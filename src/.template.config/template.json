@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Pepegov",
+    "classifications": [ "Common", "Web" ],
+    "identity": "Microservice.OpenIddict.Template",
+    "name": "Microservice OpenIddict Template",
+    "shortName": "microserviceopenIddicttemplate",
+    "tags": {
+      "language": "C#",
+      "type": "project"
+    },
+    "sourceName": "MicroserviceOpenIddictTemplate",
+    "preferNameDirectory": true
+}

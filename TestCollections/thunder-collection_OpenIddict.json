@@ -1,0 +1,151 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "OpenIddict",
+    "dateExported": "2023-04-19T07:11:17.054Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "1d844e34-d0cc-4458-82cd-095d80d3fdf1",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "Openiddict Configuration",
+            "url": "https://localhost:10001/.well-known/openid-configuration",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-04-19T05:32:01.011Z",
+            "modified": "2023-04-19T05:32:01.011Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "9316231c-4a5d-4ee1-88a2-cbb5bb21b126",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "Token client_credentials ",
+            "url": "https://localhost:10001/connect/token",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-04-19T05:36:48.760Z",
+            "modified": "2023-04-19T05:36:48.760Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "formencoded",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "client_id",
+                        "value": "MicroserviceCredentials-4523f-21321"
+                    },
+                    {
+                        "name": "client_secret",
+                        "value": "MicroserviceCredentials-4523f-21321_21354g"
+                    },
+                    {
+                        "name": "scope",
+                        "value": "",
+                        "isDisabled": true
+                    },
+                    {
+                        "name": "grant_type",
+                        "value": "client_credentials"
+                    }
+                ]
+            },
+            "tests": []
+        },
+        {
+            "_id": "4b9eb9b5-6d28-4cc3-a69e-9da5d888e19d",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "Token password",
+            "url": "https://localhost:10001/connect/token",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-04-19T05:41:05.497Z",
+            "modified": "2023-04-19T05:41:05.497Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "formencoded",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "client_id",
+                        "value": "MicroserviceAuthorizationCode-4523f-21321"
+                    },
+                    {
+                        "name": "client_secret",
+                        "value": "MicroserviceAuthorizationCode-4523f-21321_21354g"
+                    },
+                    {
+                        "name": "scope",
+                        "value": "",
+                        "isDisabled": true
+                    },
+                    {
+                        "name": "grant_type",
+                        "value": "password"
+                    },
+                    {
+                        "name": "username",
+                        "value": "admin"
+                    },
+                    {
+                        "name": "password",
+                        "value": "qwe123!@#"
+                    }
+                ]
+            },
+            "tests": []
+        },
+        {
+            "_id": "2ecc3866-b5b8-44dd-8354-53a0f0937416",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "Authorize Auth2 (get claims)",
+            "url": "https://localhost:10001/api/account/getclaims",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2023-04-19T05:58:57.251Z",
+            "modified": "2023-04-19T05:58:57.251Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "oauth2",
+                "oauth2": {
+                    "grantType": "authorization_code",
+                    "authUrl": "https://localhost:10001/connect/authorize",
+                    "tokenUrl": "https://localhost:10001/connect/token",
+                    "clientId": "MicroserviceAuthorizationCode-4523f-21321",
+                    "clientSecret": "MicroserviceAuthorizationCode-4523f-21321_21354g",
+                    "clientAuth": "in-header",
+                    "scope": "openid",
+                    "state": "Microservice",
+                    "audience": "MicroserviceAuthorizationCode-4523f-21321"
+                }
+            },
+            "tests": []
+        },
+        {
+            "_id": "9cce26e1-74bc-44c4-8226-cc991620ad6e",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "Authorize Token (get claims)",
+            "url": "https://localhost:10001/api/account/getclaims",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2023-04-19T06:00:42.988Z",
+            "modified": "2023-04-19T06:00:42.988Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkIyNTY2Q0UzMDlCRUM3Q0ZGOEVEMjREQzAxN0JENEQ2NkQ3RTI0QTEiLCJ4NXQiOiJzbFpzNHdtLXg4XzQ3U1RjQVh2VTFtMS1KS0UiLCJ0eXAiOiJhdCtqd3QifQ.eyJzdWIiOiIxODliMWQ2Yi0yMDg2LTQ2MzUtOWUxZi0xN2IyYWI2MmZiNGQiLCJvaV9wcnN0IjoiTWljcm9zZXJ2aWNlQXV0aG9yaXphdGlvbkNvZGUtNDUyM2YtMjEzMjEiLCJjbGllbnRfaWQiOiJNaWNyb3NlcnZpY2VBdXRob3JpemF0aW9uQ29kZS00NTIzZi0yMTMyMSIsIm9pX3Rrbl9pZCI6IjA0YjM0NzY2LWEwZDItNDZiMy1hNjUxLTQ2MGI5NTZhODRlNCIsImp0aSI6IjBjYWI1OGZjLTBmZTItNGEwOC1iZjAxLTFlOGRkZGY1YTU1OSIsImV4cCI6MTY4MTg4NzYwNCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6MTAwMDEvIiwiaWF0IjoxNjgxODg0MDA0fQ.PjCUxA0mF-b26uJr_GMmGR8vsMJ5Dnz6a_BXnvPKo1GFijteF_8L85ZN12QEyLLt-NBXN1C5cilGVRaWgWaHSV0HIkf5wuFd0UAQENz9fysC12xs1o8QPgnzsWWLUB1vW0acznQ2_gcIgWS25aibbvv_NKvP-04QQC2h2C2OTfBcsQsgYmmswRyPpZngmqp1QL1VcryAMw0-fIZtpssrwVY61Ti9hwl0iV6amkxCefaiHij3vc1RoNKtHcPqn-UbcMFCFatRahRtC0wqW-P4ZwBPUil6JK493EchxmoULxxd3Bote_M_-yftq9-xiExi-Wu6_zZlOV8xmRpSHyMYZw"
+            },
+            "tests": []
+        }
+    ]
+}

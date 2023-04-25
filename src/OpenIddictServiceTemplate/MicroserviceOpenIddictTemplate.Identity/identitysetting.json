@@ -1,0 +1,71 @@
+{
+  "ClientsIdentity": [
+    {
+      "Name" : "MicroserviceCredentials",
+      "Id" : "MicroserviceCredentials-4523f-21321",
+      "Secret": "MicroserviceCredentials-4523f-21321_21354g",
+      "GrandTypes": [
+        "client_credentials",
+        "password"
+      ],
+      "Scopes": [
+        "Microservice.Profile",
+        "api"
+      ]
+    },
+    {
+      "Name" : "MicroserviceDevice",
+      "Id" : "MicroserviceDevice-4523f-21321",
+      "Secret": "MicroserviceDevice-4523f-21321_21354g",
+      "GrandTypes": [
+        "urn:ietf:params:oauth:grant-type:device_code",
+        "client_credentials"
+      ],
+      "Scopes": [
+        "Microservice.Profile",
+        "api"
+      ]
+    },
+    {
+      "Name" : "MicroserviceAuthorizationCode",
+      "Id" : "MicroserviceAuthorizationCode-4523f-21321",
+      "Secret": "MicroserviceAuthorizationCode-4523f-21321_21354g",
+      "ConsentType" : "implicit",
+      "GrandTypes": [
+        "refresh_token",
+        "authorization_code",
+        "client_credentials",
+        "password"
+      ],
+      "Scopes": [
+        "Microservice.Profile",
+        "api"
+      ]
+    }
+  ],
+  
+  "CurrentIdentityClient": {
+    "Name" : "Microservice.Identity",
+    "Id" : "Microservice.Identity-4523f-21321",
+    "Secret": "Microservice.Identity-4523f-21321_21354g",
+    "ConsentType" : "implicit",
+    "GrandTypes": [
+      "refresh_token",
+      "authorization_code",
+      "client_credentials",
+      "password"
+    ]
+  }, 
+  
+  "Scopes": [
+    {
+      "Name": "Microservice.Profile",
+      "Description": "Microservice Profile API"
+    }
+  ],
+
+  "IdentityServerUrl": {
+    "Authority": "https://localhost:10001"
+  }
+  
+}
