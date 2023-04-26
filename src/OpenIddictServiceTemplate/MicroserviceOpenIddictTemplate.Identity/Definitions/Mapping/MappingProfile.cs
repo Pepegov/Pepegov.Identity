@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using AutoMapper;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
-using MicroserviceOpenIddictTemplate.Identity.Base.Helpers;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
+using Pepegov.MicroserviceFramerwork.Helpers;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Mapping;
 

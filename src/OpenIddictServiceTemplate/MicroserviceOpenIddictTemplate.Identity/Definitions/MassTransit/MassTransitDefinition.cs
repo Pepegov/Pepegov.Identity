@@ -1,8 +1,6 @@
 using System.Reflection;
 using MassTransit;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
-using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.Consumers;
-using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.Queries;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.MassTransit;
 

@@ -1,5 +1,5 @@
 using AutoMapper;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Mapping;
 

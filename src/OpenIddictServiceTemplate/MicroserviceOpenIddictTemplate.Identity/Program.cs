@@ -1,5 +1,5 @@
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
 using Microsoft.IdentityModel.Logging;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 using Serilog;
 using Serilog.Events;
 

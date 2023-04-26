@@ -2,13 +2,13 @@
 using AutoMapper;
 using MicroserviceOpenIddictTemplate.DAL.Database;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
-using MicroserviceOpenIddictTemplate.Identity.Base.UnitOfWork;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Application.Services;
 

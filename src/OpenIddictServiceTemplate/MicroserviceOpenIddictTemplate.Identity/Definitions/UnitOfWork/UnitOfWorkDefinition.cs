@@ -1,6 +1,6 @@
 ﻿using MicroserviceOpenIddictTemplate.DAL.Database;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
-using MicroserviceOpenIddictTemplate.Identity.Base.UnitOfWork;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.UnitOfWork
 {

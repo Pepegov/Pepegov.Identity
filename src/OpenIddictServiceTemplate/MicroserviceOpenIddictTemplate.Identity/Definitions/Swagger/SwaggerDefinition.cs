@@ -1,9 +1,9 @@
-﻿using MicroserviceOpenIddictTemplate.Identity.Base.Attributes;
-using MicroserviceOpenIddictTemplate.DAL.Domain;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
+﻿using MicroserviceOpenIddictTemplate.DAL.Domain;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Options.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Pepegov.MicroserviceFramerwork.Attributes;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Swagger

@@ -149,7 +149,7 @@ The current server client that will be substituted in swagger. You need to speci
 
 - "GrandTypes": [
     "Possible connection options"
-],
+    ],
 
 - "Scopes": [
 "Your services"
@@ -157,7 +157,7 @@ The current server client that will be substituted in swagger. You need to speci
 
 - "RedirectUris": [
     "Redirect uris for authorization flow"
-]
+    ]
 
 <br>
 
@@ -241,28 +241,6 @@ information for the database
 **Database**
 - ApplicationDbContext. Context for entity framework
 - DatabaseInitializer. Сreates a database and initializes the initial data into it
-
-<br>
-
-### Base
-
-Description of the application's base code. Patterns, structural approaches
-
-**Folders**
-
-- Attributes. Set of attributes for the application
-
-- Definition. The simplest implantation of the vertical slice architecture pattern
-
-- Entityes. Common entityes in project. For example "IPagedList"
-
-- Extensions. Common extensions for project
-
-- Helpers. Common helpers for project
-
-- Reposytory. Implementation of the "Repository" pattern. Allows you to use one implementation of working with the database for all entities
-
-- UnitOfWork. Implementation of the "UnitOfWork" pattern. Allows you to work better with the "Repository" pattern. Easier work with transactions, saving data, etc.
 
 <br>
 

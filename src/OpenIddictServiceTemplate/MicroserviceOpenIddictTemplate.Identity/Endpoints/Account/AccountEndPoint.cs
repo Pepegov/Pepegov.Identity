@@ -2,12 +2,12 @@ using MediatR;
 using MicroserviceOpenIddictTemplate.DAL.Domain;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Application.Services;
-using MicroserviceOpenIddictTemplate.Identity.Base.Attributes;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.Queries;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pepegov.MicroserviceFramerwork.Attributes;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 using Serilog;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Account;

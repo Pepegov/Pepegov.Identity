@@ -1,8 +1,8 @@
 using MicroserviceOpenIddictTemplate.DAL.Database;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Options.Models;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.OpenIddictClientsSeeting;
 

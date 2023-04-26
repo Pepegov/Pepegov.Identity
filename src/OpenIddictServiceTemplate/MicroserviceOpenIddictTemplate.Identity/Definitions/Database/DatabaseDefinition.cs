@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Database
 {

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
+﻿using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Mediator;
 

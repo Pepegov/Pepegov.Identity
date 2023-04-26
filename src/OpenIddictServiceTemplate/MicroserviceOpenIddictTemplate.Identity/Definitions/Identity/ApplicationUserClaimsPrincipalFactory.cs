@@ -1,11 +1,10 @@
 ﻿using System.Collections.Immutable;
 using System.Security.Claims;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
-using MicroserviceOpenIddictTemplate.Identity.Base.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
+using Pepegov.MicroserviceFramerwork.Helpers;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 

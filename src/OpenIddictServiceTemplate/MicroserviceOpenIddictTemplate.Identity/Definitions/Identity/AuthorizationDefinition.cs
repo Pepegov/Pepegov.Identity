@@ -1,12 +1,9 @@
-﻿using System.Text.Json;
-using MicroserviceOpenIddictTemplate.DAL.Domain;
+﻿using MicroserviceOpenIddictTemplate.DAL.Domain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.OpenIddict;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Server.AspNetCore;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 

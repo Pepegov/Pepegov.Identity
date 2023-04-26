@@ -1,17 +1,13 @@
-using System.Security.Claims;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Application.Services;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
-using MicroserviceOpenIddictTemplate.Identity.Base.Helpers;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Connect.Helper;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
-using OpenIddict.Server.AspNetCore;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 using Serilog;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Connect;

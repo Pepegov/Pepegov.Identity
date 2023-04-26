@@ -1,10 +1,10 @@
 ﻿using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.DAL.Models.Options;
-using MicroserviceOpenIddictTemplate.Identity.Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Pepegov.MicroserviceFramerwork.Extensions;
 
 namespace MicroserviceOpenIddictTemplate.DAL.Database
 {

@@ -1,6 +1,6 @@
 using MicroserviceOpenIddictTemplate.Identity.Application.Services;
-using MicroserviceOpenIddictTemplate.Identity.Base.Definition;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
+using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Base;
 

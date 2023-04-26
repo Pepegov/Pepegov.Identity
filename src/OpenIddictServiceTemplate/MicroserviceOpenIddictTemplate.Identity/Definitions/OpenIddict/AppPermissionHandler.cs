@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using MicroserviceOpenIddictTemplate.Identity.Base.Helpers;
+using Pepegov.MicroserviceFramerwork.Helpers;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.OpenIddict;
 
