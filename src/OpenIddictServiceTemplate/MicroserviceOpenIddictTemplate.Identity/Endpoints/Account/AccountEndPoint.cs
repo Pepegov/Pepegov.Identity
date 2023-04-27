@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pepegov.MicroserviceFramerwork.Attributes;
 using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.ResultWrapper;
 using Serilog;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Account;
@@ -33,8 +34,14 @@ public class AccountEndPoint : Definition
         [FromServices] IMediator mediator)
     {
         var result = await mediator.Send(new RegisterAccountRequest(model), httpContext.RequestAborted);
-        Log.Information($"{result.FirstName} {result.LastName} has be registered");
-        return Results.Ok(result);
+
+        if (result.IsSuccessful)
+        {
+            Log.Information($"{result.Message.FirstName} {result.Message.LastName} has be registered");
+            return Results.Ok(result);
+        }
+
+        return Results.BadRequest(result);
     }
 
     [ProducesResponseType(200)]
@@ -42,7 +49,7 @@ public class AccountEndPoint : Definition
     [ProducesResponseType(403)]
     [FeatureGroupName("Account")]
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
-    private async Task<ApplicationUser> GetAccountById(
+    private async Task<ResultWrapper<ApplicationUser>> GetAccountById(
         HttpContext httpContext,
         [FromQuery] string id,
         [FromServices] IMediator mediator)
@@ -52,7 +59,7 @@ public class AccountEndPoint : Definition
     [ProducesResponseType(401)]
     [FeatureGroupName("Account")]
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes)]
-    private async Task<IEnumerable<ClaimsViewModel>> GetClaims(HttpContext context, [FromServices] IMediator mediator)
+    private async Task<ResultWrapper<IEnumerable<ClaimsViewModel>>> GetClaims(HttpContext context, [FromServices] IMediator mediator)
         => await mediator.Send(new GetClaimsRequest(), context.RequestAborted);
 
     [ProducesResponseType(200)]

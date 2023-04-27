@@ -5,10 +5,9 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
+using Pepegov.MicroserviceFramerwork.ResultWrapper;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Application.Services;
 
@@ -51,35 +50,51 @@ public class AccountService : IAccountService
         return result;
     }
 
-    public async Task<UserAccountViewModel> RegisterAsync(RegisterViewModel model, CancellationToken cancellationToken)
+    public async Task<ResultWrapper<UserAccountViewModel>> RegisterAsync(RegisterViewModel model, CancellationToken cancellationToken)
     {
-        var viewModel = new UserAccountViewModel();
+        var result = new ResultWrapper<UserAccountViewModel>();
+        
         var user = _mapper.Map<ApplicationUser>(model);
         await using var transaction = await _unitOfWork.BeginTransactionAsync();
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var createResult = await _userManager.CreateAsync(user, model.Password);
         const string role = UserRoles.Client;
 
-        if (result.Succeeded)
+        if (createResult.Succeeded)
         {
             if (await _roleManager.FindByNameAsync(role) == null)
             {
                 throw new ArgumentNullException($"role \"{role}\" not found");
             }
 
-            await _userManager.AddToRoleAsync(user, role);
+            var roleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+            {
+                var errorsRole = roleResult.Errors.Select(x => $"{x.Code}: {x.Description}").ToList();
+                result.AddMetadatas(new Metadata(string.Join(", ", errorsRole), MetadataType.Error));
+            }
             //await AddClaimsToUser(user, role);
-
+            
             var principal = await _claimsFactory.CreateAsync(user);
             var resultViewModel = _mapper.Map<UserAccountViewModel>(principal.Identity);
             resultViewModel.Roles = new List<string> { role };
             await transaction.CommitAsync(cancellationToken);
+
+            result.Message = resultViewModel;
             _logger.LogInformation($"User registration: email:{model.Email} | {_unitOfWork.LastSaveChangesResult.Exception} ");
-            return await Task.FromResult(resultViewModel);
+            return result;
         }
-        var errors = result.Errors.Select(x => $"{x.Code}: {x.Description}");
         await transaction.RollbackAsync(cancellationToken);
+        
+        var errors = createResult.Errors.Select(x => $"{x.Code}: {x.Description}").ToList();
         _logger.LogInformation($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWork.LastSaveChangesResult.Exception} ");
-        throw new Exception($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWork.LastSaveChangesResult.Exception} ");
+
+        result.AddException(new Exception($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWork.LastSaveChangesResult.Exception} "));
+        if (errors.Any())
+        {
+            result.AddMetadatas(new Metadata(string.Join(", ", errors), MetadataType.Error));
+        }
+        
+        return result;
     }
 
     public async Task<ClaimsPrincipal> GetPrincipalByIdAsync(string identifier)
@@ -101,10 +116,17 @@ public class AccountService : IAccountService
 
     public Task<ClaimsPrincipal> GetPrincipalForUserAsync(ApplicationUser user) => _claimsFactory.CreateAsync(user);
 
-    public Task<ApplicationUser> GetByIdAsync(Guid id)
+    public async Task<ResultWrapper<ApplicationUser>> GetByIdAsync(Guid id)
     {
-        var userManager = _userManager;
-        return userManager.FindByIdAsync(id.ToString());
+        var result = new ResultWrapper<ApplicationUser>();
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (user is null)
+        {
+            result.AddException(new ArgumentNullException($"User not found. id: {id}"));
+        }
+        result.Message = user;
+        
+        return result;
     }
 
     public async Task<ApplicationUser> GetCurrentUserAsync()
