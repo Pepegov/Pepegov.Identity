@@ -5,7 +5,7 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Database
 {

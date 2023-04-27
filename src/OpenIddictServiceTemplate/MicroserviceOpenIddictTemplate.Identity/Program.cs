@@ -1,5 +1,5 @@
 using Microsoft.IdentityModel.Logging;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 using Serilog;
 using Serilog.Events;
 

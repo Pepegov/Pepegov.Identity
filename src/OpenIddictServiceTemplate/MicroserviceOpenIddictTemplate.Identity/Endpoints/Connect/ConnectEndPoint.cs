@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 using Serilog;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Connect;

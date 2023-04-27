@@ -1,6 +1,6 @@
 using MicroserviceOpenIddictTemplate.Identity.Application.Services;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Base;
 
@@ -19,8 +19,6 @@ public class BaseDefinition : Definition
             .AddApiExplorer();
         services.AddEndpointsApiExplorer();
         
-
-        services.AddMvc();
         services.AddRazorPages();
         
         services.AddTransient<IAccountService, AccountService>();

@@ -6,8 +6,8 @@ using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.Queries;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 using Pepegov.MicroserviceFramerwork.Attributes;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
 using Serilog;
 

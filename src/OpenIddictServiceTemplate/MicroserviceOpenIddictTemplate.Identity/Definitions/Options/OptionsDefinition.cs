@@ -1,6 +1,6 @@
 ﻿using MicroserviceOpenIddictTemplate.DAL.Models.Options;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Options.Models;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Options;
 

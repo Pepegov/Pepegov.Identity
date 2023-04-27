@@ -1,5 +1,5 @@
 ﻿using MicroserviceOpenIddictTemplate.DAL.Domain;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Cors;
 

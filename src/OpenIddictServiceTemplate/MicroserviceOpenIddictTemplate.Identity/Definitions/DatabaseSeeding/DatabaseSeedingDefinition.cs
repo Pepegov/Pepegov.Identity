@@ -1,5 +1,5 @@
 ﻿using MicroserviceOpenIddictTemplate.DAL.Database;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.DatabaseSeeding;
 

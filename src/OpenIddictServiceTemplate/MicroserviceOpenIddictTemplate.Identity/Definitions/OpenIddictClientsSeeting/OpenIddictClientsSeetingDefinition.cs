@@ -2,7 +2,7 @@ using MicroserviceOpenIddictTemplate.DAL.Database;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Options.Models;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.OpenIddictClientsSeeting;
 

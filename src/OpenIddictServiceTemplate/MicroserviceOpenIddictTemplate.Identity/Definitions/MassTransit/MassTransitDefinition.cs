@@ -1,6 +1,6 @@
 using System.Reflection;
 using MassTransit;
-using Pepegov.MicroserviceFramerwork.Patterns.Definition;
+using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.MassTransit;
 
