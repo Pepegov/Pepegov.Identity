@@ -3,7 +3,7 @@
     {
       "Name" : "MicroserviceCredentials",
       "Id" : "MicroserviceCredentials-ID",
-      "Secret": "MicroserviceCredentials-PASSWORD",
+      "Secret": "MicroserviceCredentials-SECRET",
       "GrandTypes": [
         "client_credentials",
         "refresh_token"
@@ -19,7 +19,7 @@
     {
       "Name" : "MicroserviceDevice",
       "Id" : "MicroserviceDevice-ID",
-      "Secret": "MicroserviceDevice-PASSWORD",
+      "Secret": "MicroserviceDevice-SECRET",
       "GrandTypes": [
         "urn:ietf:params:oauth:grant-type:device_code",
         "client_credentials",
@@ -33,7 +33,7 @@
     {
       "Name" : "MicroservicePassword",
       "Id" : "MicroservicePassword-ID",
-      "Secret": "MicroservicePassword-PASSWORD",
+      "Secret": "MicroservicePassword-SECRET",
       "GrandTypes": [
         "refresh_token",
         "password"
@@ -49,7 +49,7 @@
     {
       "Name" : "MicroserviceAuthorizationCode",
       "Id" : "MicroserviceAuthorizationCode-ID",
-      "Secret": "MicroserviceAuthorizationCode-PASSWORD",
+      "Secret": "MicroserviceAuthorizationCode-SECRET",
       "ConsentType" : "implicit",
       "GrandTypes": [
         "refresh_token",
@@ -68,7 +68,7 @@
   "CurrentIdentityClient": {
     "Name" : "Microservice.Identity",
     "Id" : "Microservice.Identity-ID",
-    "Secret": "Microservice.Identity-PASSWORD",
+    "Secret": "Microservice.Identity-SECRET",
     "ConsentType" : "implicit",
     "GrandTypes": [
       "refresh_token",

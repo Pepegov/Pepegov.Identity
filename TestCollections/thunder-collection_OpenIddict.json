@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "OpenIddict",
-    "dateExported": "2023-04-19T07:11:17.054Z",
+    "dateExported": "2023-04-28T15:33:20.858Z",
     "version": "1.1",
     "folders": [],
     "requests": [
@@ -28,7 +28,7 @@
             "method": "POST",
             "sortNum": 20000,
             "created": "2023-04-19T05:36:48.760Z",
-            "modified": "2023-04-19T05:36:48.760Z",
+            "modified": "2023-04-28T10:18:54.767Z",
             "headers": [],
             "params": [],
             "body": {
@@ -37,16 +37,15 @@
                 "form": [
                     {
                         "name": "client_id",
-                        "value": "MicroserviceCredentials-4523f-21321"
+                        "value": "MicroserviceCredentials-ID"
                     },
                     {
                         "name": "client_secret",
-                        "value": "MicroserviceCredentials-4523f-21321_21354g"
+                        "value": "MicroserviceCredentials-PASSWORD"
                     },
                     {
                         "name": "scope",
-                        "value": "",
-                        "isDisabled": true
+                        "value": "offline_access openid profile"
                     },
                     {
                         "name": "grant_type",
@@ -65,7 +64,7 @@
             "method": "POST",
             "sortNum": 30000,
             "created": "2023-04-19T05:41:05.497Z",
-            "modified": "2023-04-19T05:41:05.497Z",
+            "modified": "2023-04-28T11:03:40.380Z",
             "headers": [],
             "params": [],
             "body": {
@@ -74,16 +73,15 @@
                 "form": [
                     {
                         "name": "client_id",
-                        "value": "MicroserviceAuthorizationCode-4523f-21321"
+                        "value": "MicroservicePassword-ID"
                     },
                     {
                         "name": "client_secret",
-                        "value": "MicroserviceAuthorizationCode-4523f-21321_21354g"
+                        "value": "MicroservicePassword-PASSWORD"
                     },
                     {
                         "name": "scope",
-                        "value": "",
-                        "isDisabled": true
+                        "value": "offline_access openid "
                     },
                     {
                         "name": "grant_type",
@@ -102,6 +100,86 @@
             "tests": []
         },
         {
+            "_id": "c38f0fe5-03e5-4862-9ae1-a379249b1a25",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "RefreshToken password",
+            "url": "https://localhost:10001/connect/token",
+            "method": "POST",
+            "sortNum": 35000,
+            "created": "2023-04-28T11:08:20.366Z",
+            "modified": "2023-04-28T13:35:31.258Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "formencoded",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "client_id",
+                        "value": "MicroservicePassword-ID"
+                    },
+                    {
+                        "name": "client_secret",
+                        "value": "MicroservicePassword-PASSWORD"
+                    },
+                    {
+                        "name": "grant_type",
+                        "value": "refresh_token"
+                    },
+                    {
+                        "name": "scope",
+                        "value": "offline_access openid "
+                    },
+                    {
+                        "name": "refresh_token",
+                        "value": "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJraWQiOiJDMEUwOENEM0VEOTk5OUY2MUYyNzkyRDA0RUNDMEUzNkUzNzAzMTcyIiwidHlwIjoib2lfcmVmdCtqd3QiLCJjdHkiOiJKV1QifQ.c3qlHf0anxRTudTsia-8PtZ2KpnLezfUyjFlcbIQq5GjNznImMNssa9oRZhBS03I0NKSE1QOmE7wO-nDGwF91gXBpKzxuGLxw2tt4Twpt6lbHMpT5vbh6_sDmWVfYaStLQ9IeKiJmjujS66j4wyNNiH9xYr1LqNQn-ZDBnAF0Gg0tCTy-9ahMOWOofw5PThvFYn3KWfhAm1uj6nPDIVFispeNTZyy0ZbA1FgeV_C72dSA38zNvDwTv7JRDR--8bb2WMV6YrmLYHGMS0Qiz84qSu_LofSOeVZAKZvcnsBzAb-l1fZqNyBFEMDDBOKCHiRsqHG5jyja-rAqpGM8PD81g.xvishUBJcfO4Nd7q0LmwFg.np9B9obXeowJ871JJ2ilOq4dHdfNEAQms6cB5Bj-FRhSWqX2oQ6ol8jmHYSAUCP3IifwnDz2Kkh7jhPON45Zh_zC-G0yvtLD3HJXUfj1lOWauL3niBSDWdnKurXpj8RgJmoZS0UWKNiJW04NxKM3eZ0DjrmjGMLzj2Aat9DHJj2dgwdgWG8UzK1IonFM8mUHEksyl6LXUyF7cl639ZbB6_JWwKIkLA9cemaGQHq7tSN00EQj2nzrbGCAA6OBCxCQMskunAxNlemQ4spmZt5WoASYPvPs4UeGnZdpIFCvnPwU7Tfz4s-hSRzqRWvNijfyqafi3qytL9Jkn5GfCPvw5WUrMN3wQnRuqQPbEW9pU5mUY9vQPGmE64D2pOnScVtksDf-Q5gEUjwk33cBPCkOzpI25xqqR2SZx4F_KPCATncV6hrDPI5wHwwP00IkNzMzOjLcnh36gjZXdy_J_0fL8EFNRzal1aUhxhlGQGCQg9rGXcd47-7kGtibNHY2dymvDriTPG1azZAaU-ga8RUn2eUBEopkx9eeGj8myc2avmA5snB029b6JuDdb4GETIX4ESTGPJdd6856tie6i2Bcbwmapt56FngAAI6mwPYH2zAxgEWY5F7-GxAhd-m5-XEWJ80qlO4ZSA12sPv4s7yEuqlUzjQSLWrdmqfSfBWwvGEQDl1FjxcKfmIEdoJF-PdqGNybA1iCT7p1iCpGzMe0jFI0UhvvEJ2pjQsJxcqkonzIF_tJNBGqcZMSYfvj0NKjLqRkAKHzAVvT3eA-MlwLh9kF7aFxCnmYlfXBCkglc5hf5mFYVHdeE-82efHr_oyqzEtWdCJDKAAQutQH89mncLyVbINI4YarpflFwNtTzsCjXv2bUHdgHCK4hHYxLj91fsuTyPoFQbkB9-1-5NszrY0WpmJUBaTSPZGgSE9gMHC5XGdNVaizQvHexA73UJmM3CpyYu8n3pQKLlmAAaPEvdr9uUH75-0rOKkpttAeOqUugL_4p6IO5u9NzgZhN3qqjuxgd_zAJNzpT7ylbZneP5KWRBhEb6o4apiqlliVLKU51L5enGvmvKpTHrUlCOv75EsL5x7SpK5FRh-OrZ29c9ICrA6F4NZ96gNFaVQ_UBBg1uAKVxuTJukIK2UZkQcUpVxeZCoF1vGyIzc0j1f3SCJtpH6UzySioBv2mGfKGgrRBkvCH8Av-Tu5ISbGHyYS_-gw-x9_Rk_ZMULFri2SVmIiiSa3E9RJgRh-FoaLmgh7lGxa9_DswlCy_k08m0UxUYwUvepJ4J0U_2Oozkv4VS-zcWZOUn73sKjdztvJYLv22KZIgV__8XaZO3Snj1Ngf7kswax9meRnV4bceM35TwtWNWRGp8HDzkUhwho39rHkrPZdxm0CXHzsg_SaDpkWFsv1b8WD0lzsSeVxeu3aG7I1OpoXbPm52aXF3d6MZzYhr9sXDA4_MBsfxovz6btww_92nX8pFswUXBhwreo5RoUe6DVhvY-Cb1KGu3kKgnzLCKjN2JbD0BQJG82k6ZqrAUTzGp-QyCsZPkQomp3qTlOyd_yLTYjr6qtNSYRctzRS50FQAuGsVg6_9w4eWMey0QdxRtXV-dlK_vBg8O0phUtSFKubq9D4lNxKrbN6P3M5uMeP0m8CehDjaYpDAt5cX__WeTlw192NCX9awut3rAR-FWFNa-G1nV4srcqGfuvNhdRorTUctbiqgtBhd8Pg9Jn12V0c0i8_uOmlMbDQkQ.GLa6GE1j749LMmlRKBhFBFOQWPgohEMcvc2GezN0u1U"
+                    }
+                ]
+            },
+            "tests": []
+        },
+        {
+            "_id": "d6a7238b-a9ab-48e0-9952-ec7262f8300c",
+            "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
+            "containerId": "",
+            "name": "RefreshToken client_credential",
+            "url": "https://localhost:10001/connect/token",
+            "method": "POST",
+            "sortNum": 37500,
+            "created": "2023-04-28T11:52:44.344Z",
+            "modified": "2023-04-28T15:26:53.924Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "formencoded",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "client_id",
+                        "value": "MicroserviceCredentials-ID"
+                    },
+                    {
+                        "name": "client_secret",
+                        "value": "MicroserviceCredentials-PASSWORD"
+                    },
+                    {
+                        "name": "grant_type",
+                        "value": "refresh_token"
+                    },
+                    {
+                        "name": "scope",
+                        "value": "offline_access openid "
+                    },
+                    {
+                        "name": "refresh_token",
+                        "value": "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJraWQiOiJDMEUwOENEM0VEOTk5OUY2MUYyNzkyRDA0RUNDMEUzNkUzNzAzMTcyIiwidHlwIjoib2lfcmVmdCtqd3QiLCJjdHkiOiJKV1QifQ.gjPLohBYkCsGFDIy8khNov1ZlPwei3PunwH-QiBlGTRwOtiuwzpBu5HlVQwF5Ef7UxjreCqb69TZpegO6BmD942MXx67gNu4KxEKNCNcxeDoTgDC_QcgH7zKYFSTGnR_0eWRfAleErwDaP4mO-WiuCwC_DUwmckm5oTwng9Nsz3u7JvQIjwiA6JP0OHXcyH_K2-HomJ4DdJ0cPw9pqWCcKsxTmGbuqjsgxlRAG7nDIcfesbJL6UpvJtfbwiJKGmzh6JFrjGsQm-MDImI6t2aTmcFvlIStqQrMuu3RXZGqAwv9gkEQHN6-9dtWvR1lG0d5Gwa2lOzJJjJkBTxjtu2Bw.2mJO0ILH6qwVw8Rvdndn2Q.VmsQJeViNLot4HZOREUUzpCbbjBqz8zCjv0JUYci8BB4N9S2v8tibtJOdVfd-IJq86al-RL8-WL0by8XwY65oC4PXR9O4BSLaHibITMcFINA2b7RfBGkg4b5VFc4NtUW0qRRuXGFFK2txmuekZKN-kHbvxXjFz-2BLF_SmMCsZP4n8-gdpvS-89g0P-y850gUha7Pdf0-n6NW9POydqD3Lx7JJ1vPZDPWGaWHsKkCF7xAn9S-9Klmn1GVzAePJC6mo3Fmz_K01-NBeB3pueThUa_lC9k3MRzENt78mWVOqEluVAZqrpPg0thf3MpIw0dmfLRNbWyRD8-fFM6sP-0-yVAEQO9j-etT74yApbZmX2skqYP4aRxxXYRZg-1JaLqxWwHpE7ut1v4iH_QIGF9mf51eAXLWZcLUM3aBfaNdYXHs-wNtRDuBXEmA3xcVleSSxVKR8YVN0gmJ8rl7sfH4tawvFvi1VGRZX3kJ0CLE5SBISeeCphSpK3_wvp6jR0rPuCVoflvGXkuav78G-Sde2xzqIQCDEdojrjYsG8vok2qbz7sEq8bInFgnSBCyQVhl5eLdgcbLgETyfx5-vLwj_Xx3wWwsUhIvvKnEAw4wPNeIRenlDnjLt52X0CZ3HCAE8ZyW7TKkf1j79PlJooLDB6nr5xpO_bCYJNfmV5Z8WovEwkkdkZRcv9shx0pgwV4qcJnxkJDpo-igck3bTmdJ1svmhFZTMEbxQD27s2hYhoKBzgpIT0W0BwVBz-547RcBq9w5slJeApJP4YNxCSugniBe1LYdxGTlCS9uoFSGf0OPHQSe0PGjuvjR_0FsYgCZbyDcSB9L56TZMUvFiILcjgP8zxk8RsTSa3ICaKfPXbFV9VPS1LaGZdmxF09JaPCulKSZv_KJAGQbPBsf3IIQx8BaHB1rA8LrhahgDhgo-LuJwoquyq8mLZOCVal6MXhBUaCzANIbE_Vi-KpZeb0sehqTyhM-HsKtMBG5PHqukW8F1PRPBBuyYvU722F5LX8MmEUdxQqI8NbGjZSQ1YH8hstgWbkfkdOMk65fqJ8Llulr8k-j0_xRehRxAeSTvDm3Z06tHT5MuGiYfrnVB207aDdDCiz31YpPuCb9z5PS63yeeMqKFIrqL8hD2F2vDaaPk6un8BekAJhCD4BFScp25N8ZZEwd_SQNGLpkrmvpahzHiBVFwitATa8a-egSV8ENGwkVw-JJwJZdAM7t56V_f20wV06yngL_WCqzj4JPZZkf0m2bS7yrtas0ykOIkbdeBu6oGRFTyLMIkGtEy55on_VtBhXZ4vaOxbzWGzvThDTq0rm65ZGcdOBpGtbq8O4PLl42CN44f0kafBFPb4KArgkSiirpvOyxzPSPjKfTmsV-DvjAc6m0-0Cs2dyu1q4.svEaCnM8Iynr-1JHvhUpiSvTigsOyVvEbVs2ndw8jNs"
+                    }
+                ]
+            },
+            "tests": []
+        },
+        {
             "_id": "2ecc3866-b5b8-44dd-8354-53a0f0937416",
             "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
             "containerId": "",
@@ -110,7 +188,7 @@
             "method": "GET",
             "sortNum": 40000,
             "created": "2023-04-19T05:58:57.251Z",
-            "modified": "2023-04-19T05:58:57.251Z",
+            "modified": "2023-04-28T11:06:02.469Z",
             "headers": [],
             "params": [],
             "auth": {
@@ -119,8 +197,8 @@
                     "grantType": "authorization_code",
                     "authUrl": "https://localhost:10001/connect/authorize",
                     "tokenUrl": "https://localhost:10001/connect/token",
-                    "clientId": "MicroserviceAuthorizationCode-4523f-21321",
-                    "clientSecret": "MicroserviceAuthorizationCode-4523f-21321_21354g",
+                    "clientId": "MicroserviceAuthorizationCode-ID",
+                    "clientSecret": "MicroserviceAuthorizationCode-PASSWORD",
                     "clientAuth": "in-header",
                     "scope": "openid",
                     "state": "Microservice",
@@ -134,16 +212,16 @@
             "colId": "0e8edf9e-05d4-4c49-807a-9931b45fc7d5",
             "containerId": "",
             "name": "Authorize Token (get claims)",
-            "url": "https://localhost:10001/api/account/getclaims",
+            "url": "https://localhost:10001/api/account/getcurrentaccountclaims",
             "method": "GET",
             "sortNum": 50000,
             "created": "2023-04-19T06:00:42.988Z",
-            "modified": "2023-04-19T06:00:42.988Z",
+            "modified": "2023-04-28T15:21:30.884Z",
             "headers": [],
             "params": [],
             "auth": {
                 "type": "bearer",
-                "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkIyNTY2Q0UzMDlCRUM3Q0ZGOEVEMjREQzAxN0JENEQ2NkQ3RTI0QTEiLCJ4NXQiOiJzbFpzNHdtLXg4XzQ3U1RjQVh2VTFtMS1KS0UiLCJ0eXAiOiJhdCtqd3QifQ.eyJzdWIiOiIxODliMWQ2Yi0yMDg2LTQ2MzUtOWUxZi0xN2IyYWI2MmZiNGQiLCJvaV9wcnN0IjoiTWljcm9zZXJ2aWNlQXV0aG9yaXphdGlvbkNvZGUtNDUyM2YtMjEzMjEiLCJjbGllbnRfaWQiOiJNaWNyb3NlcnZpY2VBdXRob3JpemF0aW9uQ29kZS00NTIzZi0yMTMyMSIsIm9pX3Rrbl9pZCI6IjA0YjM0NzY2LWEwZDItNDZiMy1hNjUxLTQ2MGI5NTZhODRlNCIsImp0aSI6IjBjYWI1OGZjLTBmZTItNGEwOC1iZjAxLTFlOGRkZGY1YTU1OSIsImV4cCI6MTY4MTg4NzYwNCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6MTAwMDEvIiwiaWF0IjoxNjgxODg0MDA0fQ.PjCUxA0mF-b26uJr_GMmGR8vsMJ5Dnz6a_BXnvPKo1GFijteF_8L85ZN12QEyLLt-NBXN1C5cilGVRaWgWaHSV0HIkf5wuFd0UAQENz9fysC12xs1o8QPgnzsWWLUB1vW0acznQ2_gcIgWS25aibbvv_NKvP-04QQC2h2C2OTfBcsQsgYmmswRyPpZngmqp1QL1VcryAMw0-fIZtpssrwVY61Ti9hwl0iV6amkxCefaiHij3vc1RoNKtHcPqn-UbcMFCFatRahRtC0wqW-P4ZwBPUil6JK493EchxmoULxxd3Bote_M_-yftq9-xiExi-Wu6_zZlOV8xmRpSHyMYZw"
+                "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkIyNTY2Q0UzMDlCRUM3Q0ZGOEVEMjREQzAxN0JENEQ2NkQ3RTI0QTEiLCJ4NXQiOiJzbFpzNHdtLXg4XzQ3U1RjQVh2VTFtMS1KS0UiLCJ0eXAiOiJhdCtqd3QifQ.eyJzdWIiOiIxZDhhMGVjNC03NjExLTQ0ZGItYTM1Mi1lNzcwOWI0NzgxM2EiLCJvaV9wcnN0IjoiTWljcm9zZXJ2aWNlUGFzc3dvcmQtSUQiLCJvaV9hdV9pZCI6IjEwYjY0ODNjLWZiMGMtNGU3MS1iODRjLTEwNjE2Y2Q3ZjFlZCIsImNsaWVudF9pZCI6Ik1pY3Jvc2VydmljZVBhc3N3b3JkLUlEIiwib2lfdGtuX2lkIjoiY2E4ZTM2ZjgtMjc2OC00OTljLTgwYWEtOGYxMjhkNmI0ZGExIiwic2NvcGUiOiJvZmZsaW5lX2FjY2VzcyBvcGVuaWQiLCJqdGkiOiJmZDM5YWZiNy0xOTczLTRiY2UtOTE4ZS0zMTE1NDc1MzFkZGUiLCJleHAiOjE2ODI4MDA1NzEsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjEwMDAxLyIsImlhdCI6MTY4MjY5MjU3MX0.N7j76XoD-P9daouVmMdG05hWSVnrlSppFUDOToNj0XFnvkbfiFkq2qOj8GClJsSRQQb0ISBacJuOnSUffEU2DC0Vj1-vdRQXq9z596lCnBkpzg3WbSjEZRbQS-Qr08JZSQJ1uz3dKXmn9L88RdhSdX1yEdyZTA7lLY6rqN7fCa_qPtb7MNEOtJdO202Vbv_rdqFLGKqUgPhnqVQKPE0KTqC_movA8X2CfXGQgn4rkvbIab9xu1CVxNluhYhS3ZM2wPPBZIRqgtyMTuwLe4Uj58VkaiSmbqmu0z_dDZllOGLFlTJA0ky4QsH1X4wFH1TswaGTxcZxy4gVsXEfa6SJYQ"
             },
             "tests": []
         }
