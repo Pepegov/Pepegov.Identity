@@ -53,6 +53,11 @@ public class ConnectEndPoint : Definition
             return await ConnectHelper.ConnectDeviceCodeGrantType(httpContext, userManager, signInManager);
         }
 
+        if (request.IsRefreshTokenGrantType())
+        {
+            return await ConnectHelper.ConnectRefreshTokenGrantType(request, httpContext, accountService, userManager, signInManager);
+        }
+
         return Results.Problem("The specified grant type is not supported.");
     }   
     

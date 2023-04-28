@@ -32,6 +32,7 @@ public static class OpenIddictApplicationDescriptorExtensions
                     application.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
                     application.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
                     break;
+                case OpenIddictConstants.Permissions.GrantTypes.Password:
                 case OpenIddictConstants.Permissions.GrantTypes.ClientCredentials:
                     break;
             }
@@ -48,6 +49,7 @@ public static class OpenIddictApplicationDescriptorExtensions
                     application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
                     application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
                     break;
+                case OpenIddictConstants.Permissions.GrantTypes.Password:
                 case OpenIddictConstants.Permissions.GrantTypes.ClientCredentials:
                     application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
                     break;

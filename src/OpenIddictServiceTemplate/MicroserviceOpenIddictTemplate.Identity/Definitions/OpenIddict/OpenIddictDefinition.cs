@@ -33,6 +33,9 @@ public class OpenIddictDefinition : Definition
                     .AllowPasswordFlow()
                     .AllowClientCredentialsFlow()
                     .AllowRefreshTokenFlow();
+                
+                options.SetAccessTokenLifetime(TimeSpan.FromHours(30));
+                options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
 
                 options.SetAuthorizationEndpointUris("connect/authorize")
                     //.RequireProofKeyForCodeExchange() // enable PKCE
@@ -56,6 +59,7 @@ public class OpenIddictDefinition : Definition
                 options
                     .AddDevelopmentEncryptionCertificate()
                     .AddDevelopmentSigningCertificate();
+                
                 
                 // registration ASP.NET Core host and configure setting for ASP.NET Core.
                 options

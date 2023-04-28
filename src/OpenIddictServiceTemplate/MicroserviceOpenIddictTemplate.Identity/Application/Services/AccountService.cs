@@ -103,8 +103,8 @@ public class AccountService : IAccountService
         {
             throw new ArgumentNullException(nameof(identifier));
         }
-        var userManager = _userManager;
-        var user = await userManager.FindByIdAsync(identifier);
+        
+        var user = await _userManager.FindByIdAsync(identifier);
         if (user == null)
         {
             throw new Exception("user not found");

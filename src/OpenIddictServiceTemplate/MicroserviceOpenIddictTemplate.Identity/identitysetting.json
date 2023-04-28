@@ -2,24 +2,28 @@
   "ClientsIdentity": [
     {
       "Name" : "MicroserviceCredentials",
-      "Id" : "MicroserviceCredentials-4523f-21321",
-      "Secret": "MicroserviceCredentials-4523f-21321_21354g",
+      "Id" : "MicroserviceCredentials-ID",
+      "Secret": "MicroserviceCredentials-PASSWORD",
       "GrandTypes": [
         "client_credentials",
-        "password"
+        "refresh_token"
       ],
       "Scopes": [
+        "profile",
+        "offline_access",
+        "openid",
         "Microservice.Profile",
         "api"
       ]
     },
     {
       "Name" : "MicroserviceDevice",
-      "Id" : "MicroserviceDevice-4523f-21321",
-      "Secret": "MicroserviceDevice-4523f-21321_21354g",
+      "Id" : "MicroserviceDevice-ID",
+      "Secret": "MicroserviceDevice-PASSWORD",
       "GrandTypes": [
         "urn:ietf:params:oauth:grant-type:device_code",
-        "client_credentials"
+        "client_credentials",
+        "refresh_token"
       ],
       "Scopes": [
         "Microservice.Profile",
@@ -27,17 +31,34 @@
       ]
     },
     {
-      "Name" : "MicroserviceAuthorizationCode",
-      "Id" : "MicroserviceAuthorizationCode-4523f-21321",
-      "Secret": "MicroserviceAuthorizationCode-4523f-21321_21354g",
-      "ConsentType" : "implicit",
+      "Name" : "MicroservicePassword",
+      "Id" : "MicroservicePassword-ID",
+      "Secret": "MicroservicePassword-PASSWORD",
       "GrandTypes": [
         "refresh_token",
-        "authorization_code",
-        "client_credentials",
         "password"
       ],
       "Scopes": [
+        "profile",
+        "offline_access",
+        "openid",
+        "Microservice.Profile",
+        "api"
+      ]
+    },
+    {
+      "Name" : "MicroserviceAuthorizationCode",
+      "Id" : "MicroserviceAuthorizationCode-ID",
+      "Secret": "MicroserviceAuthorizationCode-PASSWORD",
+      "ConsentType" : "implicit",
+      "GrandTypes": [
+        "refresh_token",
+        "authorization_code"
+      ],
+      "Scopes": [
+        "profile",
+        "offline_access",
+        "openid",
         "Microservice.Profile",
         "api"
       ]
@@ -46,8 +67,8 @@
   
   "CurrentIdentityClient": {
     "Name" : "Microservice.Identity",
-    "Id" : "Microservice.Identity-4523f-21321",
-    "Secret": "Microservice.Identity-4523f-21321_21354g",
+    "Id" : "Microservice.Identity-ID",
+    "Secret": "Microservice.Identity-PASSWORD",
     "ConsentType" : "implicit",
     "GrandTypes": [
       "refresh_token",
@@ -61,6 +82,18 @@
     {
       "Name": "Microservice.Profile",
       "Description": "Microservice Profile API"
+    },
+    {
+      "Name": "openid",
+      "Description": "standart openid scope"
+    },
+    {
+      "Name": "offline_access",
+      "Description": "standart offline_access scope"
+    },
+    {
+      "Name": "profile",
+      "Description": "standart profile scope"
     }
   ],
 
