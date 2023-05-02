@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 
 public class ApplicationUserProfile
@@ -10,6 +12,7 @@ public class ApplicationUserProfile
     /// <summary>
     /// Account
     /// </summary>
+    [JsonIgnore]
     public virtual ApplicationUser? ApplicationUser { get; set; }
 
     /// <summary>

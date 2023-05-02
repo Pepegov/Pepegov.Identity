@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MicroserviceOpenIddictTemplate.Identity.Application.Services;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
@@ -11,12 +12,10 @@ public class BaseDefinition : Definition
         services.AddLocalization();
         services.AddResponseCaching();
         services.AddMemoryCache();
-
         //services.AddHttpContextAccessor();
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-        
-        services.AddMvcCore()
-            .AddApiExplorer();
+
+        services.AddMvc();
         services.AddEndpointsApiExplorer();
         
         services.AddRazorPages();

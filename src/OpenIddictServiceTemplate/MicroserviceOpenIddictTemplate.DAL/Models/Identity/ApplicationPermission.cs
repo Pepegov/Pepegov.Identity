@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 
 /// <summary>
@@ -13,11 +15,13 @@ public class ApplicationPermission
     /// <summary>
     /// Application User profile identifier
     /// </summary>
+    [JsonIgnore]
     public Guid ApplicationUserProfileId { get; set; }
 
     /// <summary>
     /// Application User Profile
     /// </summary>
+    [JsonIgnore]
     public virtual ApplicationUserProfile? ApplicationUserProfile { get; set; }
 
     /// <summary>

@@ -6,6 +6,7 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
 using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
@@ -106,6 +107,9 @@ public class AccountService : IAccountService
             await _unitOfWork.SaveChangesAsync();
             if (_unitOfWork.LastSaveChangesResult.IsOk)
             {
+                user.ApplicationUserProfile = profile;
+                await _userManager.UpdateAsync(user);
+                
                 var stringAnswer = $"User registration: email:{model.Email} | {_unitOfWork.LastSaveChangesResult.Exception}";
                 var principal = await _claimsFactory.CreateAsync(user);
                 result.Message = _mapper.Map<UserAccountViewModel>(principal.Identity);
@@ -164,9 +168,8 @@ public class AccountService : IAccountService
 
     public async Task<ApplicationUser> GetCurrentUserAsync()
     {
-        var userManager = _userManager;
-        var userId = GetCurrentUserId().ToString();
-        var user = await userManager.FindByIdAsync(userId);
+        var userId = GetCurrentUserId();
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         return user;
     }
 

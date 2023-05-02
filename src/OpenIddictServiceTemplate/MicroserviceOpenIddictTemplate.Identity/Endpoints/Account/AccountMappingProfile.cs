@@ -61,6 +61,7 @@ public class RegisterViewModelToApplicationUserConvert : ITypeConverter<Register
         destination.LastName = source.LastName;
         destination.Email = source.Email;
         destination.PhoneNumber = source.PhoneNumber;
+        destination.BirthDate = source.DateOfBirth;
         
         return destination;
     }

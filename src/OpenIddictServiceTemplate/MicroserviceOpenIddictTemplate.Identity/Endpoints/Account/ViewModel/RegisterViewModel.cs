@@ -16,6 +16,9 @@ public class RegisterViewModel
     [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
     [Display(Name = "Last Name")]
     public string LastName { get; set; } = null!;
+    [Required]
+    [Display(Name = "Date of birth")]
+    public DateTime DateOfBirth { get; set; }
     [EmailAddress]
     [Display(Name = "Email")]
     public string? Email { get; set; }
