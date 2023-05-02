@@ -1,4 +1,5 @@
-﻿using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
+﻿using MicroserviceOpenIddictTemplate.DAL.Domain;
+using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.DAL.Models.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,10 +42,10 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
                 return;
             }
             
-            var adminFromConfig = scope.ServiceProvider.GetService<IOptions<AdminUser>>()!.Value;
+            var adminFromConfig = scope.ServiceProvider.GetService<IOptions<AdminProfileOption>>()!.Value;
             if (adminFromConfig is null)
             {
-                throw new ArgumentNullException("AdminUser не найден в appsetting.json");
+                throw new ArgumentNullException("Admin Profile не найден в appsetting.json");
             }
 
             var admin = new ApplicationUser
@@ -58,9 +59,22 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
                 PhoneNumberConfirmed = adminFromConfig.PhoneNumberConfirmed,
                 BirthDate = DateTime.UtcNow,
                 SecurityStamp = Guid.NewGuid().ToString("D"),
+                ApplicationUserProfile = new ApplicationUserProfile()
+                {
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Permissions = new List<ApplicationPermission>()
+                    {
+                        new()
+                        {
+                            PolicyName = "Account:GetAccountById",
+                            Description = "Access policy for Account controller user get by id"
+                        }
+                    }
+                }
             };
 
-            if (!_context!.Users.Any(u => u.UserName == admin.UserName)) //Проверка на то, что админ уже существует
+            if (!_context!.Users.Any(u => u.UserName == admin.UserName))
             {
                 var password = new PasswordHasher<ApplicationUser>();
                 admin.PasswordHash = password.HashPassword(admin, adminFromConfig.Password);

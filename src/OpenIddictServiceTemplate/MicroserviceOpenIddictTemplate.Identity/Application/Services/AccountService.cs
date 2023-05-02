@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using MicroserviceOpenIddictTemplate.DAL.Database;
+using MicroserviceOpenIddictTemplate.DAL.Domain;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
@@ -61,11 +62,11 @@ public class AccountService : IAccountService
 
         if (createResult.Succeeded)
         {
-            if (await _roleManager.FindByNameAsync(role) == null)
+            if (await _roleManager.FindByNameAsync(role) is null)
             {
-                throw new ArgumentNullException($"role \"{role}\" not found");
+                result.AddException(new ArgumentNullException($"role \"{role}\" not found"));
+                return result;
             }
-
             var roleResult = await _userManager.AddToRoleAsync(user, role);
             if (!roleResult.Succeeded)
             {
@@ -73,15 +74,47 @@ public class AccountService : IAccountService
                 result.AddMetadatas(new Metadata(string.Join(", ", errorsRole), MetadataType.Error));
             }
             //await AddClaimsToUser(user, role);
-            
-            var principal = await _claimsFactory.CreateAsync(user);
-            var resultViewModel = _mapper.Map<UserAccountViewModel>(principal.Identity);
-            resultViewModel.Roles = new List<string> { role };
-            await transaction.CommitAsync(cancellationToken);
 
-            result.Message = resultViewModel;
-            _logger.LogInformation($"User registration: email:{model.Email} | {_unitOfWork.LastSaveChangesResult.Exception} ");
-            return result;
+
+            var permission = new ApplicationPermission()
+            {
+                PolicyName = "User:View",
+                Description = "Standart user polycy for minimal view"
+            };
+            var profile = new ApplicationUserProfile
+            {
+                Created = DateTime.UtcNow, 
+                Updated = DateTime.UtcNow,
+                Permissions = new List<ApplicationPermission>()
+            };
+            
+            var permissionRepository = _unitOfWork.GetRepository<ApplicationPermission>();
+            var profileRepository = _unitOfWork.GetRepository<ApplicationUserProfile>();
+
+            var currentPermussion =
+                await permissionRepository.GetFirstOrDefaultAsync(predicate: x =>
+                    x.PolicyName == permission.PolicyName, disableTracking: false);
+            profile.Permissions.Add(currentPermussion ?? permission);
+
+            if (currentPermussion is null)
+            {
+                await permissionRepository.InsertAsync(profile.Permissions, cancellationToken);
+            }
+            
+            await profileRepository.InsertAsync(profile, cancellationToken);
+            
+            await _unitOfWork.SaveChangesAsync();
+            if (_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                var stringAnswer = $"User registration: email:{model.Email} | {_unitOfWork.LastSaveChangesResult.Exception}";
+                var principal = await _claimsFactory.CreateAsync(user);
+                result.Message = _mapper.Map<UserAccountViewModel>(principal.Identity);
+                result.AddMetadatas(new Metadata(stringAnswer, MetadataType.Success));
+                
+                await transaction.CommitAsync(cancellationToken);
+                _logger.LogInformation($"User registration: email:{model.Email} | {_unitOfWork.LastSaveChangesResult.Exception} ");
+                return result;
+            }
         }
         await transaction.RollbackAsync(cancellationToken);
         

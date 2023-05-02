@@ -1,11 +1,15 @@
 namespace MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 
+/// <summary>
+/// User permission for application
+/// </summary>
 public class ApplicationPermission
 {
     /// <summary>
     /// Application Permission indentifer
     /// </summary>
     public Guid ApplicationPermissionId { get; set; }
+    
     /// <summary>
     /// Application User profile identifier
     /// </summary>

@@ -48,7 +48,7 @@ public class AccountEndPoint : Definition
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]
     [FeatureGroupName("Account")]
-    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Policy = "Account:GetAccountById")]
     private async Task<ResultWrapper<ApplicationUser>> GetAccountById(
         HttpContext httpContext,
         [FromQuery] string id,

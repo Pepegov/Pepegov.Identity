@@ -114,7 +114,7 @@ public static partial class ConnectHelper
 
         if (type == OpenIddictConstants.GrantTypes.Password)
         {   
-            var user = await userManager.FindByIdAsync(result.Principal.GetClaim(OpenIddictConstants.Claims.Subject) ?? string.Empty);
+            var user = await userManager.FindByIdAsync(result.Principal.GetClaim(OpenIddictConstants.Claims.Subject));
             
             var properties = await CheckUser(user, request, userManager, signInManager);
             if (properties is not null)
@@ -142,7 +142,7 @@ public static partial class ConnectHelper
             return new AuthenticationProperties(new Dictionary<string, string>
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
-                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The refresh token is no longer valid."
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "User not found or the refresh token is no longer valid."
             }!);
         }
 

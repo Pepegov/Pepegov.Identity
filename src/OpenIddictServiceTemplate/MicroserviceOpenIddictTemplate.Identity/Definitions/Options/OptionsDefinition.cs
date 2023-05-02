@@ -15,6 +15,6 @@ public class OptionsDefinition : Definition
 
         services.Configure<IdentityAddressOption>(identityConfiguration.GetSection("IdentityServerUrl"));
         services.Configure<IdentityClientOption>(identityConfiguration.GetSection("CurrentIdentityClient"));
-        services.Configure<AdminUser>(builder.Configuration.GetSection("AdminUser"));
+        services.Configure<AdminProfileOption>(builder.Configuration.GetSection("AdminUser"));
     }
 }

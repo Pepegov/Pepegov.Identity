@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
+using OpenIddict.Abstractions;
 using Pepegov.MicroserviceFramerwork.Helpers;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Mapping;
@@ -30,11 +31,12 @@ public class RegisterViewModelToApplicationUserConvert : ITypeConverter<Register
         {
             destination = new ApplicationUser();
         }
-        
+
+        destination.UserName = source.UserName;
         destination.FirstName = source.FirstName;
         destination.LastName = source.LastName;
         destination.Email = source.Email;
-        destination.UserName = source.Email;
+        destination.PhoneNumber = source.PhoneNumber;
         
         return destination;
     }
@@ -49,10 +51,13 @@ public class ClaimsIdentityToUserAccountViewModel : ITypeConverter<ClaimsIdentit
             destination = new UserAccountViewModel();
         }
 
-        destination.FirstName = ClaimsHelper.GetValue<string>(source, ClaimTypes.GivenName);
-        destination.LastName = ClaimsHelper.GetValue<string>(source, ClaimTypes.Surname);
-        destination.Email = ClaimsHelper.GetValue<string>(source, ClaimTypes.Email);
-        destination.PhoneNumber = ClaimsHelper.GetValue<string>(source, ClaimTypes.MobilePhone);
+        destination.Id = ClaimsHelper.GetValue<Guid>(source, OpenIddictConstants.Claims.Subject);
+        destination.UserName = ClaimsHelper.GetValue<string>(source, OpenIddictConstants.Claims.Name);
+        destination.FirstName = ClaimsHelper.GetValue<string>(source, OpenIddictConstants.Claims.GivenName);
+        destination.LastName = ClaimsHelper.GetValue<string>(source, OpenIddictConstants.Claims.FamilyName);
+        destination.Email = ClaimsHelper.GetValue<string>(source, OpenIddictConstants.Claims.Email);
+        destination.PhoneNumber = ClaimsHelper.GetValue<string>(source, OpenIddictConstants.Claims.PhoneNumber);
+        destination.Roles = ClaimsHelper.GetValues<string>(source, OpenIddictConstants.Claims.Role);
 
         return destination;
     }
