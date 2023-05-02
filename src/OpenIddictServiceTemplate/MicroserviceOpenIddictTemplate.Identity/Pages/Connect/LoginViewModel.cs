@@ -6,11 +6,11 @@ public class LoginViewModel
 {
 
     [Required]
-    [Display(Name = "Имя для входа")]
+    [Display(Name = "Name")]
     public string UserName { get; set; } = null!;
 
     [Required]
-    [Display(Name = "Пароль")]
+    [Display(Name = "Password")]
     public string Password { get; set; } = null!;
 
     [Required]
