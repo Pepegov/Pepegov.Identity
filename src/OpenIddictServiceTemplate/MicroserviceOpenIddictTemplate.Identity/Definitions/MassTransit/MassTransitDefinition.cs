@@ -1,6 +1,8 @@
 using System.Reflection;
 using MassTransit;
+using MicroserviceOpenIddictTemplate.Identity.Definitions.Options.Models;
 using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
+using Pepegov.MicroserviceFramerwork.Exceptions;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.MassTransit;
 
@@ -14,31 +16,26 @@ public class MassTransitDefinition : Definition
             x.SetInMemorySagaRepositoryProvider();
             
             var assembly = Assembly.GetEntryAssembly();
+            var setting = builder.Configuration.GetSection("RabbitMQ").Get<MassTransitOption>();
+            if (setting is null)
+            {
+                throw new MicroserviceArgumentNullException("MassTransit setting is null");
+            }
             
             x.AddConsumers(assembly);
             x.AddSagaStateMachines(assembly);
             x.AddSagas(assembly);
             x.AddActivities(assembly);
             
-            //x.AddConsumer<GetAccountByIdConsumer>();
-            //x.AddConsumer<RegisterAccountConsumer>();
-
             x.UsingRabbitMq((context, cfg) =>
             {
 
-                cfg.Host("rabbitmq://localhost/ ", h =>
+                cfg.Host($"rabbitmq://{setting.Url}/{setting.Host}", h =>
                 {
-                    h.Username("rmuser");
-                    h.Password("rmpassword"); 
+                    h.Username(setting.User);
+                    h.Password(setting.Password); 
                 });
-                /*cfg.ReceiveEndpoint("AccountQueue", e =>
-                {
-                    e.PrefetchCount = 20;
-                    e.UseMessageRetry(r => r.Interval(2, 100));
 
-                    e.Consumer<GetAccountByIdConsumer>(context);
-                    e.Consumer<RegisterAccountConsumer>(context);
-                });*/
                 cfg.ConfigureEndpoints(context);
             });
 
