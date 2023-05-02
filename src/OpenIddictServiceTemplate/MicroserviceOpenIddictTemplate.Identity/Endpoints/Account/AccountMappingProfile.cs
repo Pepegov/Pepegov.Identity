@@ -5,20 +5,44 @@ using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using OpenIddict.Abstractions;
 using Pepegov.MicroserviceFramerwork.Helpers;
 
-namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Mapping;
+namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Account;
 
-public class MappingProfile : Profile
+public class AccountMappingProfile : Profile
 {
-    public MappingProfile()
+    public AccountMappingProfile()
     {
-        CreateMap<ApplicationUser, UserAccountViewModel>();
-        CreateMap<UserAccountViewModel, ApplicationUser>();
-
+        CreateMap<ApplicationUser, UserAccountViewModel>()
+            .ForMember(x => x.Roles, o => o.Ignore())
+            .ForMember(x => x.PositionName, o => o.Ignore());
+        
+        CreateMap<UserAccountViewModel, ApplicationUser>()
+            .ConvertUsing<UserAccountViewModelToApplicationUserConvert>();
+        
         CreateMap<RegisterViewModel, ApplicationUser>()
             .ConvertUsing<RegisterViewModelToApplicationUserConvert>();
 
         CreateMap<ClaimsIdentity, UserAccountViewModel>()
             .ConvertUsing<ClaimsIdentityToUserAccountViewModel>();
+    }
+}
+
+public class UserAccountViewModelToApplicationUserConvert : ITypeConverter<UserAccountViewModel, ApplicationUser>
+{
+    public ApplicationUser Convert(UserAccountViewModel source, ApplicationUser destination, ResolutionContext context)
+    {
+        if (destination is null)
+        {
+            destination = new ApplicationUser();
+        }
+
+        destination.UserName = source.UserName;
+        destination.FirstName = source.FirstName;
+        destination.LastName = source.LastName;
+        destination.MiddleName = source.MiddleName;
+        destination.Email = source.Email;
+        destination.PhoneNumber = source.PhoneNumber;
+
+        return destination;
     }
 }
 

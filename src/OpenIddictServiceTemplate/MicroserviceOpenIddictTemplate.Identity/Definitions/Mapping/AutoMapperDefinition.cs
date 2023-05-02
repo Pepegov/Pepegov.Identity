@@ -4,14 +4,20 @@ using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Mapping;
 
 public class AutoMapperDefinition : Definition
-{
+{ 
     public override void ConfigureServicesAsync(IServiceCollection services, WebApplicationBuilder builder)
+        => services.AddAutoMapper(typeof(Program));
+    
+    public override void ConfigureApplicationAsync(WebApplication app)
     {
-        var mappingConfig = new MapperConfiguration(mc =>
+        var mapper = app.Services.GetRequiredService<AutoMapper.IConfigurationProvider>();
+        if (app.Environment.IsDevelopment())
         {
-            mc.AddProfile(new MappingProfile());
-        });
-        IMapper mapper = mappingConfig.CreateMapper();
-        services.AddSingleton(mapper);
+            mapper.AssertConfigurationIsValid();
+        }
+        else
+        {
+            mapper.CompileMappings();
+        }
     }
 }
