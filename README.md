@@ -8,6 +8,7 @@ Implemented next stack:
 - UnitOfWork
 - OpenIddict
 - AuthoMapper
+- MassTransit
 - Swagger with identity
 - IOption 
 
@@ -137,6 +138,17 @@ The current server client that will be substituted in swagger. You need to speci
     
     ...
   }, 
+```
+
+Permissions for asp.net policy. Added to the "Permissions" table in the database, also added to the admin user profile
+
+```json
+  "Permissions": [
+    {
+      "Name": "Permission:Get",
+      "Description": "Get permission"
+    },
+    ...
 ```
 
 #### ClientsIdentity syntaxis:
