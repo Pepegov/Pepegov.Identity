@@ -25,7 +25,15 @@ public class AuthorizationDefinition : Definition
                 options.LoginPath = "/connect/login";
             });
 
-        services.AddAuthorization();
+        //services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthData.AuthenticationSchemes, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                //policy.RequireClaim("scope", "api");
+            });
+        });
         services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
         services.AddSingleton<IAuthorizationHandler, AppPermissionHandler>();
     }

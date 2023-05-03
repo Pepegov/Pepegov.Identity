@@ -3,6 +3,7 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.DAL.Models.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Pepegov.MicroserviceFramerwork.Extensions;
@@ -30,6 +31,7 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
             }
 
             await SeedRoles();
+            await SeedPermissions();
             await SeedUsers();
         }
 
@@ -63,14 +65,6 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
                 {
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow,
-                    Permissions = new List<ApplicationPermission>()
-                    {
-                        new()
-                        {
-                            PolicyName = "Account:GetAccountById",
-                            Description = "Access policy for Account controller user get by id"
-                        }
-                    }
                 }
             };
 
@@ -93,6 +87,12 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
                 }
 
                 await _context.SaveChangesAsync();
+                
+                var permissions = _context.Permissions.ToList();
+                var profile = await _context.Profiles.Where(x => x.Id == admin.ApplicationUserProfileId).FirstOrDefaultAsync();
+                
+                profile.Permissions = permissions;
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -112,6 +112,27 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
                 }
             }
 
+            await _context.SaveChangesAsync();
+        }
+        
+        private async Task SeedPermissions()
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var identityConfiguration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("identitysetting.json")
+                .Build();
+            var options = identityConfiguration.GetSection("Permissions").Get<List<IdentityPermissionOption>>();
+
+            foreach (var option in options)
+            {
+                var permission = _context.Permissions.Where(x => x.PolicyName == option.Name).ToList();
+                if (permission.Any())
+                {
+                    continue;
+                }
+                await _context.Permissions.AddAsync(new ApplicationPermission() { PolicyName = option.Name, Description = option.Description});
+            }
             await _context.SaveChangesAsync();
         }
     }

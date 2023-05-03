@@ -63,15 +63,16 @@ public static partial class ConnectHelper
         return Results.SignIn(claimsPrincipal!, null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
     
-    public static async Task<IResult> ConnectClientCredentialsGrantType(OpenIddictRequest? request)
+    public static async Task<IResult> ConnectClientCredentialsGrantType(OpenIddictRequest? request, IOpenIddictScopeManager scopeManager)
     {
-        var claimsPrincipal = await CreateCredentialsClaimsPrincipal(request);
+        var claimsPrincipal = await CreateCredentialsClaimsPrincipal(request, scopeManager);
         return Results.SignIn(claimsPrincipal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
     public static async Task<IResult> ConnectPasswordGrantType(OpenIddictRequest? request,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        IOpenIddictScopeManager scopeManager,
         IAccountService accountService)
     {
         var user = await userManager.FindByNameAsync(request.Username);
@@ -88,7 +89,7 @@ public static partial class ConnectHelper
             await userManager.ResetAccessFailedCountAsync(user);
         }
 
-        var claimsPrincipal = await CreatePasswordClaimsPrincipal(request, accountService, user);
+        var claimsPrincipal = await CreatePasswordClaimsPrincipal(request, accountService, user, scopeManager);
 
         return Results.SignIn(claimsPrincipal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
@@ -97,6 +98,7 @@ public static partial class ConnectHelper
         OpenIddictRequest? request,
         HttpContext httpContext,
         IAccountService accountService,
+        IOpenIddictScopeManager scopeManager,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager)
     {
@@ -109,7 +111,7 @@ public static partial class ConnectHelper
 
         if (type == OpenIddictConstants.GrantTypes.ClientCredentials)
         {
-            return await ConnectClientCredentialsGrantType(request);
+            return await ConnectClientCredentialsGrantType(request, scopeManager);
         }
 
         if (type == OpenIddictConstants.GrantTypes.Password)
@@ -128,7 +130,7 @@ public static partial class ConnectHelper
                 await userManager.ResetAccessFailedCountAsync(user);
             }
 
-            var claimsPrincipal = await CreatePasswordClaimsPrincipal(request, accountService, user);
+            var claimsPrincipal = await CreatePasswordClaimsPrincipal(request, accountService, user, scopeManager);
             return Results.SignIn(claimsPrincipal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
@@ -184,7 +186,7 @@ public static partial class ConnectHelper
         return null;
     }
 
-    public static Task<ClaimsPrincipal> CreateCredentialsClaimsPrincipal(OpenIddictRequest? request)
+    public static async Task<ClaimsPrincipal> CreateCredentialsClaimsPrincipal(OpenIddictRequest? request, IOpenIddictScopeManager scopeManager)
     {
         var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
@@ -198,14 +200,17 @@ public static partial class ConnectHelper
         {
             identity.AddClaim(OpenIddictConstants.Claims.Scope, request.Scope!, OpenIddictConstants.Destinations.AccessToken);
         }
+        
+        identity.SetResources(await scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
+        identity.SetDestinations(GetDestinations);
 
         var claimsPrincipal = new ClaimsPrincipal(identity);
         claimsPrincipal.SetScopes(request.GetScopes());
 
-        return Task.FromResult(claimsPrincipal);
+        return claimsPrincipal;
     }
 
-    public static async Task<ClaimsPrincipal> CreatePasswordClaimsPrincipal(OpenIddictRequest? request, IAccountService accountService, ApplicationUser user)
+    public static async Task<ClaimsPrincipal> CreatePasswordClaimsPrincipal(OpenIddictRequest? request, IAccountService accountService, ApplicationUser user, IOpenIddictScopeManager scopeManager)
     {
         var principal = await accountService.GetPrincipalForUserAsync(user);
         principal.AddClaim(OpenIddictConstants.Claims.ClientId, request.ClientId!);
@@ -217,6 +222,9 @@ public static partial class ConnectHelper
         {
             principal.AddClaim(OpenIddictConstants.Claims.Scope, request.Scope!, OpenIddictConstants.Destinations.AccessToken);
         }
+        
+        principal.SetResources(await scopeManager.ListResourcesAsync(principal.GetScopes()).ToListAsync());
+        principal.SetDestinations(GetDestinations);
         
         var claimsPrincipal = new ClaimsPrincipal(principal);
         claimsPrincipal.SetScopes(request.GetScopes());

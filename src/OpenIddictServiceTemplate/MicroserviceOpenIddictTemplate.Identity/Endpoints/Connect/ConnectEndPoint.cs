@@ -38,11 +38,11 @@ public class ConnectEndPoint : Definition
 
         if (request.IsClientCredentialsGrantType())
         {
-            return await ConnectHelper.ConnectClientCredentialsGrantType(request);
+            return await ConnectHelper.ConnectClientCredentialsGrantType(request, manager);
         }
         if (request.IsPasswordGrantType())
         {
-            return await ConnectHelper.ConnectPasswordGrantType(request, userManager, signInManager, accountService);
+            return await ConnectHelper.ConnectPasswordGrantType(request, userManager, signInManager, manager, accountService);
         }
         if (request.IsAuthorizationCodeGrantType())
         {
@@ -55,7 +55,7 @@ public class ConnectEndPoint : Definition
 
         if (request.IsRefreshTokenGrantType())
         {
-            return await ConnectHelper.ConnectRefreshTokenGrantType(request, httpContext, accountService, userManager, signInManager);
+            return await ConnectHelper.ConnectRefreshTokenGrantType(request, httpContext, accountService, manager, userManager, signInManager);
         }
 
         return Results.Problem("The specified grant type is not supported.");

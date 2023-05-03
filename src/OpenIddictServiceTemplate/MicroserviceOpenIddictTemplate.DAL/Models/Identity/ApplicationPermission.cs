@@ -11,18 +11,12 @@ public class ApplicationPermission
     /// Application Permission indentifer
     /// </summary>
     public Guid ApplicationPermissionId { get; set; }
-    
-    /// <summary>
-    /// Application User profile identifier
-    /// </summary>
-    [JsonIgnore]
-    public Guid ApplicationUserProfileId { get; set; }
 
     /// <summary>
     /// Application User Profile
     /// </summary>
     [JsonIgnore]
-    public virtual ApplicationUserProfile? ApplicationUserProfile { get; set; }
+    public virtual List<ApplicationUserProfile>? ApplicationUserProfiles { get; set; }
 
     /// <summary>
     /// Authorize attribute policy name

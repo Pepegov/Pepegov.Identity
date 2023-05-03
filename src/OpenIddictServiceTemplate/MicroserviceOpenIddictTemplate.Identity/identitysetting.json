@@ -97,6 +97,17 @@
     }
   ],
 
+  "Permissions": [
+    {
+      "Name": "Account:GetAccountById",
+      "Description": "Access policy for Account controller user get by id"
+    },
+    {
+      "Name": "User:View",
+      "Description": "Standart user polycy for minimal view"
+    }
+  ],
+
   "IdentityServerUrl": {
     "Authority": "https://localhost:10001"
   }
