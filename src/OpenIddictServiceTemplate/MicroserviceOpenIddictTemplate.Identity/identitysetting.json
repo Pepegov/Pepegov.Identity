@@ -99,6 +99,18 @@
 
   "Permissions": [
     {
+      "Name": "Permission:Get",
+      "Description": "Get permission"
+    },
+    {
+      "Name": "Permission:Change",
+      "Description": "Change permission"
+    },
+    {
+      "Name": "Permission:Profile",
+      "Description": "Change profile permission information"
+    },
+    {
       "Name": "Account:GetAccountById",
       "Description": "Access policy for Account controller user get by id"
     },

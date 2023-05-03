@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Pepegov.MicroserviceFramerwork.Exceptions;
 using Pepegov.MicroserviceFramerwork.Extensions;
 
 namespace MicroserviceOpenIddictTemplate.DAL.Database
@@ -39,15 +40,31 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
         {
             using var scope = _serviceProvider.CreateScope();
             
-            if (_context.Users.Any())
-            {
-                return;
-            }
-            
             var adminFromConfig = scope.ServiceProvider.GetService<IOptions<AdminProfileOption>>()!.Value;
             if (adminFromConfig is null)
             {
-                throw new ArgumentNullException("Admin Profile не найден в appsetting.json");
+                throw new MicroserviceArgumentNullException("Admin Profile не найден в appsetting.json");
+            }
+
+            var currentAdmin = _context.Users
+                .Include(x => x.ApplicationUserProfile)
+                .ThenInclude(x => x.Permissions)
+                .FirstOrDefault(x => x.UserName == adminFromConfig.UserName && x.Email == adminFromConfig.Email);
+            
+            if (currentAdmin is not null)
+            {
+                foreach (var permission in _context.Permissions.ToList())
+                {
+                    if (currentAdmin.ApplicationUserProfile.Permissions.Any(x => x.ApplicationPermissionId == permission.ApplicationPermissionId))
+                    {
+                        continue;
+                    }
+                    
+                    currentAdmin.ApplicationUserProfile.Permissions.Add(permission);
+                }
+
+                await _context.SaveChangesAsync();
+                return;
             }
 
             var admin = new ApplicationUser
