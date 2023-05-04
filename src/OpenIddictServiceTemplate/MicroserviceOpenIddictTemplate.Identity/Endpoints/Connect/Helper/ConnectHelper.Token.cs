@@ -168,7 +168,7 @@ public static partial class ConnectHelper
             }!);
         }
         
-        /*// Ensure the password is valid
+        // Ensure the password is valid
         if (!await userManager.CheckPasswordAsync(user, request.Password))
         {
             if (userManager.SupportsUserLockout)
@@ -181,7 +181,7 @@ public static partial class ConnectHelper
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The password is invalid."
             }!);
-        }*/
+        }
 
         return null;
     }
