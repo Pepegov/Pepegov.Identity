@@ -1,6 +1,6 @@
 ﻿using MicroserviceOpenIddictTemplate.DAL.Database;
 using Pepegov.MicroserviceFramerwork.AspNetCore.Definition;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Definitions.UnitOfWork
 {
@@ -8,7 +8,7 @@ namespace MicroserviceOpenIddictTemplate.Identity.Definitions.UnitOfWork
     {
         public override void ConfigureServicesAsync(IServiceCollection services, WebApplicationBuilder builder)
         {
-            services.AddUnitOfWork<ApplicationDbContext>();
+            services.AddUnitOfWorkEF<ApplicationDbContext>();
         }
     }
 }

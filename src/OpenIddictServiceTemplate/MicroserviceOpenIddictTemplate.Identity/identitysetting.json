@@ -11,9 +11,7 @@
       "Scopes": [
         "profile",
         "offline_access",
-        "openid",
-        "Microservice.Profile",
-        "api"
+        "openid"
       ]
     },
     {
@@ -24,10 +22,6 @@
         "urn:ietf:params:oauth:grant-type:device_code",
         "client_credentials",
         "refresh_token"
-      ],
-      "Scopes": [
-        "Microservice.Profile",
-        "api"
       ]
     },
     {
@@ -58,9 +52,7 @@
       "Scopes": [
         "profile",
         "offline_access",
-        "openid",
-        "Microservice.Profile",
-        "api"
+        "openid"
       ]
     }
   ],
@@ -79,10 +71,6 @@
   }, 
   
   "Scopes": [
-    {
-      "Name": "Microservice.Profile",
-      "Description": "Microservice Profile API"
-    },
     {
       "Name": "openid",
       "Description": "standart openid scope"

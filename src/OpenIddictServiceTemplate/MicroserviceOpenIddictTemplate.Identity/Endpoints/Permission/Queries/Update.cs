@@ -2,8 +2,8 @@ using MediatR;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.ViewModel;
 using Pepegov.MicroserviceFramerwork.Exceptions;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.Queries;
 
@@ -22,9 +22,9 @@ public record class UpdateRequest : IRequest<ResultWrapper<ApplicationPermission
 public class UpdateRequestHandler : IRequestHandler<UpdateRequest, ResultWrapper<ApplicationPermission>>
 {
     private readonly ILogger<UpdateRequestHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWorkEF _unitOfWork;
     
-    public UpdateRequestHandler(ILogger<UpdateRequestHandler> logger, IUnitOfWork unitOfWork)
+    public UpdateRequestHandler(ILogger<UpdateRequestHandler> logger, IUnitOfWorkEF unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -41,7 +41,7 @@ public class UpdateRequestHandler : IRequestHandler<UpdateRequest, ResultWrapper
         if (permission is null)
         {
             var message = $"permission by id {request.Id} not found";
-            result.AddException(new MicroserviceNotFoundException(message));
+            result.AddExceptions(new MicroserviceNotFoundException(message));
             _logger.LogError(message);
             return result;
         }

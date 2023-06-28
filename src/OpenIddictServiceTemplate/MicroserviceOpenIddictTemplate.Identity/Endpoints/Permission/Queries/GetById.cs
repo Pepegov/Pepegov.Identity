@@ -1,7 +1,7 @@
 using MediatR;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.Queries;
 
@@ -15,9 +15,9 @@ public record class GetByIdRequest : IRequest<ResultWrapper<ApplicationPermissio
 public class GetByIdRequestHandler : IRequestHandler<GetByIdRequest, ResultWrapper<ApplicationPermission>>
 {
     private readonly ILogger<GetByIdRequestHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWorkEF _unitOfWork;
     
-    public GetByIdRequestHandler(ILogger<GetByIdRequestHandler> logger, IUnitOfWork unitOfWork)
+    public GetByIdRequestHandler(ILogger<GetByIdRequestHandler> logger, IUnitOfWorkEF unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;

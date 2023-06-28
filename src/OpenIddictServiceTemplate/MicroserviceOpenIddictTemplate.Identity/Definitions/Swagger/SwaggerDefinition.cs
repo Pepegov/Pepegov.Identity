@@ -17,11 +17,12 @@ namespace MicroserviceOpenIddictTemplate.Identity.Definitions.Swagger
             services.AddSwaggerGen(options =>
             {
                 // Swagger description
+                var now = DateTime.Now.ToString("f");
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = AppData.ServiceName,
                     Version = AppData.ServiceVersion,
-                    Description = AppData.ServiceDescription
+                    Description = AppData.ServiceDescription + $" | Upload time: {now}"
                 });
                 
                 options.ResolveConflictingActions(x => x.First());

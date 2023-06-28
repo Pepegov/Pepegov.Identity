@@ -3,8 +3,8 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Pepegov.MicroserviceFramerwork.Exceptions;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.Queries;
 
@@ -21,9 +21,9 @@ public record class RemoveInProfileRequest : IRequest<ResultWrapper<ProfilePermi
 public class RemoveInProfileRequestHandler : IRequestHandler<RemoveInProfileRequest, ResultWrapper<ProfilePermissionViewModel>>
 {
     private readonly ILogger<RemoveInProfileRequestHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWorkEF _unitOfWork;
     
-    public RemoveInProfileRequestHandler(ILogger<RemoveInProfileRequestHandler> logger, IUnitOfWork unitOfWork)
+    public RemoveInProfileRequestHandler(ILogger<RemoveInProfileRequestHandler> logger, IUnitOfWorkEF unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -42,7 +42,7 @@ public class RemoveInProfileRequestHandler : IRequestHandler<RemoveInProfileRequ
         if (profile is null)
         {
             var message = $"profile by id {request.Model.ProfileId} not found";
-            result.AddException(new MicroserviceNotFoundException(message));
+            result.AddExceptions(new MicroserviceNotFoundException(message));
             _logger.LogError(message);
             return result;
         }
@@ -53,7 +53,7 @@ public class RemoveInProfileRequestHandler : IRequestHandler<RemoveInProfileRequ
         if (permission is null)
         {
             var message = $"permission by id {request.Model.PermissionId} not found";
-            result.AddException(new MicroserviceNotFoundException(message));
+            result.AddExceptions(new MicroserviceNotFoundException(message));
             _logger.LogError(message);
             return result;
         }
@@ -62,7 +62,7 @@ public class RemoveInProfileRequestHandler : IRequestHandler<RemoveInProfileRequ
         if (!answer)
         {
             var message = $"permission {request.Model.PermissionId} dont remove in profile {request.Model.ProfileId}";
-            result.AddException(new MicroserviceInvalidOperationException(message));
+            result.AddExceptions(new MicroserviceInvalidOperationException(message));
             _logger.LogError(message);
             return result;
         }

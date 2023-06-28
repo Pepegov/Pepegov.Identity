@@ -2,8 +2,8 @@ using AutoMapper;
 using MediatR;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.ViewModel;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.Queries;
 
@@ -20,10 +20,10 @@ public record class InsertRequest : IRequest<ResultWrapper<ApplicationPermission
 public class InsertRequestHandler : IRequestHandler<InsertRequest, ResultWrapper<ApplicationPermission>>
 {
     private readonly ILogger<InsertRequestHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWorkEF _unitOfWork;
     private readonly IMapper _mapper;
     
-    public InsertRequestHandler(ILogger<InsertRequestHandler> logger, IUnitOfWork unitOfWork, IMapper mapper)
+    public InsertRequestHandler(ILogger<InsertRequestHandler> logger, IUnitOfWorkEF unitOfWork, IMapper mapper)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;

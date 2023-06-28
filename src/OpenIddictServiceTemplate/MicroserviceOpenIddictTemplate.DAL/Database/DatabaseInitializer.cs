@@ -137,7 +137,7 @@ namespace MicroserviceOpenIddictTemplate.DAL.Database
             using var scope = _serviceProvider.CreateScope();
             var identityConfiguration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("identitysetting.json")
+                .AddJsonFile(AppData.IdentitySettingPath)
                 .Build();
             var options = identityConfiguration.GetSection("Permissions").Get<List<IdentityPermissionOption>>();
 

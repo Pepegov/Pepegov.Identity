@@ -3,8 +3,8 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Pepegov.MicroserviceFramerwork.Exceptions;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Endpoints.Permission.Queries;
 
@@ -21,9 +21,9 @@ public record class AddToProfileRequest : IRequest<ResultWrapper<ProfilePermissi
 public class AddToProfileRequestHandler : IRequestHandler<AddToProfileRequest, ResultWrapper<ProfilePermissionViewModel>>
 {
     private readonly ILogger<UpdateRequestHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWorkEF _unitOfWork;
     
-    public AddToProfileRequestHandler(ILogger<UpdateRequestHandler> logger, IUnitOfWork unitOfWork)
+    public AddToProfileRequestHandler(ILogger<UpdateRequestHandler> logger, IUnitOfWorkEF unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -42,7 +42,7 @@ public class AddToProfileRequestHandler : IRequestHandler<AddToProfileRequest, R
         if (profile is null)
         {
             var message = $"profile by id {request.Model.ProfileId} not found";
-            result.AddException(new MicroserviceNotFoundException(message));
+            result.AddExceptions(new MicroserviceNotFoundException(message));
             _logger.LogError(message);
             return result;
         }
@@ -53,7 +53,7 @@ public class AddToProfileRequestHandler : IRequestHandler<AddToProfileRequest, R
         if (permission is null)
         {
             var message = $"permission by id {request.Model.PermissionId} not found";
-            result.AddException(new MicroserviceNotFoundException(message));
+            result.AddExceptions(new MicroserviceNotFoundException(message));
             _logger.LogError(message);
             return result;
         }

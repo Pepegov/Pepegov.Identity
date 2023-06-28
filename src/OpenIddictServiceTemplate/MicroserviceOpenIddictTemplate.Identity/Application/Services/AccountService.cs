@@ -6,16 +6,16 @@ using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Definitions.Identity;
 using MicroserviceOpenIddictTemplate.Identity.Endpoints.Account.ViewModel;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
-using Pepegov.MicroserviceFramerwork.Patterns.UnitOfWork;
+using Pepegov.MicroserviceFramerwork.Exceptions;
 using Pepegov.MicroserviceFramerwork.ResultWrapper;
+using Pepegov.UnitOfWork.EntityFramework;
 
 namespace MicroserviceOpenIddictTemplate.Identity.Application.Services;
 
 public class AccountService : IAccountService
 {
-    private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;
+    private readonly IUnitOfWorkEF<ApplicationDbContext> _unitOfWork;
     private readonly ILogger<AccountService> _logger;
     private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
     private readonly IHttpContextAccessor _httpContext;
@@ -26,7 +26,7 @@ public class AccountService : IAccountService
     public AccountService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager, 
-        IUnitOfWork<ApplicationDbContext> unitOfWork,
+        IUnitOfWorkEF<ApplicationDbContext> unitOfWork,
         ILogger<AccountService> logger,
         ApplicationUserClaimsPrincipalFactory claimsFactory,
         IHttpContextAccessor httpContext,
@@ -65,7 +65,7 @@ public class AccountService : IAccountService
         {
             if (await _roleManager.FindByNameAsync(role) is null)
             {
-                result.AddException(new ArgumentNullException($"role \"{role}\" not found"));
+                result.AddExceptions(new MicroserviceArgumentNullException($"role \"{role}\" not found"));
                 return result;
             }
             var roleResult = await _userManager.AddToRoleAsync(user, role);
@@ -125,7 +125,7 @@ public class AccountService : IAccountService
         var errors = createResult.Errors.Select(x => $"{x.Code}: {x.Description}").ToList();
         _logger.LogInformation($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWork.LastSaveChangesResult.Exception} ");
 
-        result.AddException(new Exception($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWork.LastSaveChangesResult.Exception} "));
+        result.AddExceptions(new MicroserviceInvalidOperationException($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWork.LastSaveChangesResult.Exception} "));
         if (errors.Any())
         {
             result.AddMetadatas(new Metadata(string.Join(", ", errors), MetadataType.Error));
@@ -159,7 +159,7 @@ public class AccountService : IAccountService
         var user = await _userManager.FindByIdAsync(id.ToString());
         if (user is null)
         {
-            result.AddException(new ArgumentNullException($"User not found. id: {id}"));
+            result.AddExceptions(new MicroserviceArgumentNullException($"User not found. id: {id}"));
         }
         result.Message = user;
         
