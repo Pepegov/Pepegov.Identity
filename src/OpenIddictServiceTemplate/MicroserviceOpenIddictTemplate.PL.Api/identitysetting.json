@@ -1,0 +1,102 @@
+{
+  "IdentityServerUrl": {
+    "Authority": "https://localhost:10001"
+  },
+  
+  "ClientsIdentity": [
+    {
+      "Name" : "MicroserviceCredentials",
+      "Id" : "MicroserviceCredentials-ID",
+      "Secret": "MicroserviceCredentials-SECRET",
+      "GrandTypes": [
+        "client_credentials",
+        "refresh_token"
+      ],
+      "Scopes": [
+        "profile",
+        "offline_access",
+        "openid"
+      ]
+    },
+    {
+      "Name" : "MicroserviceDevice",
+      "Id" : "MicroserviceDevice-ID",
+      "Secret": "MicroserviceDevice-SECRET",
+      "GrandTypes": [
+        "urn:ietf:params:oauth:grant-type:device_code",
+        "client_credentials",
+        "refresh_token"
+      ]
+    },
+    {
+      "Name" : "MicroservicePassword",
+      "Id" : "MicroservicePassword-ID",
+      "Secret": "MicroservicePassword-SECRET",
+      "GrandTypes": [
+        "refresh_token",
+        "password"
+      ],
+      "Scopes": [
+        "profile",
+        "offline_access",
+        "openid",
+        "Microservice.Profile",
+        "api"
+      ]
+    },
+    {
+      "Name" : "MicroserviceAuthorizationCode",
+      "Id" : "MicroserviceAuthorizationCode-ID",
+      "Secret": "MicroserviceAuthorizationCode-SECRET",
+      "ConsentType" : "implicit",
+      "GrandTypes": [
+        "refresh_token",
+        "authorization_code"
+      ],
+      "Scopes": [
+        "profile",
+        "offline_access",
+        "openid"
+      ]
+    }
+  ],
+  
+  "CurrentIdentityClient": {
+    "Name" : "Microservice.Identity",
+    "Id" : "Microservice.Identity-ID",
+    "Secret": "Microservice.Identity-SECRET",
+    "ConsentType" : "implicit",
+    "GrandTypes": [
+      "refresh_token",
+      "authorization_code",
+      "client_credentials",
+      "password"
+    ]
+  }, 
+  
+  "Scopes": [
+    {
+      "Name": "openid",
+      "Description": "standart openid scope"
+    },
+    {
+      "Name": "offline_access",
+      "Description": "standart offline_access scope"
+    },
+    {
+      "Name": "profile",
+      "Description": "standart profile scope"
+    }
+  ],
+
+  "Permissions": [
+    {
+      "Name": "Permission:View",
+      "Description": "Change permission"
+    },
+    {
+      "Name": "User:View",
+      "Description": "Standart user polycy for minimal view"
+    }
+  ]
+}

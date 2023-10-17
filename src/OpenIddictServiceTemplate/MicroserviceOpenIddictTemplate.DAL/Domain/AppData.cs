@@ -5,8 +5,6 @@ namespace MicroserviceOpenIddictTemplate.DAL.Domain;
 /// </summary>
 public static class AppData
 {
-    public const string PolicyName = "CorsPolicy";
-
     /// <summary>
     /// Current service name
     /// </summary>
@@ -21,10 +19,14 @@ public static class AppData
     /// Current service version
     /// </summary>
     public const string ServiceVersion = "f7v1.0.0";
-
+    
+    /// <summary>
+    /// Name of cors police
+    /// </summary>
+    public const string PolicyName = "CorsPolicy";
+    
     /// <summary>
     /// Path to identitysetting.json
     /// </summary>
     public const string IdentitySettingPath = "identitysetting.json";
-
 }
