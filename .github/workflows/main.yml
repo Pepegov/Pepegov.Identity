@@ -24,7 +24,7 @@ jobs:
                 uses: docker/build-push-action@v2
                 with:
                     context: .
-                    file: ./src/OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.PL.Api/Dockerfile
+                    file: ./src/Dockerfile
                     push: true
                     tags: |
                         pepegov/identity:latest
