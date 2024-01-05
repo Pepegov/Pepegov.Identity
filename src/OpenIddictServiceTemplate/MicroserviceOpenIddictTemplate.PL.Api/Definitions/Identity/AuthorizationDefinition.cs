@@ -13,6 +13,8 @@ public class AuthorizationDefinition : ApplicationDefinition
 {
     public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
     {
+        context.ServiceCollection.AddDistributedMemoryCache();
+        
         context.ServiceCollection
             .AddAuthentication(options =>
             {
@@ -22,6 +24,10 @@ public class AuthorizationDefinition : ApplicationDefinition
             })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.Name = ".JoyTech.Session";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.LoginPath = "/connect/login";
             });
 
@@ -43,12 +49,13 @@ public class AuthorizationDefinition : ApplicationDefinition
     public override Task ConfigureApplicationAsync(IDefinitionApplicationContext context)
     {
         var app = context.Parse<WebDefinitionApplicationContext>().WebApplication;
-        
         app.UseRouting();
         app.UseCors(AppData.PolicyName);
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseSession();
+        
         // registering UserIdentity helper as singleton
         UserIdentity.Instance.Configure(app.Services.GetService<IHttpContextAccessor>()!);   
         

@@ -1,6 +1,9 @@
 using System.Security.Claims;
+using MicroserviceOpenIddictTemplate.DAL.Domain;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
@@ -12,14 +15,14 @@ public partial class ConnectHandler
 {
     public async Task<IResult> ConnectDeviceCodeGrantType(HttpContext httpContext)
     {
-        var result = await httpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        var result = await httpContext.AuthenticateAsync(AuthData.SingInScheme);
 
         // Retrieve the user profile corresponding to the authorization code/refresh token.
         var user = await _userManager.FindByIdAsync(result.Principal.GetClaim(OpenIddictConstants.Claims.Subject));
         if (user is null)
         {
             return Results.Forbid(
-                authenticationSchemes: new List<string> {OpenIddictServerAspNetCoreDefaults.AuthenticationScheme},
+                authenticationSchemes: new List<string> {AuthData.SingInScheme},
                 properties: new AuthenticationProperties(new Dictionary<string, string>
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
@@ -31,7 +34,7 @@ public partial class ConnectHandler
         if (!await _signInManager.CanSignInAsync(user))
         {
             return Results.Forbid(
-                authenticationSchemes: new List<string> {OpenIddictServerAspNetCoreDefaults.AuthenticationScheme},
+                authenticationSchemes: new List<string> {AuthData.SingInScheme},
                 properties: new AuthenticationProperties(new Dictionary<string, string>
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
@@ -47,30 +50,31 @@ public partial class ConnectHandler
         identity.SetDestinations(GetDestinations);
 
         // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
-        return Results.SignIn(new ClaimsPrincipal(identity),null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return Results.SignIn(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
     }
     
     public async Task<IResult> ConnectAuthorizationCodeGrantType(HttpContext httpContext)
     {
-        var authenticateResult = await httpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        var authenticateResult = await httpContext.AuthenticateAsync(AuthData.SingInScheme);
         var claimsPrincipal = authenticateResult.Principal;
-        return Results.SignIn(claimsPrincipal!, null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        
+        return Results.SignIn(claimsPrincipal!, new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
     }
     
     public async Task<IResult> ConnectClientCredentialsGrantType(OpenIddictRequest? request)
     {
         var claimsPrincipal = await CreateCredentialsClaimsPrincipal(request);
-        return Results.SignIn(claimsPrincipal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return Results.SignIn(claimsPrincipal, new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
     }
 
-    public async Task<IResult> ConnectPasswordGrantType(OpenIddictRequest? request)
+    public async Task<IResult> ConnectPasswordGrantType(OpenIddictRequest? request, HttpContext httpContext)
     {
         var user = await _userManager.FindByNameAsync(request.Username);
 
         var properties = await CheckUser(user, request);
         if (properties is not null)
         {
-            return Results.Forbid(properties, new List<string>(){OpenIddictServerAspNetCoreDefaults.AuthenticationScheme});
+            return Results.Forbid(properties, new List<string>(){AuthData.SingInScheme});
         }
         
         // Reset the lockout count
@@ -81,7 +85,8 @@ public partial class ConnectHandler
 
         var claimsPrincipal = await CreatePasswordClaimsPrincipal(request, user);
 
-        return Results.SignIn(claimsPrincipal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+        return Results.SignIn(claimsPrincipal, new AuthenticationProperties() {}, AuthData.SingInScheme);
     }
 
     public async Task<IResult> ConnectRefreshTokenGrantType(
@@ -90,7 +95,7 @@ public partial class ConnectHandler
     {
         
         // Retrieve the claims principal stored in the refresh token.
-        var result = await httpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        var result = await httpContext.AuthenticateAsync(AuthData.SingInScheme);
 
         var type = ClaimsHelper.GetValue<string>((ClaimsIdentity)result.Principal.Identity!,
             OpenIddictConstants.Claims.TokenType);
@@ -107,7 +112,7 @@ public partial class ConnectHandler
             var properties = await CheckUser(user, request);
             if (properties is not null)
             {
-                return Results.Forbid(properties, new List<string>(){OpenIddictServerAspNetCoreDefaults.AuthenticationScheme});
+                return Results.Forbid(properties, new List<string>(){AuthData.SingInScheme});
             }
         
             // Reset the lockout count
@@ -117,7 +122,7 @@ public partial class ConnectHandler
             }
 
             var claimsPrincipal = await CreatePasswordClaimsPrincipal(request, user);
-            return Results.SignIn(claimsPrincipal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            return Results.SignIn(claimsPrincipal, new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
         }
 
         return Results.BadRequest("Authentication scheme is not found");
@@ -174,7 +179,7 @@ public partial class ConnectHandler
 
     public async Task<ClaimsPrincipal> CreateCredentialsClaimsPrincipal(OpenIddictRequest? request)
     {
-        var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        var identity = new ClaimsIdentity(AuthData.SingInScheme);
 
         // Subject or sub is a required field, we use the client id as the subject identifier here.
         identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId!);

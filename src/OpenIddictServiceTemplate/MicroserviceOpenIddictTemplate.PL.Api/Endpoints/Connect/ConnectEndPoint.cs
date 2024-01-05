@@ -30,7 +30,7 @@ public class ConnectEndPoint : ApplicationDefinition
         
         app.MapPost("~/connect/authorize", Authorize).ExcludeFromDescription();
         app.MapGet("~/connect/authorize", Authorize).ExcludeFromDescription();
-        
+
         return base.ConfigureApplicationAsync(context);
     }
 
@@ -53,7 +53,7 @@ public class ConnectEndPoint : ApplicationDefinition
         }
         if (request.IsPasswordGrantType())
         {
-            result = await connectHandler.ConnectPasswordGrantType(request);
+            result = await connectHandler.ConnectPasswordGrantType(request, httpContext);
         }
         if (request.IsAuthorizationCodeGrantType())
         {

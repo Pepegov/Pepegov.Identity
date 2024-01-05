@@ -61,7 +61,6 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .AddDevelopmentEncryptionCertificate()
                     .AddDevelopmentSigningCertificate();
                 
-                
                 // registration ASP.NET Core host and configure setting for ASP.NET Core.
                 options
                     .UseAspNetCore()

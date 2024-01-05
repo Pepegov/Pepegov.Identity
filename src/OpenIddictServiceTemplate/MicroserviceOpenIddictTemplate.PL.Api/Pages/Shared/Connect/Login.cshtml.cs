@@ -1,12 +1,13 @@
 ﻿using MicroserviceOpenIddictTemplate.BL.Services.Interfaces;
 using MicroserviceOpenIddictTemplate.DAL.Models.Identity;
+using MicroserviceOpenIddictTemplate.PL.Api.Pages.Connect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace MicroserviceOpenIddictTemplate.PL.Api.Pages.Connect;
+namespace MicroserviceOpenIddictTemplate.PL.Api.Pages.Shared.Connect;
 
 public class LoginModel : PageModel
 {

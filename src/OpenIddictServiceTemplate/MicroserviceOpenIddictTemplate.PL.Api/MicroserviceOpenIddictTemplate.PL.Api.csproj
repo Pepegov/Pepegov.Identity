@@ -16,6 +16,8 @@
     <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
@@ -23,9 +25,9 @@
     <PackageReference Include="OpenIddict.AspNetCore" Version="4.5.0" />
     <PackageReference Include="OpenIddict.Core" Version="4.5.0" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="4.5.0" />
-    <PackageReference Include="Pepegov.MicroserviceFramework" Version="2.1.1" />
-    <PackageReference Include="Pepegov.MicroserviceFramework.ApiResults" Version="1.0.2" />
-    <PackageReference Include="Pepegov.MicroserviceFramework.AspNetCore" Version="2.1.6" />
+    <PackageReference Include="Pepegov.MicroserviceFramework" Version="2.1.2" />
+    <PackageReference Include="Pepegov.MicroserviceFramework.ApiResults" Version="1.0.3" />
+    <PackageReference Include="Pepegov.MicroserviceFramework.AspNetCore" Version="2.2.2" />
     <PackageReference Include="Pepegov.UnitOfWork" Version="3.0.4" />
     <PackageReference Include="Pepegov.UnitOfWork.EntityFramework" Version="1.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
@@ -46,6 +48,16 @@
     <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
     <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
     <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Shared\Connect\Login.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>
