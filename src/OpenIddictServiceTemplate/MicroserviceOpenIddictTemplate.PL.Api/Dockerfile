@@ -8,8 +8,8 @@ WORKDIR /src
 COPY ["MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj", "MicroserviceOpenIddictTemplate.DAL/"]
 COPY ["MicroserviceOpenIddictTemplate.BL/MicroserviceOpenIddictTemplate.BL.csproj", "MicroserviceOpenIddictTemplate.BL/"]
 COPY ["MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj", "MicroserviceOpenIddictTemplate.PL.Api/"]
-RUN dotnet restore "MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj"
 COPY . .
+RUN dotnet restore "MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj"
 WORKDIR "/src/MicroserviceOpenIddictTemplate.PL.Api"
 RUN dotnet build "MicroserviceOpenIddictTemplate.PL.Api.csproj" -c Release -o /app/build
 
