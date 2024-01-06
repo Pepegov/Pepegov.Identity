@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj MicroserviceOpenIddictTemplate.PL.Api/
 COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.BL/MicroserviceOpenIddictTemplate.BL.csproj MicroserviceOpenIddictTemplate.BL/
-COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj MicroserviceOpenIddictTemplate.DAL
+COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj MicroserviceOpenIddictTemplate.DAL/
 RUN dotnet restore "MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj"
 COPY . .
 WORKDIR "/src/MicroserviceOpenIddictTemplate.PL.Api"
