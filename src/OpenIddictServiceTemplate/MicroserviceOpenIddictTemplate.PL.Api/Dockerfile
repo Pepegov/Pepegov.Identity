@@ -6,8 +6,8 @@ EXPOSE 10001
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj", "MicroserviceOpenIddictTemplate.DAL/"]
-COPY ["MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj", "MicroserviceOpenIddictTemplate.PL.Api/"]
 COPY ["MicroserviceOpenIddictTemplate.BL/MicroserviceOpenIddictTemplate.BL.csproj", "MicroserviceOpenIddictTemplate.BL/"]
+COPY ["MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj", "MicroserviceOpenIddictTemplate.PL.Api/"]
 RUN dotnet restore "MicroserviceOpenIddictTemplate.PL.Api/MicroserviceOpenIddictTemplate.PL.Api.csproj"
 COPY . .
 WORKDIR "/src/MicroserviceOpenIddictTemplate.PL.Api"
