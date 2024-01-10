@@ -46,6 +46,6 @@ jobs:
                     passphrase : ${{ secrets.PASSPHRASE }}
                     script: |
                         cd ${{ secrets.DEPLOY_DIR }}
-                        docker rmi -f ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest
+                        docker rmi -f ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest || true 
                         docker compose pull
                         docker compose up -d
