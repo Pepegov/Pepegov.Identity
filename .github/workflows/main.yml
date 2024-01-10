@@ -45,7 +45,7 @@ jobs:
                     port: ${{ secrets.SERVER_PORT }}
                     passphrase : ${{ secrets.PASSPHRASE }}
                     script: |
-                        cat ~/.docker_password.txt | docker login localhost:5000 -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+                        cat ~/.docker_password.txt | docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
                         cd ${{ secrets.DEPLOY_DIR }}
                         docker rmi -f ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest || true 
                         docker compose pull
