@@ -5,7 +5,9 @@ using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Serilog;
 using Serilog.Events;
 
-internal class Program
+namespace MicroserviceOpenIddictTemplate.PL;
+
+public class Program
 {
     public static async Task<int> Main(string[] args)
     {
