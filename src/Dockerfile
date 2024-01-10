@@ -10,11 +10,11 @@ COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.BL/MicroserviceOpe
 COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj MicroserviceOpenIddictTemplate.DAL/
 RUN dotnet restore MicroserviceOpenIddictTemplate.PL/MicroserviceOpenIddictTemplate.PL.csproj
 COPY . .
-WORKDIR /src/MicroserviceOpenIddictTemplate.PL/
-RUN dotnet build MicroserviceOpenIddictTemplate.PL.csproj -c Release -o /app/build
+WORKDIR /src
+RUN dotnet build MicroserviceOpenIddictTemplate.PL/MicroserviceOpenIddictTemplate.PL.csproj -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "MicroserviceOpenIddictTemplate.PL.csproj" -c Release -o /app/publish
+RUN dotnet publish "MicroserviceOpenIddictTemplate.PL/MicroserviceOpenIddictTemplate.PL.csproj" -c Release -o /app/publish
 
 FROM base AS final
 ENV ASPNETCORE_URLS=https://+:10001;http://+:10000

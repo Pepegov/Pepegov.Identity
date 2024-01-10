@@ -7,9 +7,9 @@ using Serilog.Events;
 
 namespace MicroserviceOpenIddictTemplate.PL;
 
-public class Program
+internal class Program
 {
-    public static async Task<int> Main(string[] args)
+    public static async Task Main(string[] args)
     {
         try
         {
@@ -48,7 +48,7 @@ public class Program
             //Run app
             await app.RunAsync();
 
-            return 1;
+            //return 1;
         }
         catch (Exception ex)
         {
@@ -65,6 +65,6 @@ public class Program
         {
             await Log.CloseAndFlushAsync();
         }
-        return 0;
+        //return 0;
     }
 }

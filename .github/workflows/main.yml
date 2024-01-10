@@ -23,8 +23,8 @@ jobs:
             -   name: "Build"
                 uses: docker/build-push-action@v5
                 with:
-                    context: ./src/
-                    file: ./src/Dockerfile
+                    context: ./src/OpenIddictServiceTemplate
+                    file: ./src/OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.PL/Dockerfile
                     push: true
                     tags: |
                         ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest
@@ -32,7 +32,10 @@ jobs:
                         "ASPNETCORE_ENVIRONMENT=Release"
                     build-args: |
                         build_mode=Release
-
+    deploy:
+        name: 'Deploy'
+        runs-on: ubuntu-latest
+        steps:
             -   name: "Run deploy on server"
                 uses: appleboy/ssh-action@master
                 with:
