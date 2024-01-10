@@ -5,9 +5,9 @@ EXPOSE 10001
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY src/OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.PL/MicroserviceOpenIddictTemplate.PL.csproj MicroserviceOpenIddictTemplate.PL/
-COPY src/OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.BL/MicroserviceOpenIddictTemplate.BL.csproj MicroserviceOpenIddictTemplate.BL/
-COPY src/OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj MicroserviceOpenIddictTemplate.DAL/
+COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.PL/MicroserviceOpenIddictTemplate.PL.csproj MicroserviceOpenIddictTemplate.PL/
+COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.BL/MicroserviceOpenIddictTemplate.BL.csproj MicroserviceOpenIddictTemplate.BL/
+COPY OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.DAL/MicroserviceOpenIddictTemplate.DAL.csproj MicroserviceOpenIddictTemplate.DAL/
 RUN dotnet restore MicroserviceOpenIddictTemplate.PL/MicroserviceOpenIddictTemplate.PL.csproj
 COPY . .
 WORKDIR /src/MicroserviceOpenIddictTemplate.PL/
