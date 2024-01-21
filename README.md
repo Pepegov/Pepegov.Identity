@@ -1,4 +1,4 @@
-# OpendIddict Service
+# Pepegov.Identity.OpenIddict
 
 This project is a flexible implementation of microservice architecture with OpenIddict authentication server
 
