@@ -1,4 +1,4 @@
-# Pepegov.Identity.OpenIddict
+# Pepegov.Identity OpendIddict Service
 
 This project is a flexible implementation of microservice architecture with OpenIddict authentication server
 
@@ -7,7 +7,7 @@ Implemented next stack:
 - Reposytory
 - UnitOfWork
 - OpenIddict
-- AuthoMapper
+- AutoMapper
 - MassTransit
 - Swagger with identity
 - IOption 
@@ -30,7 +30,7 @@ To install a template for your device via dotnet:
 
 1. Go to the directory with the desired template
     ```bash
-    cd OpenIddictService/Service
+    cd src/
     ```
 2. Perform the installation
     ```bash
@@ -51,6 +51,14 @@ To install a template for your device via dotnet:
 ## Configuration
 
 ### APPSETTING.JSON & APPSETTING.JSON.DEVELOPER 
+
+The address of the identity server. Must match the address of the application.
+
+```json
+"IdentityServerUrl": {
+    "Authority": "https://localhost:10001"
+}
+```
 
 Cors permissions. This example is for appsetting.Development.json For regular appsetting.json settings needed by cors
 
@@ -96,14 +104,6 @@ Configuring logging via serilog. Based on the needs, configure sinks. Note that 
 ```
 
 ### IDENTITYSETTING.JSON
-
-The address of the identity server. Must match the address of the application.
-
-```json
-"IdentityServerUrl": {
-    "Authority": "https://localhost:10001"
-}
-```
 
 List of scopes that the server supports
 

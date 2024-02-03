@@ -23,8 +23,8 @@ jobs:
             -   name: "Build"
                 uses: docker/build-push-action@v5
                 with:
-                    context: ./src/OpenIddictServiceTemplate
-                    file: ./src/OpenIddictServiceTemplate/MicroserviceOpenIddictTemplate.PL/Dockerfile
+                    context: ./src/Service
+                    file: ./src/Service/Pepegov.Identity.PL/Dockerfile
                     push: true
                     tags: |
                         ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest

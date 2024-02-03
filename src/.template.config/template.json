@@ -2,13 +2,13 @@
     "$schema": "http://json.schemastore.org/template",
     "author": "Pepegov",
     "classifications": [ "Common", "Web" ],
-    "identity": "Microservice.OpenIddict.Template",
-    "name": "Microservice OpenIddict Template",
-    "shortName": "microserviceopenIddicttemplate",
+    "identity": "Pepegov.Identity",
+    "name": "Pepegov identity service",
+    "shortName": "pepegovidentity",
     "tags": {
       "language": "C#",
       "type": "project"
     },
-    "sourceName": "MicroserviceOpenIddictTemplate",
+    "sourceName": "Pepegov.Identity",
     "preferNameDirectory": true
 }
