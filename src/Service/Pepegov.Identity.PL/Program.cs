@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Logging;
+﻿using Microsoft.IdentityModel.Logging;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Serilog;
 using Serilog.Events;
@@ -20,23 +18,21 @@ internal class Program
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
-
-            #region TEST
-
-            IConfiguration testConfiguration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-    
-            Log.Logger.Information($"Connection string | {testConfiguration.GetConnectionString("DefaultConnection")}");
-            Log.Logger.Information("$RABBITMQ_PASSWORD");
-            Log.Logger.Information(Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD"));
-
-            #endregion
             
             //Create builder
             var builder = WebApplication.CreateBuilder(args);
             
+            // Configure env
+
+            builder.WebHost.ConfigureAppConfiguration((context, configurationBuilder) =>
+            {
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+                context.Configuration = configurationBuilder.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                    .AddJsonFile($"appsettings.json", optional: false)
+                    .AddJsonFile($"appsettings.{env}.json", optional: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+            });
             //Host logging  
             builder.Host.UseSerilog((context, configuration) =>
                 configuration.ReadFrom.Configuration(context.Configuration));
