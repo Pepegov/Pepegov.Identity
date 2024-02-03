@@ -25,6 +25,7 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
 
         //Get all clients
         var identityClients = identityConfiguration.GetSection("ClientsIdentity").Get<List<IdentityClientOption>>()!
+                              
                               ?? new List<IdentityClientOption>();
         
         //get current client and add all scopes in him 

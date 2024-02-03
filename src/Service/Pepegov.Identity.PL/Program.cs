@@ -30,7 +30,7 @@ internal class Program
     
             Log.Logger.Information($"Connection string | {testConfiguration.GetConnectionString("DefaultConnection")}");
             Log.Logger.Information("$RABBITMQ_PASSWORD");
-            Log.Logger.Information(Environment.GetEnvironmentVariable("$RABBITMQ_PASSWORD"));
+            Log.Logger.Information(Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD"));
 
             #endregion
             
