@@ -33,7 +33,7 @@ internal class Program
                     .Build();
             });
 
-            builder.Configuration.AddEnvironmentVariables();
+            builder.Configuration.AddEnvironmentVariables().Build();
             
             Log.Logger.Information(builder.Configuration.GetConnectionString("DefaultConnection"));
             
