@@ -30,13 +30,13 @@ jobs:
                         ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest
                     secrets: |
                         "ASPNETCORE_ENVIRONMENT=Release"
-                        "APPSETTINGS_RABBITMQ_URL=${{ secrets.APPSETTINGS_RABBITMQ_URL }}"
-                        "APPSETTINGS_RABBITMQ_HOST=${{ secrets.APPSETTINGS_RABBITMQ_HOST }}"
-                        "APPSETTINGS_RABBITMQ_USER=${{ secrets.APPSETTINGS_RABBITMQ_USER }}"
-                        "APPSETTINGS_RABBITMQ_PASSWORD=${{ secrets.APPSETTINGS_RABBITMQ_PASSWORD }}"
-                        "APPSETTINGS_POSTGRES_URL=${{ secrets.APPSETTINGS_POSTGRES_URL }}"
-                        "APPSETTINGS_POSTGRES_USER=${{ secrets.APPSETTINGS_POSTGRES_USER }}"
-                        "APPSETTINGS_POSTGRES_PASSWORD=${{ secrets.APPSETTINGS_POSTGRES_PASSWORD }}"
+                        "RABBITMQ_URL=${{ secrets.APPSETTINGS_RABBITMQ_URL }}"
+                        "RABBITMQ_HOST=${{ secrets.APPSETTINGS_RABBITMQ_HOST }}"
+                        "RABBITMQ_USER=${{ secrets.APPSETTINGS_RABBITMQ_USER }}"
+                        "RABBITMQ_PASSWORD=${{ secrets.APPSETTINGS_RABBITMQ_PASSWORD }}"
+                        "POSTGRES_URL=${{ secrets.APPSETTINGS_POSTGRES_URL }}"
+                        "POSTGRES_USER=${{ secrets.APPSETTINGS_POSTGRES_USER }}"
+                        "POSTGRES_PASSWORD=${{ secrets.APPSETTINGS_POSTGRES_PASSWORD }}"
                     build-args: |
                         build_mode=Release
     deploy:
