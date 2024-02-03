@@ -20,6 +20,20 @@ internal class Program
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
+
+            #region TEST
+
+            IConfiguration testConfiguration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+    
+            Log.Logger.Information($"Connection string | {testConfiguration.GetConnectionString("DefaultConnection")}");
+            Log.Logger.Information("${{{{secrets.APPSETTINGS_RABBITMQ_PASSWORD}}}}");
+            Log.Logger.Information("$secrets.APPSETTINGS_RABBITMQ_PASSWORD}");
+            Log.Logger.Information("$APPSETTINGS_RABBITMQ_PASSWORD}");
+
+            #endregion
             
             //Create builder
             var builder = WebApplication.CreateBuilder(args);

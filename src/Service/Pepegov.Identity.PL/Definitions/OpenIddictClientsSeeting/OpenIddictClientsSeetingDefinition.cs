@@ -13,10 +13,10 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
     { 
         using var scope = context.ServiceProvider.CreateScope();
         
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
-        configurationBuilder.AddJsonFile("identitysetting.json");
-        IConfiguration identityConfiguration = configurationBuilder.Build();
+        IConfiguration identityConfiguration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("identitysetting.json")
+            .Build();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
