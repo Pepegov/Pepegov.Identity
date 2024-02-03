@@ -6,7 +6,6 @@ jobs:
     build:
         name: 'Build & Publish'
         runs-on: ubuntu-latest
-        environment: ${{ vars.APPSETTINGS }}
         steps:
             -   name: "Checkout repository"
                 uses: actions/checkout@v2
@@ -31,6 +30,13 @@ jobs:
                         ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest
                     secrets: |
                         "ASPNETCORE_ENVIRONMENT=Release"
+                        "APPSETTINGS_RABBITMQ_URL=${{ secrets.APPSETTINGS_RABBITMQ_URL }}"
+                        "APPSETTINGS_RABBITMQ_HOST=${{ secrets.APPSETTINGS_RABBITMQ_HOST }}"
+                        "APPSETTINGS_RABBITMQ_USER=${{ secrets.APPSETTINGS_RABBITMQ_USER }}"
+                        "APPSETTINGS_RABBITMQ_PASSWORD=${{ secrets.APPSETTINGS_RABBITMQ_PASSWORD }}"
+                        "APPSETTINGS_POSTGRES_URL=${{ secrets.APPSETTINGS_POSTGRES_URL }}"
+                        "APPSETTINGS_POSTGRES_USER=${{ secrets.APPSETTINGS_POSTGRES_USER }}"
+                        "APPSETTINGS_POSTGRES_PASSWORD=${{ secrets.APPSETTINGS_POSTGRES_PASSWORD }}"
                     build-args: |
                         build_mode=Release
     deploy:
