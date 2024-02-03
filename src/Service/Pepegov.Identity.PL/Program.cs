@@ -23,7 +23,6 @@ internal class Program
             var builder = WebApplication.CreateBuilder(args);
             
             // Configure env
-
             builder.WebHost.ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
@@ -33,6 +32,11 @@ internal class Program
                     .AddEnvironmentVariables()
                     .Build();
             });
+
+            builder.Configuration.AddEnvironmentVariables();
+            
+            Log.Logger.Information(builder.Configuration.GetConnectionString("DefaultConnection"));
+            
             //Host logging  
             builder.Host.UseSerilog((context, configuration) =>
                 configuration.ReadFrom.Configuration(context.Configuration));
