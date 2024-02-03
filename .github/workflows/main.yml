@@ -47,6 +47,7 @@ jobs:
                     script: |
                         cat ~/.docker_password.txt | docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
                         cd ${{ secrets.DEPLOY_DIR }}
+                        docker compose down
                         docker rmi -f ${{ secrets.REGISTRY_URL }}/pepegov/identity:latest || true 
                         docker compose pull
                         docker compose up -d
