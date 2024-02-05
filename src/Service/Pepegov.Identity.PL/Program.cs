@@ -19,11 +19,11 @@ internal class Program
                 .WriteTo.Console()
                 .CreateLogger();
             
-            Log.Logger.Information("$BUILD_CONFIGURATION");
-            Log.Logger.Information("%BUILD_CONFIGURATION");
-            Log.Logger.Information("%BUILD_CONFIGURATION%");
-            Log.Logger.Information("${{BUILD_CONFIGURATION}}");
-             Log.Logger.Information("%{{BUILD_CONFIGURATION}}");
+            Log.Logger.Information("build_mode");
+            Log.Logger.Information("%build_mode");
+            Log.Logger.Information("%build_mode%");
+            Log.Logger.Information("${{build_mode}}");
+             Log.Logger.Information("%{{build_mode}}");
             
             //Create builder
             var builder = WebApplication.CreateBuilder(args);
