@@ -5,6 +5,7 @@ EXPOSE 10001
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG build_mode
 WORKDIR /src
 COPY ["Pepegov.Identity.PL/Pepegov.Identity.PL.csproj", "Pepegov.Identity.PL/"]
 COPY ["Pepegov.Identity.BL/Pepegov.Identity.BL.csproj", "Pepegov.Identity.BL/"]
