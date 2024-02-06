@@ -111,11 +111,6 @@ namespace Pepegov.Identity.PL.Definitions.Swagger
         {
             var app = context.Parse<WebDefinitionApplicationContext>().WebApplication;
             
-            if (!app.Environment.IsDevelopment())
-            {
-                return Task.CompletedTask;
-            }
-            
             using var scope = app.Services.CreateAsyncScope();
             var url = scope.ServiceProvider.GetService<IOptions<IdentityAddressOption>>()!.Value.Authority;
             var client = scope.ServiceProvider.GetService<IOptions<IdentityClientOption>>()!.Value;
