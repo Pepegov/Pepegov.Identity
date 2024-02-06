@@ -19,29 +19,10 @@ internal class Program
                 .WriteTo.Console()
                 .CreateLogger();
             
-            Log.Logger.Information("build_mode");
-            Log.Logger.Information("%build_mode");
-            Log.Logger.Information("%build_mode%");
-            Log.Logger.Information("${{build_mode}}");
-             Log.Logger.Information("%{{build_mode}}");
-            
             //Create builder
             var builder = WebApplication.CreateBuilder(args);
-            
-            // Configure env
-            builder.WebHost.ConfigureAppConfiguration((context, configurationBuilder) =>
-            {
-                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-                context.Configuration = configurationBuilder.SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                    .AddJsonFile($"appsettings.json", optional: false)
-                    .AddJsonFile($"appsettings.{env}.json", optional: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-            });
 
             builder.Configuration.AddEnvironmentVariables().Build();
-            
-            Log.Logger.Information(builder.Configuration.GetConnectionString("DefaultConnection"));
             
             //Host logging  
             builder.Host.UseSerilog((context, configuration) =>
