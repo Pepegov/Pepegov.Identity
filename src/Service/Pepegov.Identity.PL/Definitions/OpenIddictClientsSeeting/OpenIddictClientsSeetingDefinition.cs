@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using Pepegov.Identity.DAL.Database;
-using Pepegov.Identity.PL.Definitions.Options.Models;
+using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 
@@ -12,26 +12,19 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
     public override async Task ConfigureApplicationAsync(IDefinitionApplicationContext context)
     { 
         using var scope = context.ServiceProvider.CreateScope();
-        
-        IConfiguration identityConfiguration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("identitysetting.json")
-            .Build();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
 
         var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-        //Get all clients
-        var identityClients = identityConfiguration.GetSection("ClientsIdentity").Get<List<IdentityClientOption>>()!
-                              
-                              ?? new List<IdentityClientOption>();
+        //Get all clients & scopes
+        var identityClients = scope.ServiceProvider.GetService<IOptions<List<IdentityClientOption>>>()?.Value ?? new List<IdentityClientOption>();
+        var scopes = scope.ServiceProvider.GetService<IOptions<List<IdentityScopeOption>>>()?.Value ?? new List<IdentityScopeOption>();
         
         //get current client and add all scopes in him 
         var currentIdentityClient = scope.ServiceProvider.GetService<IOptions<IdentityClientOption>>()!.Value;
-        currentIdentityClient.Scopes = identityConfiguration.GetSection("Scopes").Get<List<IdentityScopeOption>>()!
-            .Select(x => x.Name).ToList();
+        currentIdentityClient.Scopes = scopes.Select(x => x.Name).ToList();
         identityClients.Add(currentIdentityClient); //current client add too other clients
 
         var url = scope.ServiceProvider.GetService<IOptions<IdentityAddressOption>>()!.Value.Authority;

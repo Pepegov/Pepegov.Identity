@@ -12,9 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
     public DbSet<ApplicationPermission> Permissions { get; set; }
     
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

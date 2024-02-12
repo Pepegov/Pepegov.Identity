@@ -4,6 +4,7 @@ using Pepegov.Identity.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Pepegov.Identity.DAL.Domain;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
@@ -15,15 +16,18 @@ public class BaseDefinition : ApplicationDefinition
     public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
     {
         context.ServiceCollection.AddLocalization();
+        context.ServiceCollection.AddHttpContextAccessor();
         context.ServiceCollection.AddResponseCaching();
         context.ServiceCollection.AddMemoryCache();
-        //context.ServiceCollection.AddHttpContextAccessor();
         context.ServiceCollection.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
         context.ServiceCollection.AddMvc();
         context.ServiceCollection.AddEndpointsApiExplorer();
         
-        context.ServiceCollection.AddRazorPages();
+        context.ServiceCollection.AddRazorPages(options =>
+        {
+            options.Conventions.AuthorizePage("/Connect/SuperAdmin/Login", AuthData.SuperAdminArea);
+        });
         
         context.ServiceCollection.AddTransient<IAccountService, AccountService>();
         context.ServiceCollection.AddTransient<ApplicationUserClaimsPrincipalFactory>();

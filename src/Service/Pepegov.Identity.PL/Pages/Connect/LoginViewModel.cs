@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Pepegov.Identity.PL.Pages.Shared.Connect;
+namespace Pepegov.Identity.PL.Pages.Connect;
 
 public class LoginViewModel
 {

@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OpenIddict.Abstractions;
 using Pepegov.Identity.BL.Services.Interfaces;
+using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.DAL.Models.Identity;
+using Pepegov.MicroserviceFramework.Infrastructure.Helpers;
+using Serilog;
 
-namespace Pepegov.Identity.PL.Pages.Shared.Connect;
+namespace Pepegov.Identity.PL.Pages.Connect;
 
 public class LoginModel : PageModel
 {
@@ -30,10 +35,20 @@ public class LoginModel : PageModel
     [BindProperty]
     public LoginViewModel Input { get; set; }
 
-    public void OnGet() => Input = new LoginViewModel
+    public List<string> CurrentUserRoles { get; set; } = new List<string>();
+
+    public void OnGet()
     {
-        ReturnUrl = ReturnUrl
-    };
+        if (HttpContext.User.Identity is not null)
+        {
+            CurrentUserRoles = ClaimsHelper.GetValues<string>((ClaimsIdentity)HttpContext.User.Identity, OpenIddictConstants.Claims.Role);
+        }
+        
+        Input = new LoginViewModel
+        {
+            ReturnUrl = ReturnUrl
+        };
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -45,7 +60,7 @@ public class LoginModel : PageModel
         var user = await _userManager.FindByNameAsync(Input.UserName);
         if (user is null)
         {
-            ModelState.AddModelError("UserName", "Пользователь не найден");
+            ModelState.AddModelError("UserName", "User not found");
             return Page();
         }
 
@@ -62,7 +77,7 @@ public class LoginModel : PageModel
             return RedirectToPage("/swagger");
         }
 
-        ModelState.AddModelError("UserName", "Не верный логин или пароль");
+        ModelState.AddModelError("UserName", "Invalid username or password");
         return Page();
     }
 }

@@ -1,10 +1,18 @@
 using System.Security.Claims;
-using Pepegov.Identity.BL;
+using MassTransit.Internals;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using Pepegov.Identity.BL;
+using Pepegov.Identity.BL.GrandType.Infrastructure;
+using Pepegov.Identity.BL.GrandType.Model;
 using Pepegov.Identity.DAL.Models.Identity;
+using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
 
-namespace Pepegov.Identity.PL.Endpoints.Connect.Helper;
+namespace Pepegov.Identity.PL.Endpoints.Connect.Handlers;
 
 public partial class ConnectHandler
 {
@@ -14,12 +22,19 @@ public partial class ConnectHandler
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IOptions<List<IdentityScopeOption>> _scopeOption;
+    private readonly IOptions<IdentityClientOption> _currentIdentityClientOption;
     
-    public ConnectHandler(IOpenIddictApplicationManager openIddictApplicationManager, 
+    public ConnectHandler(
+        IOpenIddictApplicationManager openIddictApplicationManager, 
         IOpenIddictScopeManager openIddictScopeManager, 
         IOpenIddictAuthorizationManager openIddictAuthorizationManager, 
         SignInManager<ApplicationUser> signInManager, 
-        UserManager<ApplicationUser> userManager, ApplicationUserClaimsPrincipalFactory claimsFactory)
+        UserManager<ApplicationUser> userManager, 
+        ApplicationUserClaimsPrincipalFactory claimsFactory, 
+        IHttpContextAccessor httpContextAccessor, 
+        IOptions<List<IdentityScopeOption>> scopeOption, IOptions<IdentityClientOption> currentIdentityClientOption)
     {
         _openIddictApplicationManager = openIddictApplicationManager;
         _openIddictScopeManager = openIddictScopeManager;
@@ -27,49 +42,62 @@ public partial class ConnectHandler
         _signInManager = signInManager;
         _userManager = userManager;
         _claimsFactory = claimsFactory;
+        _httpContextAccessor = httpContextAccessor;
+        _scopeOption = scopeOption;
+        _currentIdentityClientOption = currentIdentityClientOption;
+    }
+
+    public async Task<AuthenticateResult> AuthorizeCookieAsync(AuthorizationContext context)
+    {
+        //Throw if httpcontex or request is null
+        if (_httpContextAccessor.HttpContext is null)
+        {
+            ArgumentNullException.ThrowIfNull(_httpContextAccessor.HttpContext);
+            ArgumentNullException.ThrowIfNull(_httpContextAccessor.HttpContext.Request);
+        }
+        
+        context.HttpContext = _httpContextAccessor.HttpContext;
+        context.OpenIddictRequest = _httpContextAccessor.HttpContext.GetOpenIddictServerRequest() ?? throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+
+        // Retrieve the user principal stored in the authentication cookie.
+        return await _httpContextAccessor.HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
     
-    private static IEnumerable<string> GetDestinations(Claim claim)
+    public async Task<AuthorizationContext> ConfigureUserAsync(AuthorizationContext context, ClaimsPrincipal principal)
     {
-        // Note: by default, claims are NOT automatically included in the access and identity tokens.
-        // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
-        // whether they should be included in access tokens, in identity tokens or in both.
+        //User information
+        context.User = await _userManager.GetUserAsync(principal) ?? throw new InvalidOperationException("The user details cannot be retrieved.");
+        context.UserId = await _userManager.GetUserIdAsync(context.User);
 
-        switch (claim.Type)
-        {
-            case OpenIddictConstants.Claims.Name:
-                yield return OpenIddictConstants.Destinations.AccessToken;
-
-                if (claim.Subject.HasScope(OpenIddictConstants.Permissions.Scopes.Profile))
-                    yield return OpenIddictConstants.Destinations.IdentityToken;
-
-                yield break;
-
-            case OpenIddictConstants.Claims.Email:
-                yield return OpenIddictConstants.Destinations.AccessToken;
-
-                if (claim.Subject.HasScope(OpenIddictConstants.Permissions.Scopes.Email))
-                    yield return OpenIddictConstants.Destinations.IdentityToken;
-
-                yield break;
-
-            case OpenIddictConstants.Claims.Role:
-                yield return OpenIddictConstants.Destinations.AccessToken;
-
-                if (claim.Subject.HasScope(OpenIddictConstants.Permissions.Scopes.Roles))
-                    yield return OpenIddictConstants.Destinations.IdentityToken;
-
-                yield break;
-
-            // Never include the security stamp in the access and identity tokens, as it's a secret value.
-            case "AspNet.Identity.SecurityStamp": yield break;
-
-            default:
-                yield return OpenIddictConstants.Destinations.AccessToken;
-                yield break;
-        }
+        return context;
+    }
+    
+    public async Task<AuthorizationContext> ConfigureOpenIddictAsync(AuthorizationContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context.OpenIddictRequest);
+        ArgumentNullException.ThrowIfNull(context.UserId);
+        
+        //OpenIddict Application
+        context.OpenIddictApplication = new OpenIddictApplication();
+        context.OpenIddictApplication.Application = await _openIddictApplicationManager.FindByClientIdAsync(context.OpenIddictRequest.ClientId!, context.CancellationToken) 
+                                                   ?? throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
+        context.OpenIddictApplication.ApplicationId = await _openIddictApplicationManager.GetIdAsync(context.OpenIddictApplication.Application, context.CancellationToken)!
+                                                     ?? throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
+        
+        context.Authorizations = (List<object>?)await _openIddictAuthorizationManager.FindAsync(
+                     subject: context.UserId,
+                     client: context.OpenIddictApplication.ApplicationId!,
+                     status: OpenIddictConstants.Statuses.Valid,
+                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
+                     scopes: context.OpenIddictRequest.GetScopes(), 
+                     cancellationToken: context.CancellationToken)
+                 .ToListAsync(context.CancellationToken)
+             ?? throw new InvalidOperationException("No authorization found");
+        
+        return context;
     }
 }
+
 
 
 

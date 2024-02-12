@@ -34,6 +34,11 @@ public class AuthorizationDefinition : ApplicationDefinition
         //services.AddAuthorization();
         context.ServiceCollection.AddAuthorization(options =>
         {
+            options.AddPolicy(AuthData.SuperAdminArea, builder =>
+            {
+                builder.RequireAuthenticatedUser();
+                builder.RequireRole(UserRoles.SuperAdmin);
+            });
             options.AddPolicy(AuthData.AuthenticationSchemes, policy =>
             {
                 policy.RequireAuthenticatedUser();

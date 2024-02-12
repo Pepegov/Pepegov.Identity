@@ -1,4 +1,4 @@
-namespace Pepegov.Identity.PL.Definitions.Options.Models;
+namespace Pepegov.Identity.PL.Definitions.MassTransit;
 
 public class MassTransitOption
 {

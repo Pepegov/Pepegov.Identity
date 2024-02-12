@@ -1,6 +1,7 @@
 ﻿using OpenIddict.Abstractions;
 using Pepegov.Identity.DAL.Database;
-using Pepegov.Identity.PL.Definitions.Options.Models;
+using Pepegov.Identity.DAL.Models.Options;
+using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 
@@ -10,10 +11,15 @@ public class OpenIddictDefinition : ApplicationDefinition
 {
     public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
     {
-        var configurationBuilder = new ConfigurationBuilder()
+        var identityConfiguration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("identitysetting.json");
-        IConfiguration identityConfiguration = configurationBuilder.Build();
+            .AddJsonFile("identitysetting.json")
+            .Build();
+        
+        context.ServiceCollection.Configure<IdentityAddressOption>(context.Configuration.GetSection("IdentityServerUrl"));
+        context.ServiceCollection.Configure<List<IdentityScopeOption>>(identityConfiguration.GetSection("Scopes"));
+        context.ServiceCollection.Configure<IdentityClientOption>(identityConfiguration.GetSection("CurrentIdentityClient"));
+        context.ServiceCollection.Configure<List<IdentityClientOption>>(identityConfiguration.GetSection("ClientsIdentity"));
         
         var scopeOptions = identityConfiguration.GetSection("Scopes").Get<List<IdentityScopeOption>>()!;
         var scopes = new List<string> { OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile, OpenIddictConstants.Scopes.Roles, };
@@ -37,8 +43,9 @@ public class OpenIddictDefinition : ApplicationDefinition
                 
                 options.SetAccessTokenLifetime(TimeSpan.FromHours(30));
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
+                options.SetAuthorizationCodeLifetime(TimeSpan.FromHours(1));
 
-                options.SetAuthorizationEndpointUris("connect/authorize")
+                options.SetAuthorizationEndpointUris("connect/authorize", "connect/superadmin/authorize")
                     //.RequireProofKeyForCodeExchange() // enable PKCE
                     .SetDeviceEndpointUris("connect/device")
                     //.SetIntrospectionEndpointUris("connect/introspect")

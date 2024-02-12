@@ -1,4 +1,4 @@
-namespace Pepegov.Identity.PL.Definitions.Options.Models;
+namespace Pepegov.Identity.PL.Definitions.OpenIddict.Options;
 
 public class IdentityClientOption
 {

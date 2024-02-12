@@ -1,7 +1,6 @@
 using System.Reflection;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
-using Pepegov.Identity.PL.Definitions.Options.Models;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 using Pepegov.MicroserviceFramework.Exceptions;

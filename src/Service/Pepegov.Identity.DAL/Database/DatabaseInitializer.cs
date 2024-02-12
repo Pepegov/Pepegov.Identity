@@ -2,11 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.DAL.Models.Identity;
 using Pepegov.Identity.DAL.Models.Options;
-using Pepegov.MicroserviceFramework.Exceptions;
 using Pepegov.MicroserviceFramework.Infrastructure.Extensions;
 
 namespace Pepegov.Identity.DAL.Database
@@ -14,18 +14,20 @@ namespace Pepegov.Identity.DAL.Database
     public class DatabaseInitializer
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<DatabaseInitializer> _logger;
         private readonly ApplicationDbContext _context;
 
         public DatabaseInitializer(IServiceProvider serviceProvider, ApplicationDbContext context)
         {
             _serviceProvider = serviceProvider;
             _context = context;
+            _logger = serviceProvider.GetRequiredService<ILogger<DatabaseInitializer>>();
         }
         
         public async Task Seed()
         {
             await _context!.Database.EnsureCreatedAsync();
-            var pending = await _context.Database.GetPendingMigrationsAsync(); //Асинхронно получает все миграции, определенные в сборке, но не примененные к целевой базе данных.
+            var pending = await _context.Database.GetPendingMigrationsAsync();
             if (pending.Any())
             {
                 await _context!.Database.MigrateAsync();
@@ -40,76 +42,123 @@ namespace Pepegov.Identity.DAL.Database
         {
             using var scope = _serviceProvider.CreateScope();
             
-            var adminFromConfig = scope.ServiceProvider.GetService<IOptions<AdminProfileOption>>()!.Value;
-            if (adminFromConfig is null)
+            var seedUsers = scope.ServiceProvider.GetService<IOptions<List<SeedUserOption>>>()!.Value;
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            if (seedUsers is null || seedUsers.Count == 0)
             {
-                throw new MicroserviceArgumentNullException("Admin Profile не найден в appsetting.json");
+                _logger.LogWarning("SeedUsers not found in appsetting.json");
+                return;
             }
 
-            var currentAdmin = _context.Users
-                .Include(x => x.ApplicationUserProfile)
-                .ThenInclude(x => x.Permissions)
-                .FirstOrDefault(x => x.UserName == adminFromConfig.UserName && x.Email == adminFromConfig.Email);
-            
-            if (currentAdmin is not null)
+            foreach (var seedUser in seedUsers)
             {
-                foreach (var permission in _context.Permissions.ToList())
+                var user = new ApplicationUser
                 {
-                    if (currentAdmin.ApplicationUserProfile.Permissions.Any(x => x.ApplicationPermissionId == permission.ApplicationPermissionId))
+                    Email = seedUser.Email,
+                    UserName = seedUser.UserName,
+                    FirstName = seedUser.FirstName,
+                    LastName = seedUser.LastName,
+                    PhoneNumber = seedUser.PhoneNumber,
+                    EmailConfirmed = seedUser.EmailConfirmed,
+                    PhoneNumberConfirmed = seedUser.PhoneNumberConfirmed,
+                    BirthDate = DateTime.UtcNow,
+                    SecurityStamp = Guid.NewGuid().ToString("D"),
+                    ApplicationUserProfile = new ApplicationUserProfile()
+                    {
+                        Created = DateTime.UtcNow,
+                        Updated = DateTime.UtcNow,
+                        Permissions = new List<ApplicationPermission>()
+                    }
+                };
+
+                await SeedUserProfile(user, seedUser);
+                await SeedRolesToProfile(user, seedUser.Roles);
+                await SeedPermissionsToProfile(user, seedUser.Permissions);
+            }
+            
+            async Task SeedPermissionsToProfile(ApplicationUser user, string[]? permissions)
+            {
+                if (permissions is null || permissions.Length == 0)
+                {
+                    return;
+                }
+                
+                var profile = await _context.Users
+                    .Where(x => x.UserName == user.UserName)
+                    .Include(i => i.ApplicationUserProfile)
+                    .ThenInclude(ti => ti.Permissions)
+                    .FirstOrDefaultAsync();
+
+                if (profile is null)
+                {
+                    throw new InvalidSeedException($"User by name {user.UserName} not found");
+                }
+
+                foreach (var permissionName in permissions)
+                {
+                    if (!profile.ApplicationUserProfile!.Permissions!.Select(x => x.PolicyName).Contains(permissionName))
+                    {
+                        profile.ApplicationUserProfile.Permissions!.Add(new ApplicationPermission()
+                        {
+                            PolicyName = permissionName,
+                            Description = "automatically seed permission"
+                        });
+                    }
+                }
+                
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Successfully seed permission by names {string.Join(", ", permissions)} to user by name {user.UserName}");
+            }
+            
+            async Task SeedRolesToProfile(ApplicationUser user, string[]? roles)
+            {
+                if (roles is null || roles.Length == 0)
+                {
+                    return;
+                }
+                
+                var currentUser = await userManager.Users.FirstOrDefaultAsync(x =>
+                    x.UserName == user.UserName);
+                if (currentUser is null)
+                {
+                    throw new InvalidSeedException($"User by name {user.UserName} not found");
+                }
+
+                foreach (var role in roles)
+                {
+                    if (await userManager.IsInRoleAsync(currentUser, role))
                     {
                         continue;
                     }
                     
-                    currentAdmin.ApplicationUserProfile.Permissions.Add(permission);
+                    var roleResult = await userManager!.AddToRoleAsync(currentUser, role);
+                    if (!roleResult.Succeeded)
+                    {
+                        var roleErrorMessage = string.Join(", ", roleResult.Errors.Select(x => $" Code:{x.Code} Description:{x.Description}"));
+                        throw new InvalidSeedException($"Cannot add roles {string.Join(", ", roles)} to account by name {user.UserName}. Errors: {roleErrorMessage}");
+                    }
+                    
+                    _logger.LogInformation($"Successfully add role {role} to user by name {user.UserName}");
                 }
-
-                await _context.SaveChangesAsync();
-                return;
             }
 
-            var admin = new ApplicationUser
+            async Task SeedUserProfile(ApplicationUser user, SeedUserOption seedUser)
             {
-                Email = adminFromConfig.Email,
-                UserName = adminFromConfig.UserName,
-                FirstName = adminFromConfig.FirstName,
-                LastName = adminFromConfig.LastName,
-                PhoneNumber = adminFromConfig.PhoneNumber,
-                EmailConfirmed = adminFromConfig.EmailConfirmed,
-                PhoneNumberConfirmed = adminFromConfig.PhoneNumberConfirmed,
-                BirthDate = DateTime.UtcNow,
-                SecurityStamp = Guid.NewGuid().ToString("D"),
-                ApplicationUserProfile = new ApplicationUserProfile()
+                if (_context!.Users.Any(u => u.UserName == seedUser.UserName || u.Email == seedUser.Email || u.PhoneNumber == seedUser.PhoneNumber))
                 {
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow,
+                    return;
                 }
-            };
-
-            if (!_context!.Users.Any(u => u.UserName == admin.UserName))
-            {
-                var password = new PasswordHasher<ApplicationUser>();
-                admin.PasswordHash = password.HashPassword(admin, adminFromConfig.Password);
                 
-                var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
-                var userResult = await userManager.CreateAsync(admin);
+                var passwordHasher = new PasswordHasher<ApplicationUser>();
+                user.PasswordHash = passwordHasher.HashPassword(user, seedUser.Password);
+                
+                var userResult = await userManager!.CreateAsync(user);
                 if (!userResult.Succeeded)
                 {
-                    throw new InvalidOperationException($"Cannot create account {userResult.Errors.FirstOrDefault()?.Description}");
+                    throw new InvalidSeedException($"Cannot create account {userResult.Errors.FirstOrDefault()?.Description}");
                 }
                 
-                var roleResult = await userManager.AddToRoleAsync(admin, UserRoles.Admin);
-                if (!roleResult.Succeeded)
-                {
-                    throw new InvalidOperationException("Cannot add roles to account");
-                }
-
-                await _context.SaveChangesAsync();
-                
-                var permissions = _context.Permissions.ToList();
-                var profile = await _context.Profiles.Where(x => x.Id == admin.ApplicationUserProfileId).FirstOrDefaultAsync();
-                
-                profile.Permissions = permissions;
-                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Successfully seed user with: Login {user.UserName} Email {user.Email} Phone {user.PhoneNumber}");
             }
         }
 
