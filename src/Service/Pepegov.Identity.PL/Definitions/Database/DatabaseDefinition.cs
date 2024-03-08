@@ -32,7 +32,7 @@ namespace Pepegov.Identity.PL.Definitions.Database
                 options.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
                 options.ClaimsIdentity.EmailClaimType = OpenIddictConstants.Claims.Email;
             });
-            
+
             context.ServiceCollection.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
                     options.Password.RequireDigit = false;
@@ -48,6 +48,7 @@ namespace Pepegov.Identity.PL.Definitions.Database
                 .AddUserManager<UserManager<ApplicationUser>>()
                 .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
                 .AddDefaultTokenProviders();
+                //.AddDefaultUI();
 
             context.ServiceCollection.AddTransient<ApplicationUserStore>();
         

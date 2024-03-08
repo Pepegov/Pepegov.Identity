@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using System.Security.Claims;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,20 +19,22 @@ public class DeviceCodeGrantTypeConnection : IGrantTypeConnection
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
-
-    public DeviceCodeGrantTypeConnection(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
+    
+    public DeviceCodeGrantTypeConnection(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationUserClaimsPrincipalFactory claimsFactory)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _claimsFactory = claimsFactory;
     }
 
     public async Task<IResult> SignInAsync(AuthorizationContext context)
     {
-        var result = await context.HttpContext.AuthenticateAsync(AuthData.SingInScheme);
+        var request = await context.HttpContext.AuthenticateAsync(AuthData.SingInScheme);
 
         // Retrieve the user profile corresponding to the authorization code/refresh token.
-        var user = await _userManager.FindByIdAsync(result.Principal.GetClaim(OpenIddictConstants.Claims.Subject));
-        if (user is null)
+        context.User = await _userManager.FindByIdAsync(request.Principal.GetClaim(OpenIddictConstants.Claims.Subject));
+        if (context.User is null)
         {
             return Results.Forbid(
                 authenticationSchemes: new List<string> {AuthData.SingInScheme},
@@ -42,7 +46,7 @@ public class DeviceCodeGrantTypeConnection : IGrantTypeConnection
         }
 
         // Ensure the user is still allowed to sign in.
-        if (!await _signInManager.CanSignInAsync(user))
+        if (!await _signInManager.CanSignInAsync(context.User))
         {
             return Results.Forbid(
                 authenticationSchemes: new List<string> {AuthData.SingInScheme},
@@ -52,20 +56,33 @@ public class DeviceCodeGrantTypeConnection : IGrantTypeConnection
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is no longer allowed to sign in."
                 }!));
         }
+        
+        var claimsPrincipal = await CreateClaimsPrincipalAsync(context);
+        return Results.SignIn(claimsPrincipal , new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
+    }
 
-        var identity = new ClaimsIdentity(result.Principal.Claims,
+    public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
+    {
+        var principal = await _claimsFactory.CreateAsync(context.User!);
+        principal.AddClaim(OpenIddictConstants.Claims.ClientId, context.OpenIddictRequest!.ClientId!);
+        principal.AddClaim(OpenIddictConstants.Claims.TokenType, OpenIddictConstants.GrantTypes.DeviceCode);
+        
+        // Don't forget to add destination otherwise it won't be added to the access token.
+        if (!string.IsNullOrEmpty(context.OpenIddictRequest.Scope))
+        {
+            principal.AddClaim(OpenIddictConstants.Claims.Scope, context.OpenIddictRequest.Scope!, OpenIddictConstants.Destinations.AccessToken);
+        }
+        
+        var identity = new ClaimsIdentity(principal.Claims,
             authenticationType: TokenValidationParameters.DefaultAuthenticationType,
             nameType: OpenIddictConstants.Claims.Name,
             roleType: OpenIddictConstants.Claims.Role);
-
+        
         identity.SetDestinations(PrincipalHelper.GetDestinations);
 
-        // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
-        return Results.SignIn(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
-    }
-
-    public Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
-    {
-        throw new NotImplementedException();
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        claimsPrincipal.SetScopes(context.OpenIddictRequest.GetScopes());
+        
+        return claimsPrincipal;
     }
 }

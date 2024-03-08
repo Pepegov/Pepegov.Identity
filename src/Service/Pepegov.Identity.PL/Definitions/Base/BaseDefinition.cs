@@ -21,9 +21,8 @@ public class BaseDefinition : ApplicationDefinition
         context.ServiceCollection.AddMemoryCache();
         context.ServiceCollection.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
-        context.ServiceCollection.AddMvc();
         context.ServiceCollection.AddEndpointsApiExplorer();
-        
+        context.ServiceCollection.AddControllersWithViews();
         context.ServiceCollection.AddRazorPages(options =>
         {
             options.Conventions.AuthorizePage("/Connect/SuperAdmin/Login", AuthData.SuperAdminArea);
@@ -40,8 +39,12 @@ public class BaseDefinition : ApplicationDefinition
         var app = context.Parse<WebDefinitionApplicationContext>().WebApplication;
         
         app.UseHttpsRedirection();
-        app.MapRazorPages();
-        app.MapDefaultControllerRoute();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapDefaultControllerRoute();
+            endpoints.MapRazorPages();
+        });
         
         return base.ConfigureApplicationAsync(context);
     }

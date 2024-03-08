@@ -20,8 +20,15 @@
       "Secret": "MicroserviceDevice-SECRET",
       "GrandTypes": [
         "urn:ietf:params:oauth:grant-type:device_code",
-        "client_credentials",
         "refresh_token"
+      ],
+      "ConsentType" : "implicit",
+      "Scopes": [
+        "profile",
+        "offline_access",
+        "openid",
+        "email",
+        "api"
       ]
     },
     {
@@ -36,7 +43,6 @@
         "profile",
         "offline_access",
         "openid",
-        "Microservice.Profile",
         "api"
       ]
     },
@@ -82,6 +88,22 @@
     {
       "Name": "profile",
       "Description": "standart profile scope"
+    },
+    {
+      "Name": "email",
+      "Description": "standart profile scope"
+    },
+    {
+      "Name": "phone",
+      "Description": "standart profile scope"
+    },
+    {
+      "Name": "roles",
+      "Description": "standart profile scope"
+    },
+    {
+      "Name": "api",
+      "Description": "custom api scope"
     }
   ],
 

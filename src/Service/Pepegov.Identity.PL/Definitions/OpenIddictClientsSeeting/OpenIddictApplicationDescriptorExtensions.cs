@@ -49,6 +49,10 @@ public static class OpenIddictApplicationDescriptorExtensions
                     application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
                     application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
                     break;
+                case OpenIddictConstants.Permissions.GrantTypes.DeviceCode:
+                    application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Device);
+                    application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
+                    break;
                 case OpenIddictConstants.Permissions.GrantTypes.Password:
                 case OpenIddictConstants.Permissions.GrantTypes.ClientCredentials:
                     application.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);

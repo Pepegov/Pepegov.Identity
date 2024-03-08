@@ -26,11 +26,17 @@ public class OpenIddictDefinition : ApplicationDefinition
         scopeOptions.ForEach(x => scopes.Add(x.Name));
 
         context.ServiceCollection.AddOpenIddict()
+            // Register the OpenIddict core components.
             .AddCore(options =>
             {
+                // Configure OpenIddict to use the Entity Framework Core stores and models.
+                // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
                 options.UseEntityFrameworkCore()
                     .UseDbContext<ApplicationDbContext>()
                     .ReplaceDefaultEntities<Guid>();
+                
+                // Enable Quartz.NET integration.
+                options.UseQuartz();
             })
             .AddServer(options =>
             {
@@ -71,6 +77,7 @@ public class OpenIddictDefinition : ApplicationDefinition
                 // registration ASP.NET Core host and configure setting for ASP.NET Core.
                 options
                     .UseAspNetCore()
+                    .EnableVerificationEndpointPassthrough()
                     .EnableAuthorizationEndpointPassthrough()
                     .EnableLogoutEndpointPassthrough()
                     .EnableTokenEndpointPassthrough()

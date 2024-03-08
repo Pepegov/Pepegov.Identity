@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pepegov.Identity.Client.Console", "Pepegov.Identity.Client.Console\Pepegov.Identity.Client.Console.csproj", "{72FCADF6-7677-457C-B21E-8E35029598AE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72FCADF6-7677-457C-B21E-8E35029598AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72FCADF6-7677-457C-B21E-8E35029598AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72FCADF6-7677-457C-B21E-8E35029598AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72FCADF6-7677-457C-B21E-8E35029598AE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

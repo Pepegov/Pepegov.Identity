@@ -28,7 +28,10 @@ public class AuthorizationDefinition : ApplicationDefinition
                 options.Cookie.IsEssential = true;
                 options.Cookie.Name = ".Pepegov.Session";
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                
                 options.LoginPath = "/connect/login";
+                options.AccessDeniedPath = "/connect/logout";
+                options.AccessDeniedPath = "/connect/access-denied";
             });
 
         //services.AddAuthorization();

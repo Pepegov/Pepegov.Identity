@@ -33,7 +33,7 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
         {
             if (await manager.FindByClientIdAsync(clientOption.Id) is not null) //if the client exist then dont add him
             {
-                continue;;
+                continue;
             }
 
             var client = new OpenIddictApplicationDescriptor
@@ -54,6 +54,9 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
             client.AddEndpoints();
 
             await manager.CreateAsync(client);
+
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<OpenIddictClientsSeetingDefinition>>();
+            logger.LogInformation($"Successful seeded identity application. id: {client.ClientId} | name: {client.DisplayName} | consent type {client.ConsentType}. With scopes: {string.Join(", ", clientOption.Scopes)}");
         }
     }
 }

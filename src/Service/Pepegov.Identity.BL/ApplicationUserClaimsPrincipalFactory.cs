@@ -42,6 +42,11 @@ public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<
         {
             ((ClaimsIdentity)principal.Identity!).AddClaim(new Claim(OpenIddictConstants.Claims.Name, user.UserName));
         }
+        if (!string.IsNullOrWhiteSpace(user.UserName) && 
+            string.IsNullOrEmpty(ClaimsHelper.GetValue<string>(claimIdentity,OpenIddictConstants.Claims.PreferredUsername)))
+        {
+            ((ClaimsIdentity)principal.Identity!).AddClaim(new Claim(OpenIddictConstants.Claims.PreferredUsername, user.UserName));
+        }
 
         if (!string.IsNullOrWhiteSpace(user.FirstName) &&
             string.IsNullOrEmpty(ClaimsHelper.GetValue<string>(claimIdentity,OpenIddictConstants.Claims.GivenName)))

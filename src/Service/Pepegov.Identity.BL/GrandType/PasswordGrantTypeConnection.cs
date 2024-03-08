@@ -45,6 +45,8 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         }
 
         var claimsPrincipal = await CreateClaimsPrincipalAsync(context);
+        
+        await context.HttpContext?.SignInAsync(AuthData.SingInScheme, claimsPrincipal)!;
         return Results.SignIn(claimsPrincipal, new AuthenticationProperties() {}, AuthData.SingInScheme);
     }
 
@@ -67,7 +69,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         
         var claimsPrincipal = new ClaimsPrincipal(principal);
         claimsPrincipal.SetScopes(context.OpenIddictRequest.GetScopes());
-
+        
         return claimsPrincipal;
     }
     

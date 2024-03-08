@@ -1,0 +1,59 @@
+@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Primitives
+@using Pepegov.Identity.PL.Pages.Shared.Components.SnackBar
+@model VerifyModel
+
+<div class="jumbotron">
+    <div class="col-md-6 offset-3">
+            @if (!string.IsNullOrEmpty(ViewData["Error"]?.ToString()))
+            {
+                <vc:snack-bar error-title="@ViewData["Error"]!.ToString()" error-description="@ViewData["ErrorTitle"]?.ToString()"></vc:snack-bar>
+            }
+            @if (string.IsNullOrEmpty(Model.UserCode))
+            {
+                <p class="lead text-left">Enter the user code given by the client application:</p>
+            
+                <form method="get">
+                    <div class="mt-4 row">
+                        <input class="form-control" name="user_code" type="text" />
+                    </div>
+            
+                    <div class="mt-4 row">
+                        <input class="btn btn-lg btn-success" type="submit" value="Verify"/>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="mt-4 row">
+                    <p class="lead text-left">
+                        Do you want to grant <strong>@Model.ApplicationName</strong> access to your data? 
+                        <br/>Scopes requested: @Model.Scope
+                    </p>
+                </div>
+                <div class="row">
+                    <p class="lead text-left alert alert-warning">
+                        Make sure that the code displayed on the device is <strong>@Model.UserCode</strong>.
+                        <br />
+                        If the two codes don't match, press "No" to reject the authorization demand.
+                    </p>
+                </div>
+                <div class="row">
+                    <form method="post" style="margin: 0; padding: 0;">
+                        @* Flow the request parameters so they can be received by the VerifyAccept/VerifyReject actions: *@
+                        @foreach (var parameter in HttpContext.Request.HasFormContentType ?
+                          (IEnumerable<KeyValuePair<string, StringValues>>)HttpContext.Request.Form : HttpContext.Request.Query)
+                        {
+                            <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+                        }
+            
+                        <div class="btn-group" role="group" style="width: 100%">
+                            <input class="btn btn-lg btn-success" style="width: 100%;" type="submit" value="Yes" />
+                            <a class="btn btn-lg btn-danger" style="width: 100%;" asp-page="Verify">No</a>
+                        </div>
+                    </form>
+                </div>
+            }
+    </div>
+</div>
