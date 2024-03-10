@@ -28,6 +28,11 @@ public class ApplicationUser : IdentityUser<Guid>
     public DateTime BirthDate { get; set; }
     
     /// <summary>
+    /// Gender
+    /// </summary>
+    public UserGender? Gender { get; set; }
+    
+    /// <summary>
     /// User Profile
     /// </summary>
     public virtual ApplicationUserProfile? ApplicationUserProfile { get; set; }

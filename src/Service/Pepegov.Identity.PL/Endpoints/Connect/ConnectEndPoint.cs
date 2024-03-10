@@ -113,6 +113,22 @@ public class ConnectEndPoint : ApplicationDefinition
             claims[OpenIddictConstants.Claims.PhoneNumberVerified] = await userManager.IsPhoneNumberConfirmedAsync(user);
         }
 
+        if (principalUser.HasScope(OpenIddictConstants.Permissions.Scopes.Profile))
+        {
+            claims[OpenIddictConstants.Claims.Name] = user.FirstName;
+            claims[OpenIddictConstants.Claims.GivenName] = user.FirstName;
+            claims[OpenIddictConstants.Claims.FamilyName] = user.LastName;
+            claims[OpenIddictConstants.Claims.Birthdate] = user.BirthDate.ToUniversalTime();
+            claims[OpenIddictConstants.Claims.UpdatedAt] = user.ApplicationUserProfile!.Updated.ToUniversalTime();
+            
+            if (user.Gender != null) 
+                claims[OpenIddictConstants.Claims.Gender] = user.Gender.ToString()!;
+            if (user.UserName != null) 
+                claims[OpenIddictConstants.Claims.Nickname] = user.UserName;
+            if (user.MiddleName != null) 
+                claims[OpenIddictConstants.Claims.MiddleName] = user.MiddleName;
+        }
+
         if (principalUser.HasScope(OpenIddictConstants.Permissions.Scopes.Roles))
         {
             claims[OpenIddictConstants.Claims.Role] = await userManager.GetRolesAsync(user);
