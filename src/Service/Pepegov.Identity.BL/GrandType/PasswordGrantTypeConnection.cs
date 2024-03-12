@@ -9,6 +9,7 @@ using Pepegov.Identity.BL.GrandType.Infrastructure;
 using Pepegov.Identity.BL.GrandType.Model;
 using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.DAL.Models.Identity;
+using Pepegov.MicroserviceFramework.Infrastructure.Helpers;
 
 namespace Pepegov.Identity.BL.GrandType;
 
@@ -30,8 +31,25 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
 
     public async Task<IResult> SignInAsync(AuthorizationContext context)
     {
-        var user = await _userManager.FindByNameAsync(context.OpenIddictRequest.Username);
-
+        var userName = context.OpenIddictRequest.Username;
+        if (userName is null)
+        {
+            // Retrieve the claims principal stored in the refresh token.
+            var result = await context.HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            if (!result.Succeeded)
+            {
+                var authenticationProperties = new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.AccessDenied,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "User not found or the refresh token is no longer valid."
+                }!);
+                Results.Forbid(authenticationProperties, new List<string>(){AuthData.SingInScheme});
+            }
+            userName = result.Principal.GetClaim(OpenIddictConstants.Claims.Name);
+        }
+        
+        var user = await _userManager.FindByNameAsync(userName!);
+        
         var properties = await CheckUser(user, context.OpenIddictRequest);
         if (properties is not null)
         {
@@ -44,6 +62,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
             await _userManager.ResetAccessFailedCountAsync(user);
         }
 
+        context.User = user;
         var claimsPrincipal = await CreateClaimsPrincipalAsync(context);
         
         await context.HttpContext?.SignInAsync(AuthData.SingInScheme, claimsPrincipal)!;
@@ -52,8 +71,8 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
 
     public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
     {
-        var user = await _userManager.FindByNameAsync(context.OpenIddictRequest.Username);
-        var principal = await _claimsFactory.CreateAsync(user);
+        ArgumentNullException.ThrowIfNull(context.User);
+        var principal = await _claimsFactory.CreateAsync(context.User);
         principal.AddClaim(OpenIddictConstants.Claims.ClientId, context.OpenIddictRequest.ClientId!);
         principal.AddClaim(OpenIddictConstants.Claims.TokenType, OpenIddictConstants.GrantTypes.Password);
 
@@ -105,7 +124,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         }
         
         // Ensure the password is valid
-        if (!await _userManager.CheckPasswordAsync(user, request.Password))
+        if (!string.IsNullOrEmpty(request.Password) && !await _userManager.CheckPasswordAsync(user, request.Password))
         {
             if (_userManager.SupportsUserLockout)
             {
