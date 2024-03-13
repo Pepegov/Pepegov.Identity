@@ -10,7 +10,7 @@ namespace Pepegov.Identity.BL;
 
 public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
 {
-    private UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public ApplicationUserClaimsPrincipalFactory(
         UserManager<ApplicationUser> userManager,

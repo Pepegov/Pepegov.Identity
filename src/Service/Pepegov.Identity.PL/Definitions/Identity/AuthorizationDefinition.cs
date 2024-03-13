@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Server.AspNetCore;
 using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.PL.Definitions.OpenIddict;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
@@ -14,13 +17,13 @@ public class AuthorizationDefinition : ApplicationDefinition
     public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
     {
         context.ServiceCollection.AddDistributedMemoryCache();
-        
+
         context.ServiceCollection
             .AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
@@ -30,24 +33,76 @@ public class AuthorizationDefinition : ApplicationDefinition
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 
                 options.LoginPath = "/connect/login";
-                options.AccessDeniedPath = "/connect/logout";
+                options.LogoutPath = "/connect/logout";
                 options.AccessDeniedPath = "/connect/access-denied";
-            });
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, "Bearer", options =>
+            {
+                var url = context.Configuration.GetSection("AuthServer").GetValue<string>("Url");
 
-        //services.AddAuthorization();
+                options.SaveToken = true;
+                options.Audience = "client-id-code";
+                options.Authority = url;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience =
+                        false, // Audience should be defined on the authorization server or disabled as shown
+                    ClockSkew = new TimeSpan(0, 0, 30)
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        // Ensure we always have an error and error description.
+                        if (string.IsNullOrEmpty(context.Error))
+                        {
+                            context.Error = "invalid_token";
+                        }
+
+                        if (string.IsNullOrEmpty(context.ErrorDescription))
+                        {
+                            context.ErrorDescription = "This request requires a valid JWT access token to be provided";
+                        }
+
+                        // Add some extra context for expired tokens.
+                        if (context.AuthenticateFailure != null && context.AuthenticateFailure.GetType() ==
+                            typeof(SecurityTokenExpiredException))
+                        {
+                            var authenticationException = context.AuthenticateFailure as SecurityTokenExpiredException;
+                            context.Response.Headers.Append("x-token-expired",
+                                authenticationException?.Expires.ToString("o"));
+                            context.ErrorDescription = $"The token expired on {authenticationException?.Expires:o}";
+                        }
+
+                        return context.Response.WriteAsync(JsonSerializer.Serialize(new
+                        {
+                            error = context.Error,
+                            error_description = context.ErrorDescription
+                        }));
+                    }
+                };
+            });
+        
         context.ServiceCollection.AddAuthorization(options =>
         {
+            options.AddPolicy(AuthData.AuthenticationSchemes, x =>
+            {
+                x.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme);
+                x.RequireAuthenticatedUser();
+            });
+            
             options.AddPolicy(AuthData.SuperAdminArea, builder =>
             {
                 builder.RequireAuthenticatedUser();
                 builder.RequireRole(UserRoles.SuperAdmin);
             });
-            options.AddPolicy(AuthData.AuthenticationSchemes, policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                //policy.RequireClaim("scope", "api");
-            });
         });
+
         context.ServiceCollection.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
         context.ServiceCollection.AddSingleton<IAuthorizationHandler, AppPermissionHandler>();
         

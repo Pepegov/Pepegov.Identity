@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 using Pepegov.Identity.BL.AuthorizationStrategy;
 using Pepegov.Identity.BL.GrandType.Infrastructure;
 using Pepegov.Identity.BL.GrandType.Model;
@@ -51,7 +52,8 @@ public class ConnectEndPoint : ApplicationDefinition
         app.MapPost("~/connect/authorize", Authorize).WithOpenApi().WithTags("Connect");
         app.MapGet("~/connect/authorize", Authorize).WithOpenApi().WithTags("Connect");
         
-        app.MapGet("~/connect/sing-out", SingOut).WithOpenApi().WithTags("Connect");;
+        app.MapPost("~/connect/logout", Logout).WithOpenApi().WithTags("Connect");
+        app.MapGet("~/connect/logout", Logout).WithOpenApi().WithTags("Connect");
         
         app.MapGet("~/connect/userinfo", UserInfo).WithOpenApi().WithTags("Connect");
         app.MapPost("~/connect/userinfo", UserInfo).WithOpenApi().WithTags("Connect");
@@ -66,11 +68,13 @@ public class ConnectEndPoint : ApplicationDefinition
     [ProducesResponseType(200)]
     [ProducesResponseType(401)]
     [ProducesResponseType(404)]
-    private async Task<IResult> SingOut(
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes)]
+    private async Task<IResult> Logout(
+        [FromServices] SignInManager<ApplicationUser> signInManager,
         HttpContext httpContext)
     {
-        await httpContext.SignOutAsync(AuthData.AuthenticationSchemes);
-        return Results.SignOut(null, new List<string>() { AuthData.AuthenticationSchemes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme} );
+        await signInManager.SignOutAsync();
+        return Results.SignOut(null, new List<string>() { OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme } );
     }
 
     [ProducesResponseType(200)]

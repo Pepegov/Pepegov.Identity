@@ -1,4 +1,5 @@
-﻿using OpenIddict.Abstractions;
+﻿using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Abstractions;
 using Pepegov.Identity.DAL.Database;
 using Pepegov.Identity.DAL.Models.Options;
 using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
@@ -61,18 +62,22 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .SetUserinfoEndpointUris("connect/userinfo");
                 
                 // only for developer mode
-                options
-                    .AddEphemeralEncryptionKey()
-                    .AddEphemeralSigningKey() 
-                    .DisableAccessTokenEncryption();
+                // options
+                //     .AddEphemeralEncryptionKey()
+                //     .AddEphemeralSigningKey() 
+                //     .DisableAccessTokenEncryption();
                 
                 // server scopes
                 options.RegisterScopes(scopes.ToArray());
                 
                 //certificate
+                
                 options
-                    .AddDevelopmentEncryptionCertificate()
+                    .AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")))
                     .AddDevelopmentSigningCertificate();
+                // options
+                //     .AddDevelopmentEncryptionCertificate()
+                //     .AddDevelopmentSigningCertificate();
                 
                 // registration ASP.NET Core host and configure setting for ASP.NET Core.
                 options

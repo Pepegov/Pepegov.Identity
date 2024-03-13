@@ -20,6 +20,9 @@ public class AuthorizationCodeGrantTypeConnection : IGrantTypeConnection
     public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
     {
         var authenticateResult = await context.HttpContext.AuthenticateAsync(AuthData.SingInScheme);
-        return authenticateResult.Principal!;
+        var principal = authenticateResult.Principal;
+        principal.AddClaim(OpenIddictConstants.Claims.ClientId, context.OpenIddictRequest.ClientId!);
+        principal.AddClaim(OpenIddictConstants.Claims.TokenType, OpenIddictConstants.GrantTypes.AuthorizationCode);
+        return principal!;
     }
 }

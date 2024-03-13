@@ -31,7 +31,7 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
         
         foreach (var clientOption in identityClients)
         {
-            if (await manager.FindByClientIdAsync(clientOption.Id) is not null) //if the client exist then dont add him
+            if (await manager.FindByClientIdAsync(clientOption.Id) is not null) //if the client exist then dont add it
             {
                 continue;
             }

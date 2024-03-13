@@ -21,7 +21,6 @@ public partial class ConnectHandler
     private readonly IOpenIddictAuthorizationManager _openIddictAuthorizationManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptions<List<IdentityScopeOption>> _scopeOption;
     private readonly IOptions<IdentityClientOption> _currentIdentityClientOption;
@@ -32,7 +31,6 @@ public partial class ConnectHandler
         IOpenIddictAuthorizationManager openIddictAuthorizationManager, 
         SignInManager<ApplicationUser> signInManager, 
         UserManager<ApplicationUser> userManager, 
-        ApplicationUserClaimsPrincipalFactory claimsFactory, 
         IHttpContextAccessor httpContextAccessor, 
         IOptions<List<IdentityScopeOption>> scopeOption, IOptions<IdentityClientOption> currentIdentityClientOption)
     {
@@ -41,7 +39,6 @@ public partial class ConnectHandler
         _openIddictAuthorizationManager = openIddictAuthorizationManager;
         _signInManager = signInManager;
         _userManager = userManager;
-        _claimsFactory = claimsFactory;
         _httpContextAccessor = httpContextAccessor;
         _scopeOption = scopeOption;
         _currentIdentityClientOption = currentIdentityClientOption;

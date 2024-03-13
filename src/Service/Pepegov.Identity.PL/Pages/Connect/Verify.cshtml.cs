@@ -3,6 +3,8 @@ using System.Security.Claims;
 using MassTransit.Internals;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,10 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using Pepegov.Identity.BL.GrandType.Infrastructure;
+using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.DAL.Models.Identity;
 
 namespace Pepegov.Identity.PL.Pages.Connect;
 
+[Authorize]
 public class VerifyModel : PageModel
 {
     private readonly IOpenIddictApplicationManager _applicationManager;
@@ -38,16 +42,17 @@ public class VerifyModel : PageModel
     {
         var request = HttpContext.GetOpenIddictServerRequest() ??
                       throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
-
+        
         // If the user code was not specified in the query string (e.g as part of the verification_uri_complete),
         // render a form to ask the user to enter the user code manually (non-digit chars are automatically ignored).
         if (string.IsNullOrEmpty(request.UserCode))
         {
             return;
         }
-
+        
         // Retrieve the claims principal associated with the user code.
         var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        
         if (result.Succeeded)
         {
             // Retrieve the application details from the database using the client_id stored in the principal.
