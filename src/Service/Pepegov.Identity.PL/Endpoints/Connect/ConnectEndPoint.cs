@@ -48,19 +48,19 @@ public class ConnectEndPoint : ApplicationDefinition
         }).ExcludeFromDescription();
         
         //User area
-        app.MapPost("~/connect/token", Token).WithOpenApi().WithTags("Connect");
-        app.MapPost("~/connect/authorize", Authorize).WithOpenApi().WithTags("Connect");
-        app.MapGet("~/connect/authorize", Authorize).WithOpenApi().WithTags("Connect");
+        app.MapPost("~/connect/token", Token).WithOpenApi().WithTags("Auth.Connect");
+        app.MapPost("~/connect/authorize", Authorize).WithOpenApi().WithTags("Auth.Connect");
+        app.MapGet("~/connect/authorize", Authorize).WithOpenApi().WithTags("Auth.Connect");
         
-        app.MapPost("~/connect/logout", Logout).WithOpenApi().WithTags("Connect");
-        app.MapGet("~/connect/logout", Logout).WithOpenApi().WithTags("Connect");
+        app.MapPost("~/connect/logout", Logout).WithOpenApi().WithTags("Auth.Connect");
+        app.MapGet("~/connect/logout", Logout).WithOpenApi().WithTags("Auth.Connect");
         
-        app.MapGet("~/connect/userinfo", UserInfo).WithOpenApi().WithTags("Connect");
-        app.MapPost("~/connect/userinfo", UserInfo).WithOpenApi().WithTags("Connect");
+        app.MapGet("~/connect/userinfo", UserInfo).WithOpenApi().WithTags("Auth.Connect");
+        app.MapPost("~/connect/userinfo", UserInfo).WithOpenApi().WithTags("Auth.Connect");
         
         //Admin area
-        app.MapGet("~/connect/superadmin/authorize", SuperAdminAuthorize).WithOpenApi().WithTags("Connect");
-        app.MapPost("~/connect/superadmin/authorize", SuperAdminAuthorize).WithOpenApi().WithTags("Connect");
+        app.MapGet("~/connect/superadmin/authorize", SuperAdminAuthorize).WithOpenApi().WithTags("Auth.Connect");
+        app.MapPost("~/connect/superadmin/authorize", SuperAdminAuthorize).WithOpenApi().WithTags("Auth.Connect");
         
         return base.ConfigureApplicationAsync(context);
     }

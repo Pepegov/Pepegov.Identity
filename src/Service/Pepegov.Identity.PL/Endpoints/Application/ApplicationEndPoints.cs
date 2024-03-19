@@ -1,7 +1,10 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpenIddict.EntityFrameworkCore.Models;
-using Pepegov.Identity.PL.Endpoints.Application.Handlers.Queries;
+using Pepegov.Identity.DAL.Domain;
+using Pepegov.Identity.PL.Endpoints.Application.Queries;
+using Pepegov.Identity.PL.Endpoints.Application.ViewModel;
+using Pepegov.MicroserviceFramework.ApiResults;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApi;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
@@ -15,15 +18,118 @@ public class ApplicationEndPoints : ApplicationDefinition
     {
         var app = context.Parse<WebDefinitionApplicationContext>().WebApplication;
 
-        app.MapGet("~/api/admin/auth/application/", Get).WithOpenApi();
+        app.MapGet("~/api/admin/auth/application", Get)
+            .WithOpenApi()
+            .WithTags("Auth.Application");
+        app.MapDelete("~/api/admin/auth/application", Delete)
+            .WithOpenApi()
+            .WithTags("Auth.Application");
+        app.MapPut("~/api/admin/auth/application/data", UpdateApplication)
+            .WithOpenApi()
+            .WithTags("Auth.Application");
+        app.MapPost("~/api/admin/auth/application/create", Create)
+            .WithOpenApi()
+            .WithTags("Auth.Application");
+        app.MapPut("~/api/admin/auth/application/permission", UpdatePermissions)
+            .WithOpenApi()
+            .WithTags("Auth.Application");
+        app.MapGet("~/api/admin/auth/application/permission/all", GetPermissions)
+            .WithOpenApi()
+            .WithTags("Auth.Application");
+        
         return base.ConfigureApplicationAsync(context);
     }
 
-    private async Task<IResult> Get(
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404, Type = typeof(MinimalExceptionData))]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    private async Task<IResult> UpdateApplication(
+        HttpContext httpContext,
+        [FromHeader] string? Bff,
+        [FromServices] IMediator mediator,
+        [FromQuery] string clientId,
+        [FromBody] ApplicationDataUpdateModel model)
+    {
+        var result = await mediator.Send(new UpdateApplicationDataCommand(clientId, model), httpContext.RequestAborted);
+        return Results.Extensions.Custom(result);
+    }
+    
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404, Type = typeof(MinimalExceptionData))]
+    [ProducesResponseType(500, Type = typeof(MinimalExceptionData))]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    private async Task<IResult> GetPermissions(
+        HttpContext httpContext,
+        [FromHeader] string? Bff,
         [FromServices] IMediator mediator,
         [FromQuery] string clientId)
     {
-        var result = await mediator.Send(new GetApplicationRequest(clientId));
+        var result = await mediator.Send(new GetApplicationPermissionsRequest(clientId), httpContext.RequestAborted);
+        return Results.Extensions.Custom(result);
+    }
+    
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(409, Type = typeof(MinimalExceptionData))]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    private async Task<IResult> UpdatePermissions(
+        HttpContext httpContext,
+        [FromHeader] string? Bff,
+        [FromServices] IMediator mediator,
+        [FromQuery] string clientId,
+        [FromBody] List<string> permissions)
+    {
+        var result = await mediator.Send(new UpdateApplicationPermissionsCommand(clientId, permissions), httpContext.RequestAborted);
+        return Results.Extensions.Custom(result);
+    }
+    
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(409, Type = typeof(MinimalExceptionData))]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    private async Task<IResult> Create(
+        HttpContext httpContext,
+        [FromHeader] string? Bff,
+        [FromServices] IMediator mediator,
+        [FromBody] CreateApplicationCommand application)
+    {
+        var result = await mediator.Send(application, httpContext.RequestAborted);
+        return Results.Extensions.Custom(result);
+    }
+
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404, Type = typeof(MinimalExceptionData))]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    private async Task<IResult> Delete(
+        HttpContext httpContext,
+        [FromHeader] string? Bff,
+        [FromServices] IMediator mediator,
+        [FromQuery] string clientId)
+    {
+        var result = await mediator.Send(new DeleteApplicationCommand(clientId), httpContext.RequestAborted);
+        return Results.Extensions.Custom(result);
+    }
+    
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404, Type = typeof(MinimalExceptionData))]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
+    private async Task<IResult> Get(
+        HttpContext httpContext,
+        [FromHeader] string? Bff,
+        [FromServices] IMediator mediator,
+        [FromQuery] string clientId)
+    {
+        var result = await mediator.Send(new GetApplicationViewModelRequest(clientId), httpContext.RequestAborted);
         return Results.Extensions.Custom(result);
     }
 }

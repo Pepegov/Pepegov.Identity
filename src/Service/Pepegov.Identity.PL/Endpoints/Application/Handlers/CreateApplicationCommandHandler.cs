@@ -2,24 +2,24 @@ using System.Net;
 using MediatR;
 using OpenIddict.Abstractions;
 using Pepegov.Identity.PL.Definitions.OpenIddictClientsSeeting;
-using Pepegov.Identity.PL.Endpoints.Application.Handlers.Queries;
+using Pepegov.Identity.PL.Endpoints.Application.Queries;
 using Pepegov.MicroserviceFramework.ApiResults;
 using Pepegov.MicroserviceFramework.Exceptions;
 
 namespace Pepegov.Identity.PL.Endpoints.Application.Handlers;
 
-public class AddApplicationCommandHandler : IRequestHandler<AddApplicationCommand, ApiResult>
+public class CreateApplicationCommandHandler : IRequestHandler<CreateApplicationCommand, ApiResult>
 {
-    private readonly ILogger<AddApplicationCommandHandler> _logger;
+    private readonly ILogger<CreateApplicationCommandHandler> _logger;
     private readonly IOpenIddictApplicationManager _applicationManager;
     
-    public AddApplicationCommandHandler(ILogger<AddApplicationCommandHandler> logger, IOpenIddictApplicationManager applicationManager)
+    public CreateApplicationCommandHandler(ILogger<CreateApplicationCommandHandler> logger, IOpenIddictApplicationManager applicationManager)
     {
         _logger = logger;
         _applicationManager = applicationManager;
     }
 
-    public async Task<ApiResult> Handle(AddApplicationCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResult> Handle(CreateApplicationCommand request, CancellationToken cancellationToken)
     {
         if (await _applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken) is not null) //if the client exist then dont add it
         {

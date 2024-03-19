@@ -1,9 +1,9 @@
 using MediatR;
 using Pepegov.MicroserviceFramework.ApiResults;
 
-namespace Pepegov.Identity.PL.Endpoints.Application.Handlers.Queries;
+namespace Pepegov.Identity.PL.Endpoints.Application.Queries;
 
-public class AddApplicationCommand : IRequest<ApiResult>
+public class CreateApplicationCommand : IRequest<ApiResult>
 {
     public string ClientId { get; set; } = null!;
     public string ClientSecret { get; set; } = null!;

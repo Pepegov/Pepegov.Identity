@@ -28,6 +28,7 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
         identityClients.Add(currentIdentityClient); //current client add too other clients
 
         var url = scope.ServiceProvider.GetService<IOptions<IdentityAddressOption>>()!.Value.Authority;
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<OpenIddictClientsSeetingDefinition>>();
         
         foreach (var clientOption in identityClients)
         {
@@ -54,8 +55,7 @@ public class OpenIddictClientsSeetingDefinition : ApplicationDefinition
             client.AddEndpoints();
 
             await manager.CreateAsync(client);
-
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<OpenIddictClientsSeetingDefinition>>();
+            
             logger.LogInformation($"Successful seeded identity application. id: {client.ClientId} | name: {client.DisplayName} | consent type {client.ConsentType}. With scopes: {string.Join(", ", clientOption.Scopes)}");
         }
     }

@@ -1,7 +1,7 @@
 using System.Net;
 using MediatR;
 using OpenIddict.Abstractions;
-using Pepegov.Identity.PL.Endpoints.Application.Handlers.Queries;
+using Pepegov.Identity.PL.Endpoints.Application.Queries;
 using Pepegov.MicroserviceFramework.ApiResults;
 using Pepegov.MicroserviceFramework.Data.Exceptions;
 using Pepegov.MicroserviceFramework.Exceptions;
