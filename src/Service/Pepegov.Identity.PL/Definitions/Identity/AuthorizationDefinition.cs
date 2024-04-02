@@ -14,6 +14,8 @@ namespace Pepegov.Identity.PL.Definitions.Identity;
 
 public class AuthorizationDefinition : ApplicationDefinition
 {
+    public new int Priority = 8;
+    
     public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
     {
         context.ServiceCollection.AddDistributedMemoryCache();
