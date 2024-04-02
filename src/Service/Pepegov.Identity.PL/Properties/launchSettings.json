@@ -29,7 +29,7 @@
       "applicationUrl": "https://localhost:10001;http://localhost:10000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_Kestrel__Certificates__Default__Path": "/etc/ssl/certs/localhost.pfx",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "/opt/OpendIddict/cents/localhost.pfx",
         "ASPNETCORE_Kestrel__Certificates__Default__Password": "password"
       }
     }

@@ -47,7 +47,7 @@ public class ApplicationEndPoints : ApplicationDefinition
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
     private async Task<IResult> UpdateApplication(
         HttpContext httpContext,
-        [FromHeader] string? Bff,
+        [FromHeader] bool? Bff,
         [FromServices] IMediator mediator,
         [FromQuery] string clientId,
         [FromBody] ApplicationDataUpdateModel model)
@@ -56,7 +56,7 @@ public class ApplicationEndPoints : ApplicationDefinition
         return Results.Extensions.Custom(result);
     }
     
-    [ProducesResponseType(200)]
+    [ProducesResponseType(200, Type = typeof(List<string>))]
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]
     [ProducesResponseType(404, Type = typeof(MinimalExceptionData))]
@@ -64,7 +64,7 @@ public class ApplicationEndPoints : ApplicationDefinition
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
     private async Task<IResult> GetPermissions(
         HttpContext httpContext,
-        [FromHeader] string? Bff,
+        [FromHeader] bool? Bff,
         [FromServices] IMediator mediator,
         [FromQuery] string clientId)
     {
@@ -79,7 +79,7 @@ public class ApplicationEndPoints : ApplicationDefinition
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
     private async Task<IResult> UpdatePermissions(
         HttpContext httpContext,
-        [FromHeader] string? Bff,
+        [FromHeader] bool? Bff,
         [FromServices] IMediator mediator,
         [FromQuery] string clientId,
         [FromBody] List<string> permissions)
@@ -95,7 +95,7 @@ public class ApplicationEndPoints : ApplicationDefinition
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
     private async Task<IResult> Create(
         HttpContext httpContext,
-        [FromHeader] string? Bff,
+        [FromHeader] bool? Bff,
         [FromServices] IMediator mediator,
         [FromBody] CreateApplicationCommand application)
     {
@@ -110,7 +110,7 @@ public class ApplicationEndPoints : ApplicationDefinition
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
     private async Task<IResult> Delete(
         HttpContext httpContext,
-        [FromHeader] string? Bff,
+        [FromHeader] bool? Bff,
         [FromServices] IMediator mediator,
         [FromQuery] string clientId)
     {
@@ -118,14 +118,14 @@ public class ApplicationEndPoints : ApplicationDefinition
         return Results.Extensions.Custom(result);
     }
     
-    [ProducesResponseType(200)]
+    [ProducesResponseType(200, Type = typeof(ApplicationViewModel))]
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]
     [ProducesResponseType(404, Type = typeof(MinimalExceptionData))]
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Roles = UserRoles.Admin)]
     private async Task<IResult> Get(
         HttpContext httpContext,
-        [FromHeader] string? Bff,
+        [FromHeader] bool? Bff,
         [FromServices] IMediator mediator,
         [FromQuery] string clientId)
     {

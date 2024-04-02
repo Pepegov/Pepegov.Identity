@@ -14,26 +14,27 @@ public class CorsDefinition : ApplicationDefinition
         var origins = context.Configuration.GetSection("Cors")?.GetSection("Origins")?.Value?.Split(',');
         context.ServiceCollection.AddCors(options =>
         {
-            options.AddPolicy(AppData.PolicyName, builder =>
+            options.AddPolicy(AppData.PolicyName, policyBuilder =>
             {
-                builder.AllowAnyHeader();
-                builder.AllowAnyMethod();
-                if (origins is not {Length: > 0})
+                policyBuilder.AllowAnyHeader();
+                policyBuilder.AllowAnyMethod();
+                if (origins is not { Length: > 0 })
                 {
                     return;
                 }
 
                 if (origins.Contains("*"))
                 {
-                    builder.AllowAnyHeader();
-                    builder.AllowAnyMethod();
-                    builder.SetIsOriginAllowed(host => true);
+                    policyBuilder.AllowAnyHeader();
+                    policyBuilder.AllowAnyMethod();
+                    policyBuilder.SetIsOriginAllowed(host => true);
+                    policyBuilder.AllowCredentials();
                 }
                 else
                 {
                     foreach (var origin in origins)
                     {
-                        builder.WithOrigins(origin);
+                        policyBuilder.WithOrigins(origin);
                     }
                 }
             });
