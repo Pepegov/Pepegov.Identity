@@ -115,7 +115,8 @@ public class AuthorizationDefinition : ApplicationDefinition
     {
         var app = context.Parse<WebDefinitionApplicationContext>().WebApplication;
         app.UseRouting();
-        app.UseCors(AppData.PolicyName);
+        //app.UseCors(AppData.PolicyName);
+        app.UseCors(c => c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         app.UseAuthentication();
         app.UseAuthorization();
 

@@ -62,10 +62,10 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .SetUserinfoEndpointUris("connect/userinfo");
                 
                 // only for developer mode
-                // options
-                //     .AddEphemeralEncryptionKey()
-                //     .AddEphemeralSigningKey() 
-                //     .DisableAccessTokenEncryption();
+                options
+                    .AddEphemeralEncryptionKey()
+                    .AddEphemeralSigningKey() 
+                    .DisableAccessTokenEncryption();
                 
                 // server scopes
                 options.RegisterScopes(scopes.ToArray());
@@ -73,11 +73,11 @@ public class OpenIddictDefinition : ApplicationDefinition
                 //certificate
                 
                 options
-                    .AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")))
+                    //.AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")))
                     .AddDevelopmentSigningCertificate();
-                // options
-                //     .AddDevelopmentEncryptionCertificate()
-                //     .AddDevelopmentSigningCertificate();
+                options
+                    .AddDevelopmentEncryptionCertificate()
+                    .AddDevelopmentSigningCertificate();
                 
                 // registration ASP.NET Core host and configure setting for ASP.NET Core.
                 options

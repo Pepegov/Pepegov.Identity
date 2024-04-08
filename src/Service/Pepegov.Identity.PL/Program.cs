@@ -42,6 +42,7 @@ internal class Program
             if (app.Environment.IsDevelopment())
             {
                 IdentityModelEventSource.ShowPII = true;
+                IdentityModelEventSource.LogCompleteSecurityArtifact = true;
             }
             app.UseSerilogRequestLogging();
             

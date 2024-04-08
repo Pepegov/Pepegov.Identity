@@ -28,7 +28,7 @@ public class CorsDefinition : ApplicationDefinition
                     policyBuilder.AllowAnyHeader();
                     policyBuilder.AllowAnyMethod();
                     policyBuilder.SetIsOriginAllowed(host => true);
-                    //policyBuilder.AllowCredentials();
+                    policyBuilder.AllowCredentials();
                 }
                 else
                 {
