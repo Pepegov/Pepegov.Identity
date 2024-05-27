@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using OpenIddict.Validation.AspNetCore;
+using Pepegov.Identity.BL;
 using Pepegov.Identity.BL.AuthorizationStrategy;
 using Pepegov.Identity.BL.GrandType.Infrastructure;
 using Pepegov.Identity.BL.GrandType.Model;
@@ -105,19 +105,19 @@ public class ConnectEndPoint : ApplicationDefinition
             [OpenIddictConstants.Claims.Subject] = await userManager.GetUserIdAsync(user)
         };
 
-        if (principalUser.HasScope(OpenIddictConstants.Permissions.Scopes.Email))
+        if (principalUser.FindScope(OpenIddictConstants.Permissions.Scopes.Email))
         {
             claims[OpenIddictConstants.Claims.Email] = await userManager.GetEmailAsync(user);
             claims[OpenIddictConstants.Claims.EmailVerified] = await userManager.IsEmailConfirmedAsync(user);
         }
 
-        if (principalUser.HasScope(OpenIddictConstants.Permissions.Scopes.Phone))
+        if (principalUser.FindScope(OpenIddictConstants.Permissions.Scopes.Phone))
         {
             claims[OpenIddictConstants.Claims.PhoneNumber] = await userManager.GetPhoneNumberAsync(user);
             claims[OpenIddictConstants.Claims.PhoneNumberVerified] = await userManager.IsPhoneNumberConfirmedAsync(user);
         }
 
-        if (principalUser.HasScope(OpenIddictConstants.Permissions.Scopes.Profile))
+        if (principalUser.FindScope(OpenIddictConstants.Permissions.Scopes.Profile))
         {
             claims[OpenIddictConstants.Claims.Name] = user.FirstName;
             claims[OpenIddictConstants.Claims.GivenName] = user.FirstName;
@@ -133,7 +133,7 @@ public class ConnectEndPoint : ApplicationDefinition
                 claims[OpenIddictConstants.Claims.MiddleName] = user.MiddleName;
         }
 
-        if (principalUser.HasScope(OpenIddictConstants.Permissions.Scopes.Roles))
+        if (principalUser.FindScope(OpenIddictConstants.Permissions.Scopes.Roles))
         {
             claims[OpenIddictConstants.Claims.Role] = await userManager.GetRolesAsync(user);
         }
