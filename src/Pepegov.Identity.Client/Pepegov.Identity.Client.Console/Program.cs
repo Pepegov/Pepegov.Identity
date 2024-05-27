@@ -41,10 +41,10 @@ var host = new HostBuilder()
                 // Add a client registration matching the client application definition in the server project.
                 options.AddRegistration(new OpenIddictClientRegistration
                 {
-                    Issuer = new Uri("https://localhost:10001/", UriKind.Absolute),
+                    Issuer = new Uri("https://identity.partners.qronclub.store", UriKind.Absolute),
 
-                    ClientId = "MicroserviceDevice-ID",
-                    ClientSecret = "MicroserviceDevice-SECRET",
+                    ClientId = "Internal-5ZG039cYL1uy",
+                    ClientSecret = "Internal-9b79rP8Vr0sl",
                     Scopes = { OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile, "offline_access" }
                 });
             });

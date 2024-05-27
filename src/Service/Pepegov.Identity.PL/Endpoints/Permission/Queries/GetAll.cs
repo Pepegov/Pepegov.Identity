@@ -1,3 +1,4 @@
+using System.Net;
 using MediatR;
 using Pepegov.Identity.DAL.Models.Identity;
 using Pepegov.MicroserviceFramework.ApiResults;
@@ -23,7 +24,8 @@ public class GetAllPermissionsRequestHandler : IRequestHandler<GetAllPermissions
     {
         var result = new ApiResult<IList<ApplicationPermission>>();
         var permissionRepository = _unitOfWork.GetInstance<IUnitOfWorkEntityFrameworkInstance>().GetRepository<ApplicationPermission>();
-        result.Message = await permissionRepository.GetAllAsync(true);
+        result.Message = await permissionRepository.GetAllAsync(true, cancellationToken);
+        result.StatusCode = (int)HttpStatusCode.OK;
         
         return result;
     }

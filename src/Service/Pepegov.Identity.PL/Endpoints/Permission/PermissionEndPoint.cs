@@ -56,9 +56,10 @@ public class PermissionEndPoint : ApplicationDefinition
     [ProducesResponseType(403)]
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes, Policy = AppPermissions.PermissionsAdmin)]
     private static async Task<IResult> GetAll(
+        HttpContext httpContent,
         [FromServices] IMediator mediator)
     {
-        var result = await mediator.Send(new GetAllPermissionsRequest());
+        var result = await mediator.Send(new GetAllPermissionsRequest(), httpContent.RequestAborted);
         return Results.Extensions.Custom(result);
     }
 
