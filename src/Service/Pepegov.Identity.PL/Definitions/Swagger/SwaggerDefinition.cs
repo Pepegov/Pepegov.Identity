@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Pepegov.Identity.DAL.Domain;
-using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
+using Pepegov.Identity.DAL.Models.Options;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;

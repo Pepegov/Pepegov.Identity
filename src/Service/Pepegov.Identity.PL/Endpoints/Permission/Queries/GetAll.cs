@@ -24,7 +24,7 @@ public class GetAllPermissionsRequestHandler : IRequestHandler<GetAllPermissions
     {
         var result = new ApiResult<IList<ApplicationPermission>>();
         var permissionRepository = _unitOfWork.GetInstance<IUnitOfWorkEntityFrameworkInstance>().GetRepository<ApplicationPermission>();
-        result.Message = await permissionRepository.GetAllAsync(true, cancellationToken);
+        result.Message = await permissionRepository.GetAllAsync(cancellationToken);
         result.StatusCode = (int)HttpStatusCode.OK;
         
         return result;

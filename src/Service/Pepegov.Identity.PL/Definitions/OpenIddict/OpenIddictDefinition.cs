@@ -2,7 +2,6 @@
 using OpenIddict.Abstractions;
 using Pepegov.Identity.DAL.Database;
 using Pepegov.Identity.DAL.Models.Options;
-using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 

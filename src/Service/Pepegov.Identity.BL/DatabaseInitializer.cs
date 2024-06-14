@@ -4,12 +4,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenIddict.Abstractions;
+using Pepegov.Identity.DAL.Database;
 using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.DAL.Models.Identity;
 using Pepegov.Identity.DAL.Models.Options;
 using Pepegov.MicroserviceFramework.Infrastructure.Extensions;
 
-namespace Pepegov.Identity.DAL.Database
+namespace Pepegov.Identity.BL
 {
     public class DatabaseInitializer
     {
@@ -24,21 +26,23 @@ namespace Pepegov.Identity.DAL.Database
             _logger = serviceProvider.GetRequiredService<ILogger<DatabaseInitializer>>();
         }
         
-        public async Task Seed()
+        public async Task SeedAsync(CancellationToken cancellationToken = default)
         {
-            await _context!.Database.EnsureCreatedAsync();
-            var pending = await _context.Database.GetPendingMigrationsAsync();
+            //TODO if you are not using migrations, then uncomment this line
+            //await _context!.Database.EnsureCreatedAsync();
+            var pending = await _context.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken);
             if (pending.Any())
             {
-                await _context!.Database.MigrateAsync();
+                await _context!.Database.MigrateAsync(cancellationToken: cancellationToken);
             }
 
-            await SeedRoles();
-            await SeedPermissions();
-            await SeedUsers();
+            await SeedRolesAsync(cancellationToken);
+            await SeedPermissionsAsync(cancellationToken);
+            await SeedUsersAsync(cancellationToken);
+            await SeedOpenIddictApplications(cancellationToken);
         }
 
-        private async Task SeedUsers()
+        private async Task SeedUsersAsync(CancellationToken cancellationToken = default)
         {
             using var scope = _serviceProvider.CreateScope();
             
@@ -87,7 +91,7 @@ namespace Pepegov.Identity.DAL.Database
                     .Where(x => x.UserName == user.UserName)
                     .Include(i => i.ApplicationUserProfile)
                     .ThenInclude(ti => ti.Permissions)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
                 if (profile is null)
                 {
@@ -106,7 +110,7 @@ namespace Pepegov.Identity.DAL.Database
                     }
                 }
                 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation($"Successfully seed permission by names {string.Join(", ", permissions)} to user by name {user.UserName}");
             }
             
@@ -162,7 +166,7 @@ namespace Pepegov.Identity.DAL.Database
             }
         }
 
-        private async Task SeedRoles()
+        private async Task SeedRolesAsync(CancellationToken cancellationToken = default)
         {
             using var scope = _serviceProvider.CreateScope();
 
@@ -178,10 +182,10 @@ namespace Pepegov.Identity.DAL.Database
                 }
             }
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
         
-        private async Task SeedPermissions()
+        private async Task SeedPermissionsAsync(CancellationToken cancellationToken = default)
         {
             using var scope = _serviceProvider.CreateScope();
             var identityConfiguration = new ConfigurationBuilder()
@@ -197,9 +201,55 @@ namespace Pepegov.Identity.DAL.Database
                 {
                     continue;
                 }
-                await _context.Permissions.AddAsync(new ApplicationPermission() { PolicyName = option.Name, Description = option.Description});
+                await _context.Permissions.AddAsync(new ApplicationPermission() { PolicyName = option.Name, Description = option.Description}, cancellationToken);
             }
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task SeedOpenIddictApplications(CancellationToken cancellationToken = default)
+        {
+            await using var scope = _serviceProvider.CreateAsyncScope();
+            var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+
+            //Get all clients & scopes
+            var identityClients = scope.ServiceProvider.GetService<IOptions<List<IdentityClientOption>>>()?.Value ?? new List<IdentityClientOption>();
+            var scopes = scope.ServiceProvider.GetService<IOptions<List<IdentityScopeOption>>>()?.Value ?? new List<IdentityScopeOption>();
+            
+            //get current client and add all scopes in him 
+            var currentIdentityClient = scope.ServiceProvider.GetService<IOptions<IdentityClientOption>>()!.Value;
+            currentIdentityClient.Scopes = scopes.Select(x => x.Name).ToList();
+            identityClients.Add(currentIdentityClient); //current client add too other clients
+
+            var url = scope.ServiceProvider.GetService<IOptions<IdentityAddressOption>>()!.Value.Authority;
+            
+            foreach (var clientOption in identityClients)
+            {
+                if (await manager.FindByClientIdAsync(clientOption.Id, cancellationToken) is not null) //if the client exist then dont add it
+                {
+                    continue;
+                }
+
+                var client = new OpenIddictApplicationDescriptor
+                {
+                    ClientId = clientOption.Id,
+                    ClientSecret = clientOption.Secret,
+                    DisplayName = clientOption.Name,
+                    ConsentType = clientOption.ConsentType,
+                };
+                
+                client.AddScopes(clientOption.Scopes);
+                client.AddGrandTypes(clientOption.GrandTypes);
+                
+                client.AddRedirectUris(clientOption.RedirectUris);
+                client.AddRedirectUrisForTesting(url);
+                
+                client.AddResponseTypes();
+                client.AddEndpoints();
+
+                await manager.CreateAsync(client, cancellationToken);
+                
+                _logger.LogInformation($"Successful seeded identity application. id: {client.ClientId} | name: {client.DisplayName} | consent type {client.ConsentType}. With scopes: {string.Join(", ", clientOption.Scopes)}");
+            }
         }
     }
 }

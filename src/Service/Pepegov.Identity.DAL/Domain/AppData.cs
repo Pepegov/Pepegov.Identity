@@ -18,7 +18,7 @@ public static class AppData
     /// <summary>
     /// Current service version
     /// </summary>
-    public const string ServiceVersion = "f7v1.0.0";
+    public const string ServiceVersion = "f8v1.0.0";
     
     /// <summary>
     /// Name of cors police

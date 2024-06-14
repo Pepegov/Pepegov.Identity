@@ -1,6 +1,6 @@
 using OpenIddict.Abstractions;
 
-namespace Pepegov.Identity.PL.Definitions.OpenIddictClientsSeeting;
+namespace Pepegov.Identity.BL;
 
 public static class OpenIddictApplicationDescriptorExtensions
 {

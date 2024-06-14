@@ -10,7 +10,7 @@ using Pepegov.Identity.BL;
 using Pepegov.Identity.BL.GrandType.Infrastructure;
 using Pepegov.Identity.BL.GrandType.Model;
 using Pepegov.Identity.DAL.Models.Identity;
-using Pepegov.Identity.PL.Definitions.OpenIddict.Options;
+using Pepegov.Identity.DAL.Models.Options;
 
 namespace Pepegov.Identity.PL.Endpoints.Connect.Handlers;
 

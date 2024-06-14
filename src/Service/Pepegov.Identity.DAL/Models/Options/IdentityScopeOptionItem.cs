@@ -1,4 +1,4 @@
-namespace Pepegov.Identity.PL.Definitions.OpenIddict.Options;
+namespace Pepegov.Identity.DAL.Models.Options;
 
 public class IdentityScopeOption
 {
