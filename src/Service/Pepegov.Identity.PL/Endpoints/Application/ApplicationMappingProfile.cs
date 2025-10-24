@@ -27,7 +27,7 @@ public class OpenIddictEntityFrameworkCoreApplicationGuidToApplicationViewModelC
         destination.Id = source.Id;
         destination.ClientId = source.ClientId;
         destination.ClientSecret = source.ClientSecret;
-        destination.Type = source.Type;
+        destination.Type = source.ApplicationType;
         destination.ConsentType = source.ConsentType;
 
         if (source.RedirectUris != null)

@@ -29,6 +29,7 @@ public class BaseDefinition : ApplicationDefinition
         });
         
         context.ServiceCollection.AddTransient<IAccountService, AccountService>();
+        context.ServiceCollection.AddTransient<ITokenManagementService, TokenManagementService>();
         context.ServiceCollection.AddTransient<ApplicationUserClaimsPrincipalFactory>();
         
         return base.ConfigureServicesAsync(context);

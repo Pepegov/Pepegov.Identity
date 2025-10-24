@@ -42,10 +42,10 @@ public class UpdateApplicationDataCommandHandler : IRequestHandler<UpdateApplica
         application.ClientId = request.UpdateModel.ClientId;
         application.DisplayName = request.UpdateModel.DisplayName;
         application.ConsentType = request.UpdateModel.ConsentType;
-        application.Type = request.UpdateModel.Type;
+        application.ApplicationType = request.UpdateModel.Type;
         
         await _applicationManager.UpdateAsync(application, cancellationToken);
-        _logger.LogInformation($"Successful update application {application.DisplayName} | ClientId:{application.ClientId} | Type:{application.Type} | ConsentType:{application.ConsentType} | RedirectUris:{application.RedirectUris}");
+        _logger.LogInformation($"Successful update application {application.DisplayName} | ClientId:{application.ClientId} | Type:{application.ApplicationType} | ConsentType:{application.ConsentType} | RedirectUris:{application.RedirectUris}");
         return new ApiResult(HttpStatusCode.OK);
     }
 }

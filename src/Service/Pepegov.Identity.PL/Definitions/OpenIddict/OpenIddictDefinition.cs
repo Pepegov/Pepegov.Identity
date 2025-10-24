@@ -51,6 +51,10 @@ public class OpenIddictDefinition : ApplicationDefinition
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
                 options.SetAuthorizationCodeLifetime(TimeSpan.FromHours(1));
 
+                //Enabling reference access and/or refresh tokens
+                options.UseReferenceAccessTokens()
+                    .UseReferenceRefreshTokens();
+                
                 options.SetAuthorizationEndpointUris("connect/authorize", "connect/superadmin/authorize")
                     //.RequireProofKeyForCodeExchange() // enable PKCE
                     .SetDeviceEndpointUris("connect/device")
@@ -70,7 +74,6 @@ public class OpenIddictDefinition : ApplicationDefinition
                 options.RegisterScopes(scopes.ToArray());
                 
                 //certificate
-                
                 options
                     //.AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")))
                     .AddDevelopmentSigningCertificate();
@@ -91,6 +94,8 @@ public class OpenIddictDefinition : ApplicationDefinition
             {
                 options.UseLocalServer(); 
                 options.UseAspNetCore();
+                //Enabling token entry validation at the API level
+                options.EnableTokenEntryValidation();
             });
         return base.ConfigureServicesAsync(context);
     }

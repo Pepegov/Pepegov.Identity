@@ -71,8 +71,26 @@ public class ConnectEndPoint : ApplicationDefinition
     [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes)]
     private async Task<IResult> Logout(
         [FromServices] SignInManager<ApplicationUser> signInManager,
+        [FromServices] ITokenManagementService tokenManagementService,
         HttpContext httpContext)
     {
+        // Get user ID from claims before signing out
+        var userId = ClaimsHelper.GetValue<string>((ClaimsIdentity)httpContext.User.Identity!, OpenIddictConstants.Claims.Subject);
+        
+        // Revoke all user tokens if user ID is available
+        if (!string.IsNullOrEmpty(userId))
+        {
+            try
+            {
+                await tokenManagementService.RevokeUserTokensAsync(userId, httpContext.RequestAborted);
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't block logout process
+                Log.Logger.Error(ex, "Failed to revoke tokens for user {UserId} during logout", userId);
+            }
+        }
+        
         await signInManager.SignOutAsync();
         return Results.SignOut(null, new List<string>() { OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme } );
     }

@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "OpenIddict",
+    "_postman_id": "b53c25b3-8d1f-4e70-8781-collection-id",
+    "description": "Converted from Thunder Client",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Openiddict Configuration",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:10001/.well-known/openid-configuration",
+          "protocol": "https",
+          "host": ["localhost"],
+          "port": "10001",
+          "path": [".well-known", "openid-configuration"]
+        }
+      }
+    },
+    {
+      "name": "Token client_credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "client_id", "value": "MicroserviceCredentials-ID" },
+            { "key": "client_secret", "value": "MicroserviceCredentials-PASSWORD" },
+            { "key": "scope", "value": "offline_access openid profile" },
+            { "key": "grant_type", "value": "client_credentials" }
+          ]
+        },
+        "url": {
+          "raw": "https://localhost:10001/connect/token",
+          "protocol": "https",
+          "host": ["localhost"],
+          "port": "10001",
+          "path": ["connect", "token"]
+        }
+      }
+    },
+    {
+      "name": "Token password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "client_id", "value": "MicroservicePassword-ID" },
+            { "key": "client_secret", "value": "MicroservicePassword-PASSWORD" },
+            { "key": "scope", "value": "offline_access openid" },
+            { "key": "grant_type", "value": "password" },
+            { "key": "username", "value": "admin" },
+            { "key": "password", "value": "qwe123!@#" }
+          ]
+        },
+        "url": {
+          "raw": "https://localhost:10001/connect/token",
+          "protocol": "https",
+          "host": ["localhost"],
+          "port": "10001",
+          "path": ["connect", "token"]
+        }
+      }
+    },
+    {
+      "name": "RefreshToken password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "client_id", "value": "MicroservicePassword-ID" },
+            { "key": "client_secret", "value": "MicroservicePassword-PASSWORD" },
+            { "key": "grant_type", "value": "refresh_token" },
+            { "key": "scope", "value": "offline_access openid" },
+            { "key": "refresh_token", "value": "<your_refresh_token_here>" }
+          ]
+        },
+        "url": {
+          "raw": "https://localhost:10001/connect/token",
+          "protocol": "https",
+          "host": ["localhost"],
+          "port": "10001",
+          "path": ["connect", "token"]
+        }
+      }
+    },
+    {
+      "name": "RefreshToken client_credential",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "client_id", "value": "MicroserviceCredentials-ID" },
+            { "key": "client_secret", "value": "MicroserviceCredentials-PASSWORD" },
+            { "key": "grant_type", "value": "refresh_token" },
+            { "key": "scope", "value": "offline_access openid" },
+            { "key": "refresh_token", "value": "<your_refresh_token_here>" }
+          ]
+        },
+        "url": {
+          "raw": "https://localhost:10001/connect/token",
+          "protocol": "https",
+          "host": ["localhost"],
+          "port": "10001",
+          "path": ["connect", "token"]
+        }
+      }
+    }
+  ]
+}
