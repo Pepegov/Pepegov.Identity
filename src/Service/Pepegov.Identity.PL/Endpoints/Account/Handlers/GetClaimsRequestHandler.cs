@@ -1,13 +1,10 @@
 using System.Security.Claims;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+using Pepegov.Identity.PL.Endpoints.Account.Queries;
 using Pepegov.Identity.PL.Endpoints.Account.ViewModel;
 using Pepegov.MicroserviceFramework.ApiResults;
 
-namespace Pepegov.Identity.PL.Endpoints.Account.Queries;
-
-public record GetClaimsRequest : IRequest<ApiResult<IEnumerable<ClaimsViewModel>>>;
+namespace Pepegov.Identity.PL.Endpoints.Account.Handlers;
 
 public class GetClaimsRequestHandler : IRequestHandler<GetClaimsRequest, ApiResult<IEnumerable<ClaimsViewModel>>>
 {

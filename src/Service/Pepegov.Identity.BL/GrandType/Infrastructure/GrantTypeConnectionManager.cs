@@ -4,7 +4,7 @@ namespace Pepegov.Identity.BL.GrandType.Infrastructure;
 
 public class GrantTypeConnectionManager
 {
-    private Dictionary<string, IGrantTypeConnection> handlerDictionary = new Dictionary<string, IGrantTypeConnection>();
+    private Dictionary<string, IGrantTypeConnection> handlerDictionary = new();
     
     public GrantTypeConnectionManager(IEnumerable<IGrantTypeConnection> connectionHandlers)
     {

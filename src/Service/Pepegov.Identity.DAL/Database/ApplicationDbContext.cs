@@ -5,14 +5,13 @@ using Pepegov.Identity.DAL.Models.Identity;
 
 namespace Pepegov.Identity.DAL.Database;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>(options)
 {
     
     public DbSet<ApplicationUserProfile> Profiles { get; set; }
 
     public DbSet<ApplicationPermission> Permissions { get; set; }
-    
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

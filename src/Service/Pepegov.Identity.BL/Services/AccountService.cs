@@ -14,37 +14,21 @@ using Pepegov.UnitOfWork.EntityFramework;
 
 namespace Pepegov.Identity.BL.Services;
 
-public class AccountService : IAccountService
+public class AccountService(
+    UserManager<ApplicationUser> manager,
+    RoleManager<ApplicationRole> roleManager,
+    IUnitOfWorkManager unitOfWorkManager,
+    ILogger<AccountService> logger,
+    ApplicationUserClaimsPrincipalFactory claimsFactory,
+    IHttpContextAccessor httpContext,
+    IMapper mapper)
+    : IAccountService
 {
-    private readonly ILogger<AccountService> _logger;
-    private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
-    private readonly IHttpContextAccessor _httpContext;
-    private readonly IMapper _mapper;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly IUnitOfWorkEntityFrameworkInstance _unitOfWorkEntityFrameworkInstance;
+    private readonly IUnitOfWorkEntityFrameworkInstance _unitOfWorkEntityFrameworkInstance = unitOfWorkManager.GetInstance<IUnitOfWorkEntityFrameworkInstance>();
 
-    public AccountService(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager, 
-        IUnitOfWorkManager unitOfWorkManager,
-        ILogger<AccountService> logger,
-        ApplicationUserClaimsPrincipalFactory claimsFactory,
-        IHttpContextAccessor httpContext,
-        IMapper mapper)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _logger = logger;
-        _claimsFactory = claimsFactory;
-        _httpContext = httpContext;
-        _mapper = mapper;
-        _unitOfWorkEntityFrameworkInstance = unitOfWorkManager.GetInstance<IUnitOfWorkEntityFrameworkInstance>();
-    }
-    
     public Guid GetCurrentUserId()
     {
-        var identity = _httpContext.HttpContext?.User.Identity;
+        var identity = httpContext.HttpContext?.User.Identity;
         var identitySub = (identity is ClaimsIdentity claimsIdentity ? claimsIdentity.FindFirst("sub") : (Claim)null)
                           ?? throw new InvalidOperationException("sub claim is missing");
 
@@ -54,20 +38,18 @@ public class AccountService : IAccountService
 
     public async Task RegisterAsync(RegisterViewModel model, CancellationToken cancellationToken)
     {
-        var result = new UserAccountViewModel();
-        
-        var user = _mapper.Map<ApplicationUser>(model);
+        var user = mapper.Map<ApplicationUser>(model);
         await _unitOfWorkEntityFrameworkInstance.BeginTransactionAsync(cancellationToken);
-        var createResult = await _userManager.CreateAsync(user, model.Password);
+        var createResult = await manager.CreateAsync(user, model.Password);
         const string role = UserRoles.Client;
 
         if (createResult.Succeeded)
         {
-            if (await _roleManager.FindByNameAsync(role) is null)
+            if (await roleManager.FindByNameAsync(role) is null)
             {
                 throw new MicroserviceNotFoundException($"role \"{role}\" not found");
             }
-            var roleResult = await _userManager.AddToRoleAsync(user, role);
+            var roleResult = await manager.AddToRoleAsync(user, role);
             if (!roleResult.Succeeded)
             {
                 var errorsRole = roleResult.Errors.Select(x => $"{x.Code}: {x.Description}").ToList();
@@ -89,20 +71,20 @@ public class AccountService : IAccountService
             if (_unitOfWorkEntityFrameworkInstance.LastSaveChangesResult.IsOk)
             {
                 user.ApplicationUserProfile = profile;
-                await _userManager.UpdateAsync(user);
+                await manager.UpdateAsync(user);
                 
                 var stringAnswer = $"User registration: email:{model.Email} | {_unitOfWorkEntityFrameworkInstance.LastSaveChangesResult.Exception}";
 
                 await _unitOfWorkEntityFrameworkInstance.CommitTransactionAsync(cancellationToken);
-                _logger.LogInformation(stringAnswer);
-                _logger.LogInformation($"User by {user.FirstName} {user.LastName} with UserName {user.UserName} has be registered");
+                logger.LogInformation(stringAnswer);
+                logger.LogInformation($"User by {user.FirstName} {user.LastName} with UserName {user.UserName} has be registered");
                 return;
             }
         }
         await _unitOfWorkEntityFrameworkInstance.RollbackTransactionAsync(cancellationToken);
         
         var errors = createResult.Errors.Select(x => $"{x.Code}: {x.Description}").ToList();
-        _logger.LogInformation($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWorkEntityFrameworkInstance.LastSaveChangesResult.Exception} ");
+        logger.LogInformation($"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWorkEntityFrameworkInstance.LastSaveChangesResult.Exception} ");
 
         throw new MicroserviceInvalidOperationException(
             $"User dont register: email:{model.Email} | errors: {string.Join(", ", errors)} | {_unitOfWorkEntityFrameworkInstance.LastSaveChangesResult.Exception} ");
@@ -115,37 +97,37 @@ public class AccountService : IAccountService
             throw new ArgumentNullException(nameof(identifier));
         }
         
-        var user = await _userManager.FindByIdAsync(identifier);
+        var user = await manager.FindByIdAsync(identifier);
         if (user == null)
         {
             throw new MicroserviceNotFoundException($"user by id {identifier} not found");
         }
 
-        var defaultClaims = await _claimsFactory.CreateAsync(user);
+        var defaultClaims = await claimsFactory.CreateAsync(user);
         return defaultClaims;
     }
     
     public async Task<UserAccountViewModel> GetByIdAsync(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
+        var user = await manager.FindByIdAsync(id.ToString());
         if (user is null)
         {
             throw new MicroserviceNotFoundException($"User not found. id: {id}");
         }
         
-        return _mapper.Map<UserAccountViewModel>(user);
+        return mapper.Map<UserAccountViewModel>(user);
     }
 
     public async Task<UserAccountViewModel> GetCurrentUserAsync()
     {
         var userId = GetCurrentUserId();
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        return _mapper.Map<UserAccountViewModel>(user);
+        var user = await manager.FindByIdAsync(userId.ToString());
+        return mapper.Map<UserAccountViewModel>(user);
     }
 
     public async Task<IEnumerable<UserAccountViewModel>> GetUsersByEmailsAsync(IEnumerable<string> emails)
     {
-        var userManager = _userManager;
+        var userManager = manager;
         var result = new List<ApplicationUser>();
         foreach (var email in emails)
         {
@@ -155,13 +137,13 @@ public class AccountService : IAccountService
                 result.Add(user);
             }
         }
-        return await Task.FromResult(_mapper.Map<IEnumerable<UserAccountViewModel>>(result));
+        return await Task.FromResult(mapper.Map<IEnumerable<UserAccountViewModel>>(result));
     }
 
     public async Task<IEnumerable<UserAccountViewModel>> GetUsersInRoleAsync(string roleName)
     {
-        var userManager = _userManager;
+        var userManager = manager;
         var result =await userManager.GetUsersInRoleAsync(roleName);
-        return _mapper.Map<IEnumerable<UserAccountViewModel>>(result);
+        return mapper.Map<IEnumerable<UserAccountViewModel>>(result);
     }
 }

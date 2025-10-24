@@ -8,18 +8,12 @@ using Pepegov.MicroserviceFramework.Infrastructure.Helpers;
 
 namespace Pepegov.Identity.BL;
 
-public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
+public class ApplicationUserClaimsPrincipalFactory(
+    UserManager<ApplicationUser> userManager,
+    RoleManager<ApplicationRole> roleManager,
+    IOptions<IdentityOptions> optionsAccessor)
+    : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>(userManager, roleManager, optionsAccessor)
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public ApplicationUserClaimsPrincipalFactory(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
-        IOptions<IdentityOptions> optionsAccessor)
-        : base(userManager, roleManager, optionsAccessor)
-    {
-        _userManager = userManager;
-    }
 
     public override async Task<ClaimsPrincipal> CreateAsync(ApplicationUser user)
     {
@@ -77,7 +71,7 @@ public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<
 
         if (string.IsNullOrWhiteSpace(ClaimsHelper.GetValue<string>(claimIdentity, OpenIddictConstants.Claims.Role)))
         {
-            principal.SetClaims(OpenIddictConstants.Claims.Role, (await _userManager.GetRolesAsync(user)).ToImmutableArray());
+            principal.SetClaims(OpenIddictConstants.Claims.Role, (await userManager.GetRolesAsync(user)).ToImmutableArray());
         }
         
         return principal;

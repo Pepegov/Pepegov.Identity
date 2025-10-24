@@ -80,15 +80,7 @@ public class ConnectEndPoint : ApplicationDefinition
         // Revoke all user tokens if user ID is available
         if (!string.IsNullOrEmpty(userId))
         {
-            try
-            {
-                await tokenManagementService.RevokeUserTokensAsync(userId, httpContext.RequestAborted);
-            }
-            catch (Exception ex)
-            {
-                // Log error but don't block logout process
-                Log.Logger.Error(ex, "Failed to revoke tokens for user {UserId} during logout", userId);
-            }
+            await tokenManagementService.RevokeUserTokensAsync(userId, httpContext.RequestAborted);
         }
         
         await signInManager.SignOutAsync();

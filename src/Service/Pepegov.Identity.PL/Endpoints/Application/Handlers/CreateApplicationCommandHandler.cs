@@ -9,20 +9,14 @@ using Pepegov.MicroserviceFramework.Exceptions;
 
 namespace Pepegov.Identity.PL.Endpoints.Application.Handlers;
 
-public class CreateApplicationCommandHandler : IRequestHandler<CreateApplicationCommand, ApiResult>
+public class CreateApplicationCommandHandler(
+    ILogger<CreateApplicationCommandHandler> logger,
+    IOpenIddictApplicationManager applicationManager)
+    : IRequestHandler<CreateApplicationCommand, ApiResult>
 {
-    private readonly ILogger<CreateApplicationCommandHandler> _logger;
-    private readonly IOpenIddictApplicationManager _applicationManager;
-    
-    public CreateApplicationCommandHandler(ILogger<CreateApplicationCommandHandler> logger, IOpenIddictApplicationManager applicationManager)
-    {
-        _logger = logger;
-        _applicationManager = applicationManager;
-    }
-
     public async Task<ApiResult> Handle(CreateApplicationCommand request, CancellationToken cancellationToken)
     {
-        if (await _applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken) is not null) //if the client exist then dont add it
+        if (await applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken) is not null) //if the client exist then dont add it
         {
             return new ApiResult(HttpStatusCode.Conflict, new MicroserviceAlreadyExistsException($"Application by ClientId {request.ClientId} already exist"));
         }
@@ -42,9 +36,9 @@ public class CreateApplicationCommandHandler : IRequestHandler<CreateApplication
         client.AddResponseTypes();
         client.AddEndpoints();
 
-        await _applicationManager.CreateAsync(client, cancellationToken);
+        await applicationManager.CreateAsync(client, cancellationToken);
 
-        _logger.LogInformation($"Application DisplayName: {request.DisplayName} | ClientId {request.ClientId} successfully created");
+        logger.LogInformation($"Application DisplayName: {request.DisplayName} | ClientId {request.ClientId} successfully created");
         return new ApiResult(HttpStatusCode.OK);
     }
 }

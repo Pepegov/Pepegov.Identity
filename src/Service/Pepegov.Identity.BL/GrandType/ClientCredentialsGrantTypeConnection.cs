@@ -10,15 +10,8 @@ using Pepegov.Identity.DAL.Domain;
 namespace Pepegov.Identity.BL.GrandType;
 
 [GrantType(OpenIddictConstants.GrantTypes.ClientCredentials)]
-public class ClientCredentialsGrantTypeConnection : IGrantTypeConnection
+public class ClientCredentialsGrantTypeConnection(IOpenIddictScopeManager openIddictScopeManager) : IGrantTypeConnection
 {
-    private readonly IOpenIddictScopeManager _openIddictScopeManager;
-
-    public ClientCredentialsGrantTypeConnection(IOpenIddictScopeManager openIddictScopeManager)
-    {
-        _openIddictScopeManager = openIddictScopeManager;
-    }
-
     public async Task<IResult> SignInAsync(AuthorizationContext context)
     {
         var claimsPrincipal = await CreateClaimsPrincipalAsync(context);
@@ -27,6 +20,7 @@ public class ClientCredentialsGrantTypeConnection : IGrantTypeConnection
 
     public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
     {
+        ArgumentNullException.ThrowIfNull(context.OpenIddictRequest);
         var identity = new ClaimsIdentity(AuthData.SingInScheme);
 
         // Subject or sub is a required field, we use the client id as the subject identifier here.
@@ -40,7 +34,7 @@ public class ClientCredentialsGrantTypeConnection : IGrantTypeConnection
             identity.AddClaim(OpenIddictConstants.Claims.Scope, context.OpenIddictRequest.Scope!, OpenIddictConstants.Destinations.AccessToken);
         }
         
-        identity.SetResources(await _openIddictScopeManager.ListResourcesAsync(identity.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
+        identity.SetResources(await openIddictScopeManager.ListResourcesAsync(identity.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
         identity.SetDestinations(PrincipalHelper.GetDestinations);
 
         var claimsPrincipal = new ClaimsPrincipal(identity);

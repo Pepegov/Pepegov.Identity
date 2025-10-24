@@ -9,21 +9,15 @@ using Pepegov.MicroserviceFramework.Data.Exceptions;
 
 namespace Pepegov.Identity.PL.Endpoints.Application.Handlers;
 
-public class UpdateApplicationDataCommandHandler : IRequestHandler<UpdateApplicationDataCommand, ApiResult>
+public class UpdateApplicationDataCommandHandler(
+    ILogger<UpdateApplicationDataCommandHandler> logger,
+    IOpenIddictApplicationManager applicationManager)
+    : IRequestHandler<UpdateApplicationDataCommand, ApiResult>
 {
-    private readonly ILogger<UpdateApplicationDataCommandHandler> _logger;
-    private readonly IOpenIddictApplicationManager _applicationManager;
-    
-    public UpdateApplicationDataCommandHandler(ILogger<UpdateApplicationDataCommandHandler> logger, IOpenIddictApplicationManager applicationManager)
-    {
-        _logger = logger;
-        _applicationManager = applicationManager;
-    }
-
     public async Task<ApiResult> Handle(UpdateApplicationDataCommand request, CancellationToken cancellationToken)
     {
         //find application    
-        var applicationObj =  await _applicationManager.FindByClientIdAsync(request.TargetClientId, cancellationToken);
+        var applicationObj =  await applicationManager.FindByClientIdAsync(request.TargetClientId, cancellationToken);
         if (applicationObj is null)
         {
             return new ApiResult(HttpStatusCode.NotFound, new MicroserviceNotFoundException($"Application by ClientId {request.TargetClientId} not found"));
@@ -44,8 +38,8 @@ public class UpdateApplicationDataCommandHandler : IRequestHandler<UpdateApplica
         application.ConsentType = request.UpdateModel.ConsentType;
         application.ApplicationType = request.UpdateModel.Type;
         
-        await _applicationManager.UpdateAsync(application, cancellationToken);
-        _logger.LogInformation($"Successful update application {application.DisplayName} | ClientId:{application.ClientId} | Type:{application.ApplicationType} | ConsentType:{application.ConsentType} | RedirectUris:{application.RedirectUris}");
+        await applicationManager.UpdateAsync(application, cancellationToken);
+        logger.LogInformation($"Successful update application {application.DisplayName} | ClientId:{application.ClientId} | Type:{application.ApplicationType} | ConsentType:{application.ConsentType} | RedirectUris:{application.RedirectUris}");
         return new ApiResult(HttpStatusCode.OK);
     }
 }

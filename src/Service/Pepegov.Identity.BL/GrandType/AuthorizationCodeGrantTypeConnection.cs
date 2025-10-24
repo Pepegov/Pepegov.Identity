@@ -14,11 +14,12 @@ public class AuthorizationCodeGrantTypeConnection : IGrantTypeConnection
     public async Task<IResult> SignInAsync(AuthorizationContext context)
     {
         var claimsPrincipal = await CreateClaimsPrincipalAsync(context);
-        return Results.SignIn(claimsPrincipal!, new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
+        return Results.SignIn(claimsPrincipal, new AuthenticationProperties() { IsPersistent = true }, AuthData.SingInScheme);
     }
 
     public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
     {
+        ArgumentNullException.ThrowIfNull(context.HttpContext);
         var authenticateResult = await context.HttpContext.AuthenticateAsync(AuthData.SingInScheme);
         var principal = authenticateResult.Principal;
         principal.AddClaim(OpenIddictConstants.Claims.ClientId, context.OpenIddictRequest.ClientId!);

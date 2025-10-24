@@ -9,28 +9,22 @@ using Pepegov.Identity.BL.GrandType.Infrastructure;
 using Pepegov.Identity.BL.GrandType.Model;
 using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.DAL.Models.Identity;
-using Pepegov.MicroserviceFramework.Infrastructure.Helpers;
 
 namespace Pepegov.Identity.BL.GrandType;
 
 [GrantType(OpenIddictConstants.GrantTypes.Password)]
-public class PasswordGrantTypeConnection : IGrantTypeConnection
+public class PasswordGrantTypeConnection(
+    ApplicationUserClaimsPrincipalFactory claimsFactory,
+    IOpenIddictScopeManager openIddictScopeManager,
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager)
+    : IGrantTypeConnection
 {
-    private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
-    private readonly IOpenIddictScopeManager _openIddictScopeManager;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-
-    public PasswordGrantTypeConnection(ApplicationUserClaimsPrincipalFactory claimsFactory, IOpenIddictScopeManager openIddictScopeManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
-    {
-        _claimsFactory = claimsFactory;
-        _openIddictScopeManager = openIddictScopeManager;
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
-
     public async Task<IResult> SignInAsync(AuthorizationContext context)
     {
+        ArgumentNullException.ThrowIfNull(context.OpenIddictRequest);
+        ArgumentNullException.ThrowIfNull(context.HttpContext);
+        
         var userName = context.OpenIddictRequest.Username;
         if (userName is null)
         {
@@ -48,7 +42,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
             userName = result.Principal.GetClaim(OpenIddictConstants.Claims.Name);
         }
         
-        var user = await _userManager.FindByNameAsync(userName!);
+        var user = await userManager.FindByNameAsync(userName!);
         
         var properties = await CheckUser(user, context.OpenIddictRequest);
         if (properties is not null)
@@ -57,9 +51,9 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         }
         
         // Reset the lockout count
-        if (_userManager.SupportsUserLockout)
+        if (userManager.SupportsUserLockout)
         {
-            await _userManager.ResetAccessFailedCountAsync(user);
+            await userManager.ResetAccessFailedCountAsync(user);
         }
 
         context.User = user;
@@ -72,7 +66,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
     public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
     {
         ArgumentNullException.ThrowIfNull(context.User);
-        var principal = await _claimsFactory.CreateAsync(context.User);
+        var principal = await claimsFactory.CreateAsync(context.User);
         principal.AddClaim(OpenIddictConstants.Claims.ClientId, context.OpenIddictRequest.ClientId!);
         principal.AddClaim(OpenIddictConstants.Claims.TokenType, OpenIddictConstants.GrantTypes.Password);
 
@@ -83,7 +77,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
             principal.AddClaim(OpenIddictConstants.Claims.Scope, context.OpenIddictRequest.Scope!, OpenIddictConstants.Destinations.AccessToken);
         }
         
-        principal.SetResources(await _openIddictScopeManager.ListResourcesAsync(principal.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
+        principal.SetResources(await openIddictScopeManager.ListResourcesAsync(principal.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
         principal.SetDestinations(PrincipalHelper.GetDestinations);
         
         var claimsPrincipal = new ClaimsPrincipal(principal);
@@ -104,7 +98,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         }
 
         // Ensure the user is still allowed to sign in.
-        if (!await _signInManager.CanSignInAsync(user))
+        if (!await signInManager.CanSignInAsync(user))
         {
             return new AuthenticationProperties(new Dictionary<string, string>
             {
@@ -114,7 +108,7 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         }
         
         // Ensure the user is not already locked out
-        if (_userManager.SupportsUserLockout && await _userManager.IsLockedOutAsync(user))
+        if (userManager.SupportsUserLockout && await userManager.IsLockedOutAsync(user))
         {
             return new AuthenticationProperties(new Dictionary<string, string>
             {
@@ -124,11 +118,11 @@ public class PasswordGrantTypeConnection : IGrantTypeConnection
         }
         
         // Ensure the password is valid
-        if (!string.IsNullOrEmpty(request.Password) && !await _userManager.CheckPasswordAsync(user, request.Password))
+        if (!string.IsNullOrEmpty(request.Password) && !await userManager.CheckPasswordAsync(user, request.Password))
         {
-            if (_userManager.SupportsUserLockout)
+            if (userManager.SupportsUserLockout)
             {
-                await _userManager.AccessFailedAsync(user);
+                await userManager.AccessFailedAsync(user);
             }
             
             return new AuthenticationProperties(new Dictionary<string, string>

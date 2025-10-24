@@ -1,6 +1,4 @@
-using System.Collections.Immutable;
 using System.Security.Claims;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,25 +13,20 @@ using Pepegov.Identity.DAL.Models.Identity;
 namespace Pepegov.Identity.BL.GrandType;
 
 [GrantType(OpenIddictConstants.GrantTypes.DeviceCode)]
-public class DeviceCodeGrantTypeConnection : IGrantTypeConnection
+public class DeviceCodeGrantTypeConnection(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    ApplicationUserClaimsPrincipalFactory claimsFactory)
+    : IGrantTypeConnection
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly ApplicationUserClaimsPrincipalFactory _claimsFactory;
-    
-    public DeviceCodeGrantTypeConnection(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationUserClaimsPrincipalFactory claimsFactory)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _claimsFactory = claimsFactory;
-    }
-
     public async Task<IResult> SignInAsync(AuthorizationContext context)
     {
+        ArgumentNullException.ThrowIfNull(context.HttpContext);
+        
         var request = await context.HttpContext.AuthenticateAsync(AuthData.SingInScheme);
 
         // Retrieve the user profile corresponding to the authorization code/refresh token.
-        context.User = await _userManager.FindByIdAsync(request.Principal.GetClaim(OpenIddictConstants.Claims.Subject));
+        context.User = await userManager.FindByIdAsync(request.Principal.GetClaim(OpenIddictConstants.Claims.Subject));
         if (context.User is null)
         {
             return Results.Forbid(
@@ -46,7 +39,7 @@ public class DeviceCodeGrantTypeConnection : IGrantTypeConnection
         }
 
         // Ensure the user is still allowed to sign in.
-        if (!await _signInManager.CanSignInAsync(context.User))
+        if (!await signInManager.CanSignInAsync(context.User))
         {
             return Results.Forbid(
                 authenticationSchemes: new List<string> {AuthData.SingInScheme},
@@ -63,7 +56,7 @@ public class DeviceCodeGrantTypeConnection : IGrantTypeConnection
 
     public async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(AuthorizationContext context)
     {
-        var principal = await _claimsFactory.CreateAsync(context.User!);
+        var principal = await claimsFactory.CreateAsync(context.User!);
         principal.AddClaim(OpenIddictConstants.Claims.ClientId, context.OpenIddictRequest!.ClientId!);
         principal.AddClaim(OpenIddictConstants.Claims.TokenType, OpenIddictConstants.GrantTypes.DeviceCode);
         

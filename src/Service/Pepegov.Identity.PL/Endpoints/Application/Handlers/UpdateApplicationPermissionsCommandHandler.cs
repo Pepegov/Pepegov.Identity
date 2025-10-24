@@ -11,17 +11,11 @@ using Pepegov.MicroserviceFramework.Infrastructure.Extensions;
 
 namespace Pepegov.Identity.PL.Endpoints.Application.Handlers;
 
-public class UpdatePermissionsToApplicationCommandHandler : IRequestHandler<UpdateApplicationPermissionsCommand, ApiResult>
+public class UpdatePermissionsToApplicationCommandHandler(
+    ILogger<UpdatePermissionsToApplicationCommandHandler> logger,
+    IOpenIddictApplicationManager applicationManager)
+    : IRequestHandler<UpdateApplicationPermissionsCommand, ApiResult>
 {
-    private ILogger<UpdatePermissionsToApplicationCommandHandler> _logger;
-    private readonly IOpenIddictApplicationManager _applicationManager;
-
-    public UpdatePermissionsToApplicationCommandHandler(ILogger<UpdatePermissionsToApplicationCommandHandler> logger, IOpenIddictApplicationManager applicationManager)
-    {
-        _logger = logger;
-        _applicationManager = applicationManager;
-    }
-
     public async Task<ApiResult> Handle(UpdateApplicationPermissionsCommand request, CancellationToken cancellationToken)
     {
         //check allowed prefixes
@@ -30,7 +24,7 @@ public class UpdatePermissionsToApplicationCommandHandler : IRequestHandler<Upda
             return checkResult;
             
         //find application    
-        var applicationObj =  await _applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken);
+        var applicationObj =  await applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken);
         if (applicationObj is null)
         {
             return new ApiResult(HttpStatusCode.NotFound, new MicroserviceNotFoundException($"Application by ClientId {request.ClientId} not found"));
@@ -39,8 +33,8 @@ public class UpdatePermissionsToApplicationCommandHandler : IRequestHandler<Upda
         
         application.Permissions = JsonSerializer.Serialize<List<string>>(request.Permissions);
         
-        await _applicationManager.UpdateAsync(application, cancellationToken);
-        _logger.LogInformation($"Add permission {application.Permissions} to application {application.DisplayName}");
+        await applicationManager.UpdateAsync(application, cancellationToken);
+        logger.LogInformation($"Add permission {application.Permissions} to application {application.DisplayName}");
         return new ApiResult(HttpStatusCode.OK);
     }
     
@@ -53,14 +47,14 @@ public class UpdatePermissionsToApplicationCommandHandler : IRequestHandler<Upda
             if (currentPrefix is null)
             {
                 var message = $"No prefix for application permission. clientID {request.ClientId}";
-                _logger.LogWarning(message);
+                logger.LogWarning(message);
                 return new ApiResult(HttpStatusCode.BadRequest, new MicroserviceInvalidOperationException(message));
             }
 
             if (prefixes.All(x => x != currentPrefix))
             {
                 var message = $"The permission prefix {currentPrefix} is not supported for all applications";
-                _logger.LogWarning(message);
+                logger.LogWarning(message);
                 return new ApiResult(HttpStatusCode.Conflict, new MicroserviceInvalidOperationException(message));
             }
         }

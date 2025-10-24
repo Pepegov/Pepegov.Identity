@@ -1,11 +1,6 @@
 namespace Pepegov.Identity.BL.GrandType.Infrastructure;
 
-public class GrantTypeAttribute : Attribute
+public class GrantTypeAttribute(string grantTypeName) : Attribute
 {
-    public string GrantTypeName { get; set; }
-
-    public GrantTypeAttribute(string grantTypeName)
-    {
-        GrantTypeName = grantTypeName;
-    }
+    public string GrantTypeName { get; set; } = grantTypeName;
 }

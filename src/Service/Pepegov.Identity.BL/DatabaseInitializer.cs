@@ -13,27 +13,18 @@ using Pepegov.MicroserviceFramework.Infrastructure.Extensions;
 
 namespace Pepegov.Identity.BL
 {
-    public class DatabaseInitializer
+    public class DatabaseInitializer(IServiceProvider serviceProvider, ApplicationDbContext context)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<DatabaseInitializer> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly ILogger<DatabaseInitializer> _logger = serviceProvider.GetRequiredService<ILogger<DatabaseInitializer>>();
 
-        public DatabaseInitializer(IServiceProvider serviceProvider, ApplicationDbContext context)
-        {
-            _serviceProvider = serviceProvider;
-            _context = context;
-            _logger = serviceProvider.GetRequiredService<ILogger<DatabaseInitializer>>();
-        }
-        
         public async Task SeedAsync(CancellationToken cancellationToken = default)
         {
             //TODO if you are not using migrations, then uncomment this line
             //await _context!.Database.EnsureCreatedAsync();
-            var pending = await _context.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken);
+            var pending = await context.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken);
             if (pending.Any())
             {
-                await _context!.Database.MigrateAsync(cancellationToken: cancellationToken);
+                await context!.Database.MigrateAsync(cancellationToken: cancellationToken);
             }
 
             await SeedRolesAsync(cancellationToken);
@@ -44,7 +35,7 @@ namespace Pepegov.Identity.BL
 
         private async Task SeedUsersAsync(CancellationToken cancellationToken = default)
         {
-            using var scope = _serviceProvider.CreateScope();
+            using var scope = serviceProvider.CreateScope();
             
             var seedUsers = scope.ServiceProvider.GetService<IOptions<List<SeedUserOption>>>()!.Value;
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -87,7 +78,7 @@ namespace Pepegov.Identity.BL
                     return;
                 }
                 
-                var profile = await _context.Users
+                var profile = await context.Users
                     .Where(x => x.UserName == user.UserName)
                     .Include(i => i.ApplicationUserProfile)
                     .ThenInclude(ti => ti.Permissions)
@@ -110,7 +101,7 @@ namespace Pepegov.Identity.BL
                     }
                 }
                 
-                await _context.SaveChangesAsync(cancellationToken);
+                await context.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation($"Successfully seed permission by names {string.Join(", ", permissions)} to user by name {user.UserName}");
             }
             
@@ -148,7 +139,7 @@ namespace Pepegov.Identity.BL
 
             async Task SeedUserProfile(ApplicationUser user, SeedUserOption seedUser)
             {
-                if (_context!.Users.Any(u => u.UserName == seedUser.UserName || u.Email == seedUser.Email || u.PhoneNumber == seedUser.PhoneNumber))
+                if (context!.Users.Any(u => u.UserName == seedUser.UserName || u.Email == seedUser.Email || u.PhoneNumber == seedUser.PhoneNumber))
                 {
                     return;
                 }
@@ -168,7 +159,7 @@ namespace Pepegov.Identity.BL
 
         private async Task SeedRolesAsync(CancellationToken cancellationToken = default)
         {
-            using var scope = _serviceProvider.CreateScope();
+            using var scope = serviceProvider.CreateScope();
 
             var roles = typeof(UserRoles).GetAllPublicConstantValues<string>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
@@ -182,12 +173,12 @@ namespace Pepegov.Identity.BL
                 }
             }
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
         
         private async Task SeedPermissionsAsync(CancellationToken cancellationToken = default)
         {
-            using var scope = _serviceProvider.CreateScope();
+            using var scope = serviceProvider.CreateScope();
             var identityConfiguration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(AppData.IdentitySettingPath)
@@ -196,19 +187,19 @@ namespace Pepegov.Identity.BL
 
             foreach (var option in options)
             {
-                var permission = _context.Permissions.Where(x => x.PolicyName == option.Name).ToList();
+                var permission = context.Permissions.Where(x => x.PolicyName == option.Name).ToList();
                 if (permission.Any())
                 {
                     continue;
                 }
-                await _context.Permissions.AddAsync(new ApplicationPermission() { PolicyName = option.Name, Description = option.Description}, cancellationToken);
+                await context.Permissions.AddAsync(new ApplicationPermission() { PolicyName = option.Name, Description = option.Description}, cancellationToken);
             }
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         private async Task SeedOpenIddictApplications(CancellationToken cancellationToken = default)
         {
-            await using var scope = _serviceProvider.CreateAsyncScope();
+            await using var scope = serviceProvider.CreateAsyncScope();
             var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
             //Get all clients & scopes

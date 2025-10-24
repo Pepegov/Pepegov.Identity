@@ -10,22 +10,15 @@ using Pepegov.MicroserviceFramework.Data.Exceptions;
 
 namespace Pepegov.Identity.PL.Endpoints.Application.Handlers;
 
-public class GetApplicationViewModelRequestHandler : IRequestHandler<GetApplicationViewModelRequest, ApiResult<ApplicationViewModel>>
+public class GetApplicationViewModelRequestHandler(
+    ILogger<GetApplicationViewModelRequestHandler> logger,
+    IOpenIddictApplicationManager applicationManager,
+    IMapper mapper)
+    : IRequestHandler<GetApplicationViewModelRequest, ApiResult<ApplicationViewModel>>
 {
-    private readonly ILogger<GetApplicationViewModelRequestHandler> _logger;
-    private readonly IOpenIddictApplicationManager _applicationManager;
-    private readonly IMapper _mapper;
-
-    public GetApplicationViewModelRequestHandler(ILogger<GetApplicationViewModelRequestHandler> logger, IOpenIddictApplicationManager applicationManager, IMapper mapper)
-    {
-        _logger = logger;
-        _applicationManager = applicationManager;
-        _mapper = mapper;
-    }
-
     public async Task<ApiResult<ApplicationViewModel>> Handle(GetApplicationViewModelRequest request, CancellationToken cancellationToken)
     {
-        var application = await _applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken);
+        var application = await applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken);
         if (application is null)
         {
             return new ApiResult<ApplicationViewModel>(HttpStatusCode.NotFound, new MicroserviceNotFoundException($"Application by ClientId {request.ClientId} not found"));
@@ -34,11 +27,11 @@ public class GetApplicationViewModelRequestHandler : IRequestHandler<GetApplicat
         if (application is not OpenIddictEntityFrameworkCoreApplication<Guid>)
         {
             var message = $"The received application does not match the actual one ({typeof(OpenIddictEntityFrameworkCoreApplication<Guid>)})";
-            _logger.LogCritical(message);
+            logger.LogCritical(message);
             return new ApiResult<ApplicationViewModel>(HttpStatusCode.InternalServerError, new MicroserviceMappingException(message));
         }
 
-        var model = _mapper.Map<ApplicationViewModel>((OpenIddictEntityFrameworkCoreApplication<Guid>)application);
+        var model = mapper.Map<ApplicationViewModel>((OpenIddictEntityFrameworkCoreApplication<Guid>)application);
         return new ApiResult<ApplicationViewModel>(model, HttpStatusCode.OK);
         //IOpenIddictAuthorizationManager
     }

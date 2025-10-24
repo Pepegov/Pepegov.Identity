@@ -20,7 +20,7 @@ public partial class ConnectHandler
      
         ArgumentNullException.ThrowIfNull(context.OpenIddictApplication);
         
-        switch (await _openIddictApplicationManager.GetConsentTypeAsync(context.OpenIddictApplication.Application, context.CancellationToken))
+        switch (await openIddictApplicationManager.GetConsentTypeAsync(context.OpenIddictApplication.Application, context.CancellationToken))
         {
             // If the consent is external (e.g when authorizations are granted by a sysadmin),
             // immediately return an error if no authorization can be found in the database.
@@ -70,19 +70,21 @@ public partial class ConnectHandler
 
     private async Task<IResult> IsOpenIddictRequestIsNull(AuthorizationContext context)
     {
-        var principal = await _signInManager.CreateUserPrincipalAsync(context.User!);
+        var principal = await signInManager.CreateUserPrincipalAsync(context.User!);
 
-        context.OpenIddictApplication = new OpenIddictApplication();
-        context.OpenIddictApplication.Application = await _openIddictApplicationManager.FindByClientIdAsync(_currentIdentityClientOption.Value.Id, context.CancellationToken) 
-                                                    ?? throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
-        context.OpenIddictApplication.ApplicationId = await _openIddictApplicationManager.GetIdAsync(context.OpenIddictApplication.Application, context.CancellationToken)!
+        context.OpenIddictApplication = new OpenIddictApplication
+        {
+            Application = await openIddictApplicationManager.FindByClientIdAsync(currentIdentityClientOption.Value.Id, context.CancellationToken) 
+                          ?? throw new InvalidOperationException("Details concerning the calling client application cannot be found.")
+        };
+        context.OpenIddictApplication.ApplicationId = await openIddictApplicationManager.GetIdAsync(context.OpenIddictApplication.Application, context.CancellationToken)!
                                                       ?? throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
         
         //Add all scopes
-        principal.SetScopes(_scopeOption.Value.Select(x => x.Name));
-        principal.SetResources(await _openIddictScopeManager.ListResourcesAsync(principal.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
+        principal.SetScopes(scopeOption.Value.Select(x => x.Name));
+        principal.SetResources(await openIddictScopeManager.ListResourcesAsync(principal.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
         
-        context.Authorizations = (List<object>?)await _openIddictAuthorizationManager.FindAsync(
+        context.Authorizations = (List<object>?)await openIddictAuthorizationManager.FindAsync(
                                          subject: context.UserId!,
                                          client: context.OpenIddictApplication.ApplicationId!,
                                          status: OpenIddictConstants.Statuses.Valid,
@@ -95,7 +97,7 @@ public partial class ConnectHandler
         // Automatically create a permanent authorization to avoid requiring explicit consent
         // for future authorization or token requests containing the same scopes.
         var authorization = context.Authorizations.LastOrDefault() 
-                            ?? await _openIddictAuthorizationManager.CreateAsync(
+                            ?? await openIddictAuthorizationManager.CreateAsync(
                                 principal: principal,
                                 subject: context.UserId!,
                                 client: context.OpenIddictApplication.ApplicationId,
@@ -103,7 +105,7 @@ public partial class ConnectHandler
                                 scopes: principal.GetScopes(), 
                                 cancellationToken: context.CancellationToken);
         
-        principal.SetAuthorizationId(await _openIddictAuthorizationManager.GetIdAsync(authorization, context.CancellationToken)); ;
+        principal.SetAuthorizationId(await openIddictAuthorizationManager.GetIdAsync(authorization, context.CancellationToken)); ;
         
         principal.SetDestinations(static claim => claim.Type switch
         {
@@ -120,7 +122,7 @@ public partial class ConnectHandler
             "secret_value" => Array.Empty<string>(),
 
             // Otherwise, add the claim to the access tokens only.
-            _ => new[] { OpenIddictConstants.Destinations.AccessToken }
+            _ => [OpenIddictConstants.Destinations.AccessToken]
         });
         
         return Results.SignIn(principal, null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -128,19 +130,19 @@ public partial class ConnectHandler
     
     private async Task<IResult> IsExplictHasConsent(AuthorizationContext context)
     {
-        var principal = await _signInManager.CreateUserPrincipalAsync(context.User!);
+        var principal = await signInManager.CreateUserPrincipalAsync(context.User!);
 
         // Note: in this sample, the granted scopes match the requested scope
         // but you may want to allow the user to uncheck specific scopes.
         // For that, simply restrict the list of scopes before calling SetScopes.
 
         principal.SetScopes(context.OpenIddictRequest!.GetScopes());
-        principal.SetResources(await _openIddictScopeManager.ListResourcesAsync(principal.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
+        principal.SetResources(await openIddictScopeManager.ListResourcesAsync(principal.GetScopes(), context.CancellationToken).ToListAsync(context.CancellationToken));
 
         // Automatically create a permanent authorization to avoid requiring explicit consent
         // for future authorization or token requests containing the same scopes.
         var authorization = context.Authorizations.LastOrDefault() 
-                            ?? await _openIddictAuthorizationManager.CreateAsync(
+                            ?? await openIddictAuthorizationManager.CreateAsync(
                             principal: principal,
                             subject: context.UserId!,
                             client: context.OpenIddictApplication!.ApplicationId!,
@@ -149,7 +151,7 @@ public partial class ConnectHandler
                             cancellationToken: context.CancellationToken);
 
         //var identifier = await _openIddictApplicationManager.GetIdAsync(authorization);
-        var identifier = await _openIddictAuthorizationManager.GetIdAsync(authorization, context.CancellationToken);
+        var identifier = await openIddictAuthorizationManager.GetIdAsync(authorization, context.CancellationToken);
         principal.SetAuthorizationId(identifier);
 
         principal.SetDestinations(static claim => claim.Type switch
@@ -167,7 +169,7 @@ public partial class ConnectHandler
             "secret_value" => Array.Empty<string>(),
 
             // Otherwise, add the claim to the access tokens only.
-            _ => new[] { OpenIddictConstants.Destinations.AccessToken }
+            _ => [OpenIddictConstants.Destinations.AccessToken]
         });
 
 
