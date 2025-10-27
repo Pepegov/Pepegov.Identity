@@ -62,7 +62,9 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .SetLogoutEndpointUris("connect/logout")
                     .SetTokenEndpointUris("connect/token")
                     .SetVerificationEndpointUris("connect/verify")
-                    .SetUserinfoEndpointUris("connect/userinfo");
+                    .SetUserinfoEndpointUris("connect/userinfo")
+                    .SetIntrospectionEndpointUris("/connect/introspect");
+                    
                 
                 // only for developer mode
                 options
