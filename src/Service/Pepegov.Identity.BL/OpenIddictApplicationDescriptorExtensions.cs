@@ -31,6 +31,8 @@ public static class OpenIddictApplicationDescriptorExtensions
                 case OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode:
                     application.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
                     application.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+                    application.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                    application.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
                     break;
                 case OpenIddictConstants.Permissions.GrantTypes.Password:
                 case OpenIddictConstants.Permissions.GrantTypes.ClientCredentials:

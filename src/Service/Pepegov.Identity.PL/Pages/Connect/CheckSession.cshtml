@@ -1,6 +1,5 @@
 @page
 @using Pepegov.Identity.BL.OpenIddictHandlers
-@using Serilog
 @attribute [IgnoreAntiforgeryToken] 
 @{
     Layout = null;
@@ -18,8 +17,8 @@
             binary += String.fromCharCode(bytes[i]);
         }
         return btoa(binary)
-            .replace(/\+/g, "-")   // replace + на -
-            .replace(/\//g, "_")   // replace / на _
+            .replace(/\+/g, "-")   // replace + on -
+            .replace(/\//g, "_")   // replace / on _
             .replace(/=+$/, "");   // remove = in the end
     }
 

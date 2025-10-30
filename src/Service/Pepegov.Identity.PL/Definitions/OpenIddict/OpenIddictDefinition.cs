@@ -46,7 +46,9 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .AllowAuthorizationCodeFlow()//.RequireProofKeyForCodeExchange()
                     .AllowPasswordFlow()
                     .AllowClientCredentialsFlow()
-                    .AllowRefreshTokenFlow();
+                    .AllowRefreshTokenFlow()
+                    //For id_token token requests
+                    .AllowImplicitFlow();
                 
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(5));
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(3));

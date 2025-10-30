@@ -72,7 +72,8 @@
       "refresh_token",
       "authorization_code",
       "client_credentials",
-      "password"
+      "password",
+      "implicit"
     ]
   }, 
   
