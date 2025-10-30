@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Server.AspNetCore;
+using Pepegov.Identity.BL.OpenIddictHandlers;
 using Pepegov.Identity.DAL.Domain;
 using Pepegov.Identity.PL.Definitions.OpenIddict;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
@@ -37,6 +38,17 @@ public class AuthorizationDefinition : ApplicationDefinition
                 options.LoginPath = "/connect/login";
                 options.LogoutPath = "/connect/logout";
                 options.AccessDeniedPath = "/connect/access-denied";
+                
+                options.Events.OnSignedIn = (context) =>
+                {
+                    context.Response.IssueSessionCookie();
+                    return Task.CompletedTask;
+                };
+                options.Events.OnSigningOut = (context) =>
+                {
+                    context.Response.DeleteSessionCookie();
+                    return Task.CompletedTask;
+                };
             })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, "Bearer", options =>
             {

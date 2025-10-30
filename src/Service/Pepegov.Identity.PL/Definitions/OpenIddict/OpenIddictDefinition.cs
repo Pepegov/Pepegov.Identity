@@ -1,5 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
+﻿using OpenIddict.Abstractions;
+using OpenIddict.Server;
+using Pepegov.Identity.BL.OpenIddictHandlers;
 using Pepegov.Identity.DAL.Database;
 using Pepegov.Identity.DAL.Models.Options;
 using Pepegov.MicroserviceFramework.Definition;
@@ -47,13 +48,13 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .AllowClientCredentialsFlow()
                     .AllowRefreshTokenFlow();
                 
-                options.SetAccessTokenLifetime(TimeSpan.FromHours(30));
-                options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
-                options.SetAuthorizationCodeLifetime(TimeSpan.FromHours(1));
+                options.SetAccessTokenLifetime(TimeSpan.FromMinutes(5));
+                options.SetRefreshTokenLifetime(TimeSpan.FromDays(3));
+                options.SetAuthorizationCodeLifetime(TimeSpan.FromMinutes(10));
 
                 //Enabling reference access and/or refresh tokens
-                options.UseReferenceAccessTokens()
-                    .UseReferenceRefreshTokens();
+                 options.UseReferenceRefreshTokens();
+                     //.UseReferenceAccessTokens();
                 
                 options.SetAuthorizationEndpointUris("connect/authorize", "connect/superadmin/authorize")
                     //.RequireProofKeyForCodeExchange() // enable PKCE
@@ -64,7 +65,6 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .SetVerificationEndpointUris("connect/verify")
                     .SetUserinfoEndpointUris("connect/userinfo")
                     .SetIntrospectionEndpointUris("/connect/introspect");
-                    
                 
                 // only for developer mode
                 options
@@ -91,6 +91,12 @@ public class OpenIddictDefinition : ApplicationDefinition
                     .EnableLogoutEndpointPassthrough()
                     .EnableTokenEndpointPassthrough()
                     .EnableUserinfoEndpointPassthrough();
+                
+                options.AddEventHandler<OpenIddictServerEvents.HandleConfigurationRequestContext>(contextOptions =>
+                    contextOptions.UseSingletonHandler<AttachCheckSessionIframeEndpointServerHandler>());
+
+                options.AddEventHandler<OpenIddictServerEvents.ApplyAuthorizationResponseContext>(contextOptions =>
+                    contextOptions.UseSingletonHandler<AttachSessionStateServerHandler>());
             })
             .AddValidation(options =>
             {

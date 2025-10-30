@@ -80,8 +80,4 @@
       <_ContentIncludedByDefault Remove="Pages\Components\SnackBar\default.cshtml" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Definitions\OpenIddict\Options\" />
-    </ItemGroup>
-
 </Project>
