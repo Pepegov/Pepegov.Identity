@@ -11,7 +11,7 @@ public class TokenManagementService(
     : ITokenManagementService
 {
     /// <inheritdoc/>
-    public async Task RevokeUserTokensAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task DeleteUserTokensAsync(string userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(userId))
         {
@@ -32,7 +32,7 @@ public class TokenManagementService(
         {
             try
             {
-                await tokenManager.DeleteAsync(token, cancellationToken);
+                await tokenManager.UpdateAsync(token, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ public class TokenManagementService(
     }
     
     /// <inheritdoc/>
-    public async Task RevokeApplicationTokensAsync(string applicationId, CancellationToken cancellationToken = default)
+    public async Task DeleteApplicationTokensAsync(string applicationId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(applicationId))
         {

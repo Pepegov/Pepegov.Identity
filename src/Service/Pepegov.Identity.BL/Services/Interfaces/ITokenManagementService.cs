@@ -11,7 +11,7 @@ public interface ITokenManagementService
     /// <param name="userId">User identifier</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Task representing the async operation</returns>
-    Task RevokeUserTokensAsync(string userId, CancellationToken cancellationToken = default);
+    Task DeleteUserTokensAsync(string userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Revokes all tokens and authorizations for a specific application
@@ -19,5 +19,5 @@ public interface ITokenManagementService
     /// <param name="applicationId">Application id</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Task representing the async operation</returns>
-    Task RevokeApplicationTokensAsync(string applicationId, CancellationToken cancellationToken = default);
+    Task DeleteApplicationTokensAsync(string applicationId, CancellationToken cancellationToken = default);
 }

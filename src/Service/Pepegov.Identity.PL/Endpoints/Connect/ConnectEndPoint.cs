@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 using Pepegov.Identity.BL;
 using Pepegov.Identity.BL.AuthorizationStrategy;
 using Pepegov.Identity.BL.GrandType.Infrastructure;
@@ -68,23 +69,14 @@ public class ConnectEndPoint : ApplicationDefinition
     [ProducesResponseType(200)]
     [ProducesResponseType(401)]
     [ProducesResponseType(404)]
-    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes)]
     private async Task<IResult> Logout(
         [FromServices] SignInManager<ApplicationUser> signInManager,
         [FromServices] ITokenManagementService tokenManagementService,
-        HttpContext httpContext)
+        HttpContext httpContext,
+        [FromQuery] string? redirectUri = null)
     {
-        // Get user ID from claims before signing out
-        var userId = ClaimsHelper.GetValue<string>((ClaimsIdentity)httpContext.User.Identity!, OpenIddictConstants.Claims.Subject);
-        
-        // Revoke all user tokens if user ID is available
-        if (!string.IsNullOrEmpty(userId))
-        {
-            await tokenManagementService.RevokeUserTokensAsync(userId, httpContext.RequestAborted);
-        }
-        
         await signInManager.SignOutAsync();
-        return Results.SignOut(null, new List<string>() { OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme } );
+        return Results.SignOut(new AuthenticationProperties() { RedirectUri = redirectUri }, new List<string>() { OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, CookieAuthenticationDefaults.AuthenticationScheme } );
     }
 
     [ProducesResponseType(200)]

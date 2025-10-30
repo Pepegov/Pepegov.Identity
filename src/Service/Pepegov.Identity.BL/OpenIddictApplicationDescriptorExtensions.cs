@@ -70,7 +70,8 @@ public static class OpenIddictApplicationDescriptorExtensions
     public static void AddRedirectUrisForTesting(this OpenIddictApplicationDescriptor application, string url)
     {
         application.RedirectUris.Add(new Uri("https://localhost:5500"));                                // https://localhost:5500 default vscode live server address 
-        application.RedirectUris.Add(new Uri("https://postman-redirect.com/callback"));                 // https://postman-redirect.com/callback
+        application.RedirectUris.Add(new Uri("https://oauth.pstmn.io/v1/callback"));                    // https://oauth.pstmn.io/v1/callback postman
+        application.RedirectUris.Add(new Uri("https://postman-redirect.com/callback"));                 // https://postman-redirect.com/callback postman
         application.RedirectUris.Add(new Uri("https://www.thunderclient.com/oauth/callback"));          // https://www.thunderclient.com/
         application.RedirectUris.Add(new Uri($"{url}/swagger/oauth2-redirect.html"));                   // https://swagger.io/
         application.RedirectUris.Add(new Uri("https://localhost:20001/swagger/oauth2-redirect.html"));  // https://swagger.io/ for mobile
