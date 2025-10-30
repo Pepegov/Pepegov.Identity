@@ -59,23 +59,8 @@
             }
 
             //Check hash
-            console.log("clientId="+clientId)
-            console.log("origin="+origin)
-            console.log("sessionId="+sessionId)
-            console.log("salt="+salt)
-            console.log("client salt="+salt)
-            console.log("------")
-            
-            //const utf8Bytes = new TextEncoder().encode(clientId + origin + sessionId + salt);
-            //const hashBuffer = await crypto.subtle.digest('SHA-256', utf8Bytes);
-            //const hashBytes = new Uint8Array(hashBuffer);
-            //const hashBase64 = btoa(Array.from(hashBytes, byte => String.fromCharCode(byte)).join(''));
-            //const hashBase64Url = hashBase64.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
-
             const hashBase64Url = await generateHash(clientId, origin, sessionId, salt)
             
-            console.log(clientHash)
-            console.log(hashBase64Url)
             return clientHash === hashBase64Url ? 'unchanged' : 'changed';
         } catch (e) {
             console.error('OIDC Check Session error', e)
