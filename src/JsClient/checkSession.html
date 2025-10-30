@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OIDC Session Check Client</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      line-height: 1.5;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    iframe {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>OIDC Session Check Demo</h2>
+
+  <label>OpenID Configuration URL:
+    <input type="text" id="configUrl" placeholder="https://localhost:5001/.well-known/openid-configuration">
+  </label>
+
+  <label>Client ID:
+    <input type="text" id="clientId" placeholder="e.g. demo-client">
+  </label>
+
+  <label>Session State:
+    <input type="text" id="sessionState" placeholder="e.g. abc.def">
+  </label>
+
+  <label>Check Interval (ms):
+    <input type="number" id="checkInterval" value="5000">
+  </label>
+
+  <button id="startBtn">Start Checking</button>
+
+  <p id="status">Idle...</p>
+
+  <iframe id="checkSession"></iframe>
+
+  <script>
+    let intervalId = null;
+    const iframe = document.getElementById("checkSession");
+    const statusEl = document.getElementById("status");
+    const startBtn = document.getElementById("startBtn");
+
+    window.addEventListener("message", e => {
+      const checkSessionOrigin = new URL(iframe.src).origin;
+      if (e.origin !== checkSessionOrigin) return;
+
+      console.log("Response from CheckSession:", e.data);
+
+      if (e.data === "unchanged") {
+        statusEl.textContent = "Session unchanged ✅";
+        statusEl.style.color = "green";
+      } else if (e.data === "changed") {
+        statusEl.textContent = "Session changed ❌";
+        statusEl.style.color = "red";
+      } else {
+        statusEl.textContent = "Error checking session ⚠️";
+        statusEl.style.color = "orange";
+      }
+    });
+
+    startBtn.addEventListener("click", async () => {
+      const configUrl = document.getElementById("configUrl").value.trim();
+      const clientId = document.getElementById("clientId").value.trim();
+      const sessionState = document.getElementById("sessionState").value.trim();
+      const checkInterval = parseInt(document.getElementById("checkInterval").value.trim(), 10);
+
+      if (!configUrl || !clientId || !sessionState) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      try {
+        statusEl.textContent = "Fetching OpenID configuration ⏳";
+        statusEl.style.color = "blue";
+
+        // GET .well-known/openid-configuration
+        const response = await fetch(configUrl);
+        if (!response.ok) throw new Error("Failed to fetch configuration");
+        const config = await response.json();
+
+        const checkSessionIframeUrl = config.check_session_iframe;
+        if (!checkSessionIframeUrl) throw new Error("check_session_iframe not found in configuration");
+
+        // Set iframe src
+        iframe.src = checkSessionIframeUrl;
+        console.log("Iframe url " + checkSessionIframeUrl);
+
+        // Clear previous interval if exists
+        if (intervalId) clearInterval(intervalId);
+
+        intervalId = setInterval(() => {
+          const message = `${clientId} ${sessionState}`;
+          iframe.contentWindow.postMessage(message, new URL(checkSessionIframeUrl).origin);
+          statusEl.textContent = "Checking session...";
+          statusEl.style.color = "gray";
+        }, checkInterval);
+
+        statusEl.textContent = "Session check started ⏳";
+        statusEl.style.color = "blue";
+
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Error fetching configuration ⚠️";
+        statusEl.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

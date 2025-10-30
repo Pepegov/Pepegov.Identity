@@ -1,6 +1,8 @@
 # Pepegov.Identity OpendIddict Service
 
-This project is a flexible implementation of microservice architecture with OpenIddict authentication server
+This project is a flexible implementation of microservice architecture with OpenIddict authentication server.
+In the project, there is support for [OpenID Connect Session Management](https://openid.net/specs/openid-connect-session-1_0.html).
+
 
 Implemented next stack:
 - Definition. Simple "Vertical Slice architecture"
@@ -15,8 +17,6 @@ Implemented next stack:
 More information on OpenIddict can be found [here](https://documentation.openiddict.com/)
 
 More OpenIddictTemplate [here](https://github.com/openiddict/openiddict-samples)
-
-The template idea was taken from [Calabonga](https://github.com/Calabonga/Microservice-Template)
 
 <br>
 
