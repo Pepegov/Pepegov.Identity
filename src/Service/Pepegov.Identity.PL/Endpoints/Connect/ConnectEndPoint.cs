@@ -205,23 +205,40 @@ public class ConnectEndPoint : ApplicationDefinition
         HttpContext httpContext,
         [FromServices] ConnectHandler connectHandler)
     {
-        var context = new AuthorizationContext();
-        context.CancellationToken = httpContext.RequestAborted;
+        var context = new AuthorizationContext
+        {
+            CancellationToken = httpContext.RequestAborted
+        };
+
+        // This call also initializes context.HttpContext and context.OpenIddictRequest.
         var result = await connectHandler.AuthorizeCookieAsync(context);
-        
+
+        // For prompt=none, the authorization endpoint MUST NOT trigger interactive login UI.
+        // If the user is not authenticated, return a proper OIDC error response.
         if (!result.Succeeded)
         {
+            if (context.OpenIddictRequest?.HasPrompt(OpenIddictConstants.Prompts.None) is true)
+            {
+                return Results.Forbid(
+                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.LoginRequired,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "User is not authenticated."
+                    }));
+            }
+
             ArgumentNullException.ThrowIfNull(context.HttpContext);
             return Results.Challenge(new AuthenticationProperties
-            {
-                RedirectUri = context.HttpContext.Request.PathBase + context.HttpContext.Request.Path + QueryString.Create(context.HttpContext.Request.HasFormContentType
-                ? context.HttpContext.Request.Form.ToList()
-                : context.HttpContext.Request.Query.ToList())
-            },
-            new List<string> { CookieAuthenticationDefaults.AuthenticationScheme });
+                {
+                    RedirectUri = context.HttpContext.Request.PathBase + context.HttpContext.Request.Path + QueryString.Create(context.HttpContext.Request.HasFormContentType
+                        ? context.HttpContext.Request.Form.ToList()
+                        : context.HttpContext.Request.Query.ToList())
+                },
+                new List<string> { CookieAuthenticationDefaults.AuthenticationScheme });
         }
 
-        await connectHandler.ConfigureUserAsync(context, result.Principal);
+        await connectHandler.ConfigureUserAsync(context, result.Principal!);
         await connectHandler.ConfigureOpenIddictAsync(context);
 
         return await connectHandler.Authorize(context);

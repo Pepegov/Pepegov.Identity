@@ -2,7 +2,6 @@ using MassTransit.Internals;
 using Microsoft.AspNetCore.Authentication;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using Pepegov.Identity.BL.GrandType.Infrastructure;
 using Pepegov.Identity.BL.GrandType.Model;
 
 namespace Pepegov.Identity.PL.Endpoints.Connect.Handlers;
@@ -12,7 +11,7 @@ public partial class ConnectHandler
     public async Task<IResult> Authorize(AuthorizationContext context)
     {
         ArgumentNullException.ThrowIfNull(context.User);
-        
+     
         if (context.OpenIddictRequest is null)
         {
             return await IsOpenIddictRequestIsNull(context);
@@ -24,14 +23,14 @@ public partial class ConnectHandler
         {
             // If the consent is external (e.g when authorizations are granted by a sysadmin),
             // immediately return an error if no authorization can be found in the database.
-            case OpenIddictConstants.ConsentTypes.External when !context.Authorizations.Any():
+            case OpenIddictConstants.ConsentTypes.External when context.Authorizations.Count == 0:
                 return IsExternalNotAuthorizations();
 
             // If the consent is implicit or if an authorization was found,
             // return an authorization response without displaying the consent form.
             case OpenIddictConstants.ConsentTypes.Implicit:
-            case OpenIddictConstants.ConsentTypes.External when context.Authorizations.Any():
-            case OpenIddictConstants.ConsentTypes.Explicit when context.Authorizations.Any() && !context.OpenIddictRequest.HasPrompt(OpenIddictConstants.Prompts.Consent):
+            case OpenIddictConstants.ConsentTypes.External when context.Authorizations.Count != 0:
+            case OpenIddictConstants.ConsentTypes.Explicit when context.Authorizations.Count != 0 && !context.OpenIddictRequest.HasPrompt(OpenIddictConstants.Prompts.Consent):
                 return await IsExplictHasConsent(context);
 
             // At this point, no authorization was found in the database and an error must be returned
@@ -43,14 +42,14 @@ public partial class ConnectHandler
             // In every other case, render the consent form.
             default:
                 return Results.Challenge(
-                    authenticationSchemes: new[] { OpenIddictServerAspNetCoreDefaults.AuthenticationScheme },
+                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
                     properties: new AuthenticationProperties { RedirectUri = "/" });
         }
     }
     
     private static IResult IsExternalNotAuthorizations() 
         => Results.Forbid(
-            authenticationSchemes: new[] { OpenIddictServerAspNetCoreDefaults.AuthenticationScheme },
+            authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
             properties: new AuthenticationProperties(new Dictionary<string, string>
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.ConsentRequired,
