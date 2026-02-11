@@ -1,0 +1,33 @@
+﻿@page
+@using AegisForge.Domain.Domain
+@model AegisForge.PL.Pages.Connect.LoginModel
+
+<div class="row">
+    <div class="col-md-4 offset-4">
+        <form method="post">
+            <input type="hidden" asp-for="@Model.Input.ReturnUrl" />
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="mb-3 row">
+                <label class="form-label" asp-for="@Model.Input.UserName"></label>
+                <input class="form-control" asp-for="@Model.Input.UserName">
+            </div>
+
+            <div class="mb-3 row">
+                <label class="form-label" asp-for="@Model.Input.Password"></label>
+                <input class="form-control" type="password" asp-for="@Model.Input.Password" />
+            </div>
+            <div class="mt-4 row">
+                <button class="btn btn-primary" type="submit">Sing in</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (@Model.CurrentUserRoles.Contains(UserRoles.SuperAdmin))
+{
+    <div class="position-absolute bottom-0 end-0 mb-1">
+        <a  class="btn btn-secondary" asp-page="./SuperAdmin/Login" asp-route-ReturnUrl="@Model.ReturnUrl">Super Admin Area</a>
+    </div>   
+}

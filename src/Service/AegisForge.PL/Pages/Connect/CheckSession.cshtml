@@ -1,0 +1,143 @@
+@page
+@using Pepegov.Identity.BL.OpenIddictHandlers
+@attribute [IgnoreAntiforgeryToken]
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<title>OIDC Check Session</title>
+<script type="module">
+    const sessionCookieName = '@SessionIdExtensions.CookieName';
+
+    function deleteCookie(name) {
+        document.cookie = name + '=; Max-Age=-1; path=/';
+    }
+
+    async function checkCookieAccess() {
+        try {
+            return await document.hasStorageAccess();
+        } catch (err) {
+            console.error('Failed access to cookie:', err);
+            return false;
+        }
+    }
+
+    async function checkSessionWithServer(session_state) {
+        try {
+            // Making server request for check session status
+            const response = await fetch('/api/sessions/status?session_state=' + session_state, {
+                method: 'GET',
+                credentials: 'include', // For cookie send
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                console.log(`HTTP error! status: ${response.status}`);
+                return 'error'
+            }
+
+            const result = await response.json();
+
+            // Mapping result in OIDC check session
+            switch (result) {
+                case 'Active':
+                    return 'unchanged';
+                case 'Changed':
+                case 'Revoked':
+                    return 'changed';
+                default:
+                    return 'error';
+            }
+        } catch (error) {
+            console.error('Server session check failed:', error);
+            return 'error';
+        }
+    }
+
+    async function base64UrlEncode(arrayBuffer) {
+        let binary = "";
+        const bytes = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary)
+            .replace(/\+/g, "-")   // replace + on -
+            .replace(/\//g, "_")   // replace / on _
+            .replace(/=+$/, "");   // remove = in the end
+    }
+
+    async function generateHash(clientId, origin, sessionId, salt) {
+        const input = clientId + origin + sessionId + salt;
+        const encoder = new TextEncoder();
+        const utf8Bytes = encoder.encode(input);
+
+        const hashBuffer = await crypto.subtle.digest("SHA-256", utf8Bytes);
+        return await base64UrlEncode(hashBuffer);
+    }
+
+    async function checkSession(origin, message) {
+        try {
+            //origin and message can not be empty
+            if (!origin || !message) {
+                return 'error';
+            }
+
+            //Take clientId and session state from message
+            const [clientId, sessionState] = message.split(' ');
+            if (!clientId || !sessionState) {
+                return 'error';
+            }
+
+            //Take hash and salt from sessionState
+            const [clientHash, salt] = sessionState.split('.');
+            if (!clientHash || !salt) {
+                return 'error';
+            }
+
+            //If browser doesn't block cookie
+            if(await checkCookieAccess()){
+                //Get current sessionId from cookie
+                const sessionId = document.cookie.split('; ').find(c => c.startsWith(sessionCookieName + '='))?.split('=')?.[1];
+                //console.log(`Session ID: ${sessionId}`);
+                if (!sessionId) { //If sessionId is deleted, the user will log out
+                    return 'changed';
+                }
+
+                //Check hash
+                const hashBase64Url = await generateHash(clientId, origin, sessionId, salt)
+                if(clientHash !== hashBase64Url){
+                    console.log(`The hashes don't match. Client Hash: ${clientHash}: Session Hash: ${hashBase64Url}`);
+                    //console.log(`ClientId: ${clientId}, Origin: ${origin}, SessionId: ${sessionId}, Salt: ${salt}`);
+                    return 'changed';
+                }
+            }
+
+            //Check server session
+            const serverCheckResult = await checkSessionWithServer(sessionState);
+            if (!serverCheckResult || serverCheckResult !== 'unchanged') {
+                console.log(`Server hash don't match`);
+                deleteCookie(`${sessionCookieName}`);
+                return serverCheckResult;
+            }
+
+            return 'unchanged';
+
+        } catch (e) {
+            console.error('OIDC Check Session error', e)
+            return 'error';
+        }
+    }
+
+    window.addEventListener('message', async function (e) {
+        if (e.source === self) {
+            return;
+        }
+
+        const result = await checkSession(e.origin, e.data);
+        e.source.postMessage(result, e.origin);
+    }, false);
+</script>

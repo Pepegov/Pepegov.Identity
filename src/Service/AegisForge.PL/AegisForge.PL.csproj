@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+      <Content Update="appsettings.Development.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+      <Content Update="identitysetting.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Pages\Connect\Login.cshtml" />
+      <AdditionalFiles Include="Pages\Connect\SuperAdmin\Login.cshtml" />
+      <AdditionalFiles Include="Pages\Connect\Verify.cshtml" />
+      <AdditionalFiles Include="Pages\Shared\_Layout.cshtml" />
+      <AdditionalFiles Include="Pages\_ViewImports.cshtml" />
+      <AdditionalFiles Include="Pages\_ViewStart.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.0" />
+      <PackageReference Include="MediatR" Version="12.5.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
+      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="OpenIddict.AspNetCore" Version="5.8.0" />
+      <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="5.8.0" />
+      <PackageReference Include="OpenIddict.Quartz" Version="5.8.0" />
+      <PackageReference Include="OpenIddict.Server" Version="5.8.0" />
+      <PackageReference Include="OpenIddict.Validation.AspNetCore" Version="5.8.0" />
+      <PackageReference Include="OpenIddict.Validation.SystemNetHttp" Version="5.8.0" />
+      <PackageReference Include="Pepegov.MicroserviceFramework" Version="2.1.5" />
+      <PackageReference Include="Pepegov.MicroserviceFramework.AspNetCore" Version="2.2.2" />
+      <PackageReference Include="Pepegov.UnitOfWork" Version="3.2.1" />
+      <PackageReference Include="Pepegov.UnitOfWork.EntityFramework" Version="1.4.2" />
+      <PackageReference Include="Serilog" Version="4.0.0" />
+      <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+      <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+      <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+      <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
+      <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.1" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Shared\Connect\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Connect\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Connect\SuperAdmin\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Connect\Verify.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\Connect\SuperAdmin\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\Connect\Verify.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\TagHelpers\SnackBar.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Components\SnackBar\default.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AegisForge.Application\AegisForge.Application.csproj" />
+    </ItemGroup>
+
+</Project>
