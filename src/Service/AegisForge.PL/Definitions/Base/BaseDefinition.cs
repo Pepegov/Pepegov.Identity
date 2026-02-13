@@ -2,6 +2,7 @@ using AegisForge.Application;
 using AegisForge.Application.Service;
 using AegisForge.Application.Service.Interfaces;
 using AegisForge.Infrastructure.Domain;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pepegov.Identity.BL.Services;
 using Pepegov.Identity.BL.Services.Interfaces;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
@@ -29,6 +30,7 @@ public class BaseDefinition : ApplicationDefinition
 
         context.ServiceCollection.AddDetection();
         context.ServiceCollection.AddScoped<IUserConnectInfoService, UserConnectInfoService>();
+        context.ServiceCollection.AddScoped<ISessionService, SessionService>();
         
         context.ServiceCollection.AddTransient<IAccountService, AccountService>();
         context.ServiceCollection.AddTransient<ITokenManagementService, TokenManagementService>();

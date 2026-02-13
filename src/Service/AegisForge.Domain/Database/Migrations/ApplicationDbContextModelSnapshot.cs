@@ -35,6 +35,9 @@ namespace AegisForge.Domain.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Origin")
                         .IsRequired()
                         .HasColumnType("text");
@@ -54,6 +57,9 @@ namespace AegisForge.Domain.Database.Migrations
                     b.Property<string>("SessionStatusType")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

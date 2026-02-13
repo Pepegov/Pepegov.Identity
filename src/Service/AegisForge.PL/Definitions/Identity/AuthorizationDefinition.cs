@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
+using AegisForge.Application.OpenIddictHandlers;
 using AegisForge.Domain.Domain;
 using AegisForge.Infrastructure.Domain;
+using AegisForge.Infrastructure.Extension;
 using AegisForge.PL.Definitions.OpenIddict;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

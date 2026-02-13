@@ -331,7 +331,9 @@ namespace AegisForge.Domain.Database.Migrations
                     Salt = table.Column<string>(type: "text", nullable: false),
                     SessionState = table.Column<string>(type: "text", nullable: false),
                     ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SessionStatusType = table.Column<string>(type: "text", nullable: false)
+                    SessionStatusType = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

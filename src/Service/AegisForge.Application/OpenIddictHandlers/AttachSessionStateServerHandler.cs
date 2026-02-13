@@ -6,6 +6,7 @@ using AegisForge.Application.Service;
 using AegisForge.Application.Service.Interfaces;
 using AegisForge.Domain.Aggregate;
 using AegisForge.Domain.Entity;
+using AegisForge.Infrastructure.Extension;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
-using Pepegov.Identity.BL.OpenIddictHandlers;
 using Pepegov.MicroserviceFramework.Exceptions;
 using Pepegov.UnitOfWork;
 using Pepegov.UnitOfWork.EntityFramework;
@@ -40,21 +40,32 @@ public class AttachSessionStateServerHandler(
             && Uri.TryCreate(context.Request.RedirectUri, UriKind.Absolute, out var redirectUri)
             && httpRequest?.GetSessionId() is { } sessionId)
         {
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
+            var session = await sessionService.GetSession(sessionId);
+        
             var origin = redirectUri.GetLeftPart(UriPartial.Authority);
             var salt = RandomNumberGenerator.GetHexString(8);
             
-            //Generating data for a hash
-            var utf8Bytes = Encoding.UTF8.GetBytes(clientId + origin + sessionId + salt);
-            var hashBytes = SHA256.HashData(utf8Bytes);
-            var hashBase64Url = Base64UrlTextEncoder.Encode(hashBytes);
+            string? sessionState; 
+            if (session is null)
+            {
+                //Generating data for a hash
+                var utf8Bytes = Encoding.UTF8.GetBytes(clientId + origin + sessionId + salt);
+                var hashBytes = SHA256.HashData(utf8Bytes);
+                var hashBase64Url = Base64UrlTextEncoder.Encode(hashBytes);
             
-            // Note: The session_state parameter is used so that the frontend client (an SPA or another browser client)
-            // can track whether the user's session has changed on the server (for example, if the user has logged out).
-            var sessionState = hashBase64Url + "." + salt;
+                // Note: The session_state parameter is used so that the frontend client (an SPA or another browser client)
+                // can track whether the user's session has changed on the server (for example, if the user has logged out).
+                sessionState = hashBase64Url + "." + salt;
+            }
+            else
+            {
+                sessionState = session.SessionState;
+            }
+            
             context.Response.SetParameter("session_state", sessionState);
-
-            //Because the handler is singleton
-            await using var scope = serviceProvider.CreateAsyncScope();
+            
             var unitOfWorkManager = scope.ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
             var userConnectInfoService = scope.ServiceProvider.GetRequiredService<IUserConnectInfoService>();
 
@@ -64,10 +75,11 @@ public class AttachSessionStateServerHandler(
                 return;
                  
             //Save session
-            await SaveSessionOnDbAsync(unitOfWorkManager, sessionId, sessionState, clientId, origin, salt, contextData.Value.Item1, contextData.Value.Item2, httpRequest.HttpContext.RequestAborted);
+            if(session is null)
+                await SaveSessionOnDbAsync(unitOfWorkManager, sessionId, sessionState, clientId, origin, salt, contextData.Value.Item1, contextData.Value.Item2, httpRequest.HttpContext.RequestAborted);
         }
     }
-
+    
     private async Task<(Guid, UserConnectionInfoDto)?> GetDataFromHttpContext(IUserConnectInfoService userConnectInfoService, HttpContext httpContext)
     {
         // Injecting UserId from user auth

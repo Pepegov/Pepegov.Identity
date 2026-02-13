@@ -31,6 +31,7 @@ public class ApplicationSession
         ApplicationUserId = userId;
         UserConnectionInfo = userConnectionInfo;
         SessionStatusType = sessionStatusType;
+        CreatedAt = DateTime.UtcNow;
     }
     
     public Guid Id { get; set; }
@@ -68,11 +69,15 @@ public class ApplicationSession
     /// </summary>
     public SessionStatusType SessionStatusType { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
     public void Update(string sessionId, string sessionState, string origin, string salt)
     {
         SessionId = sessionId;
         SessionState = sessionState;
         Origin = origin;
         Salt = salt;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

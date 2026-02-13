@@ -1,6 +1,8 @@
 using AegisForge.Application.Query.Session;
 using AegisForge.Application.Service.Interfaces;
+using AegisForge.Infrastructure.Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApi;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
@@ -33,6 +35,10 @@ public class SessionEndPoints : ApplicationDefinition
         return base.ConfigureApplicationAsync(context);
     }
     
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes)]
     private async Task<IResult> Terminate(
         HttpContext httpContext,
         [FromHeader] bool? Bff,
@@ -42,9 +48,13 @@ public class SessionEndPoints : ApplicationDefinition
     {
         var userId = accountService.GetCurrentUserId();
         var result = await mediator.Send(new SessionTerminateCommand(id, userId), httpContext.RequestAborted);
-        return Results.Ok(result);
+        return Results.Extensions.Custom(result);
     }
 
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [Authorize(AuthenticationSchemes = AuthData.AuthenticationSchemes)]
     private async Task<IResult> Paged(
         HttpContext httpContext,
         [FromHeader] bool? Bff,

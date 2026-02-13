@@ -1,4 +1,6 @@
 @page
+@using AegisForge.Application.OpenIddictHandlers
+@using AegisForge.Infrastructure.Extension
 @using Pepegov.Identity.BL.OpenIddictHandlers
 @attribute [IgnoreAntiforgeryToken]
 @{
@@ -120,7 +122,7 @@
             const serverCheckResult = await checkSessionWithServer(sessionState);
             if (!serverCheckResult || serverCheckResult !== 'unchanged') {
                 console.log(`Server hash don't match`);
-                deleteCookie(`${sessionCookieName}`);
+                //deleteCookie(`${sessionCookieName}`);
                 return serverCheckResult;
             }
 

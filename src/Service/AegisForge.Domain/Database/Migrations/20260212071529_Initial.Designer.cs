@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AegisForge.Domain.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260211104439_Initial")]
+    [Migration("20260212071529_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace AegisForge.Domain.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Origin")
                         .IsRequired()
                         .HasColumnType("text");
@@ -57,6 +60,9 @@ namespace AegisForge.Domain.Database.Migrations
                     b.Property<string>("SessionStatusType")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 
-namespace Pepegov.Identity.BL.OpenIddictHandlers;
+namespace AegisForge.Infrastructure.Extension;
 
 public static class SessionIdExtensions
 {

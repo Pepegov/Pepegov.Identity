@@ -204,13 +204,26 @@ public class ConnectEndPoint : ApplicationDefinition
     
     private async Task<IResult> Authorize(
         HttpContext httpContext,
-        [FromServices] ConnectHandler connectHandler)
+        [FromServices] ConnectHandler connectHandler,
+        [FromServices] ISessionService sessionService)
     {
         var context = new AuthorizationContext
         {
-            CancellationToken = httpContext.RequestAborted
+            CancellationToken = httpContext.RequestAborted,
+            HttpContext = httpContext,
         };
-
+        
+        if (await sessionService.IsSessionTerminated() is true)
+        {
+            return Results.Challenge(new AuthenticationProperties
+                {
+                    RedirectUri = httpContext!.Request.PathBase + httpContext.Request.Path + QueryString.Create(httpContext.Request.HasFormContentType
+                        ? httpContext.Request.Form.ToList()
+                        : httpContext.Request.Query.ToList())
+                },
+                new List<string> { CookieAuthenticationDefaults.AuthenticationScheme });
+        }
+        
         // This call also initializes context.HttpContext and context.OpenIddictRequest.
         var result = await connectHandler.AuthorizeCookieAsync(context);
 

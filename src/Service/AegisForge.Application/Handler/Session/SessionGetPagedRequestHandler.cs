@@ -28,6 +28,7 @@ public class SessionGetPagedRequestHandler(IUnitOfWorkManager unitOfWorkManager,
         
         var paged = await sessionRepository.GetPagedListAsync(
             predicate: predicate,
+            orderBy: sessions => sessions.OrderByDescending(o => o.CreatedAt), 
             include: x => x
                 .Include(i => i.UserConnectionInfo).ThenInclude(ti => ti.UserAgent)
                 .Include(i => i.UserConnectionInfo).ThenInclude(ti => ti.GeoData)!,
