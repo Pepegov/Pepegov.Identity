@@ -3,7 +3,6 @@ using AegisForge.Domain.Database;
 using AegisForge.Infrastructure.Options;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
-using Pepegov.Identity.BL.OpenIddictHandlers;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 

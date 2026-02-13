@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using AegisForge.Application.Service.Interfaces;
 using AegisForge.Domain.Aggregate;
+using AegisForge.Domain.Enum;
 using AegisForge.Infrastructure.Extension;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,7 +11,6 @@ using Pepegov.MicroserviceFramework.Exceptions;
 using Pepegov.UnitOfWork;
 using Pepegov.UnitOfWork.EntityFramework;
 using Pepegov.UnitOfWork.EntityFramework.Repository;
-using TelecomService.QRON.ID.Identity.Domain.Enum;
 
 namespace AegisForge.Application.Service;
 

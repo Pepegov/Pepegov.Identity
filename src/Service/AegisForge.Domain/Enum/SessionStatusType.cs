@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace TelecomService.QRON.ID.Identity.Domain.Enum;
+namespace AegisForge.Domain.Enum;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SessionStatusType

@@ -6,6 +6,7 @@ using AegisForge.Application.Service;
 using AegisForge.Application.Service.Interfaces;
 using AegisForge.Domain.Aggregate;
 using AegisForge.Domain.Entity;
+using AegisForge.Domain.Enum;
 using AegisForge.Infrastructure.Extension;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -18,7 +19,6 @@ using OpenIddict.Server;
 using Pepegov.MicroserviceFramework.Exceptions;
 using Pepegov.UnitOfWork;
 using Pepegov.UnitOfWork.EntityFramework;
-using TelecomService.QRON.ID.Identity.Domain.Enum;
 
 namespace AegisForge.Application.OpenIddictHandlers;
 

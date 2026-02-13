@@ -211,10 +211,22 @@ public class ConnectEndPoint : ApplicationDefinition
         {
             CancellationToken = httpContext.RequestAborted,
             HttpContext = httpContext,
+            OpenIddictRequest = httpContext.GetOpenIddictServerRequest()
         };
         
         if (await sessionService.IsSessionTerminated() is true)
         {
+            if (context.OpenIddictRequest?.HasPrompt(OpenIddictConstants.Prompts.None) is true)
+            {
+                return Results.Forbid(
+                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.LoginRequired,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "User session is terminated."
+                    }));
+            }
+            
             return Results.Challenge(new AuthenticationProperties
                 {
                     RedirectUri = httpContext!.Request.PathBase + httpContext.Request.Path + QueryString.Create(httpContext.Request.HasFormContentType

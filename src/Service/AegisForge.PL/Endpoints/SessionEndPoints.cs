@@ -1,5 +1,6 @@
 using AegisForge.Application.Query.Session;
 using AegisForge.Application.Service.Interfaces;
+using AegisForge.Domain.Enum;
 using AegisForge.Infrastructure.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,6 @@ using Pepegov.MicroserviceFramework.AspNetCore.WebApi;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
-using TelecomService.QRON.ID.Identity.Domain.Enum;
 
 namespace AegisForge.PL.Endpoints;
 

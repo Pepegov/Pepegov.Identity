@@ -1,9 +1,9 @@
 using AegisForge.Domain.Aggregate;
 using AegisForge.Domain.Entity;
+using AegisForge.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TelecomService.QRON.ID.Identity.Domain.Enum;
 
 namespace AegisForge.Domain.Database.EntityConfiguration;
 

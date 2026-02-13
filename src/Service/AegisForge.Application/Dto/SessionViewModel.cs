@@ -1,4 +1,4 @@
-using TelecomService.QRON.ID.Identity.Domain.Enum;
+using AegisForge.Domain.Enum;
 
 namespace AegisForge.Application.Dto;
 

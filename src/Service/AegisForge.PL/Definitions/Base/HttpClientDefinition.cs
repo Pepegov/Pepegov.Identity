@@ -2,7 +2,7 @@ using AegisForge.Infrastructure.Options;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 
-namespace TelecomService.QRON.ID.Identity.Api.Definitions.Service;
+namespace AegisForge.PL.Definitions.Base;
 
 public class HttpClientDefinition : ApplicationDefinition
 {

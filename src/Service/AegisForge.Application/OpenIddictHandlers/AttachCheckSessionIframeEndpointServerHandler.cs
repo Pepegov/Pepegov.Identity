@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using OpenIddict.Server;
 
-namespace Pepegov.Identity.BL.OpenIddictHandlers;
+namespace AegisForge.Application.OpenIddictHandlers;
 
 /// <summary>
 /// Handler for the OpenIddict event in ASP.NET The OpenID OpenID Core, which adds the check_session_iframe parameter to the OpenID Connect Discovery document (.well-known/openid-configuration).

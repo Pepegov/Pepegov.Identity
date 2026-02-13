@@ -2,12 +2,12 @@ using System.Net;
 using AegisForge.Application.Query;
 using AegisForge.Application.Query.Session;
 using AegisForge.Domain.Aggregate;
+using AegisForge.Domain.Enum;
 using MediatR;
 using Pepegov.MicroserviceFramework.ApiResults;
 using Pepegov.MicroserviceFramework.Data.Exceptions;
 using Pepegov.UnitOfWork;
 using Pepegov.UnitOfWork.EntityFramework;
-using TelecomService.QRON.ID.Identity.Domain.Enum;
 
 namespace AegisForge.Application.Handler.Session;
 

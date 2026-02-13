@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using AegisForge.Domain.Entity;
-using SessionStatusType = TelecomService.QRON.ID.Identity.Domain.Enum.SessionStatusType;
+using SessionStatusType = AegisForge.Domain.Enum.SessionStatusType;
 
 namespace AegisForge.Domain.Aggregate;
 
